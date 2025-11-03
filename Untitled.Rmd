@@ -28,3 +28,54 @@ plot(pressure)
 ```
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+
+# Advantage of current method
+simpler model with only one parameter(beta), easier to calculate, suitable for no dataset situations
+
+
+# Motivations: Need improve? Why?
+# Disadvantage of current method
+1. beta is fixed for all individuals, we need to consider the heterogeneity in individuals.
+2. Deviated aim: Police Scotland aims at assessing the probabilities that a person is over the limit, while the parameter beta only concentrates on the range between 2.5% and 97.5%.
+
+
+# New method: build a linear regression model for beta
+Check if age, weight and height have linear relationships with beta.
+Or have any patterns?
+```{r}
+beta_reg1 <- DA |>
+  pivot_longer(
+    cols = c(age, weight, height),
+    names_to = "variables",
+    values_to = "value"
+  )
+
+ggplot(beta_reg1, aes(x = value, y = beta)) + 
+  geom_point(alpha = 0.5) +
+  geom_smooth(method = "lm", se = FALSE) + 
+  facet_wrap(~ variables, scales = "free_x") +
+  theme_minimal()
+ 
+```
+# Model selection: 
+use drop(), look into AIC and R^2
+
+
+# Hypothesis test: 
+H0: C0 < limit, H1: C0 > limit 
+
+
+# Calculate V_d:
+in the Widmark's equation assumption, beta and V_d are independent, so we need to check whether Cov(V_d, beta) = 0
+
+
+# Further research:
+casual effect: biased data selection, 
+(e.g. inner correlations between sex and height)
+

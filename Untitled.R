@@ -1,5 +1,6 @@
 library(readxl)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 DA <- read_excel("SCS_BAC_and_BrAC_split_TOP.xlsx")
 
@@ -16,3 +17,11 @@ DA <- DA %>%
     maxBAC = `Maximum BAC (g/Kg)`,
     BACpeaktime = `BAC Peak time (min)`
   )
+
+
+
+
+
+
+
+
