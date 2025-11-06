@@ -44,13 +44,12 @@ fit <- brm(f, data = data,
 new <- data.frame(sex= 'female', Age_z=(70-mean(data$age))/sd(data$age),
                   Weight_z=(70-mean(data$weight))/sd(data$weight))
 
-beta_draws <- posterior_predict(fit, newdata = new, draws = 4000)
+beta_draws <- posterior_predict(fit, newdata = new, draws = 2000)
 
 Ct <- 0.15   
 t <- 2      
 C0_draws <- Ct + beta_draws * t
 
 P_over <- mean(C0_draws > 0.47)        
-quantile(C0_draws, prob = c(0.025, 0.5, 0.975))
-
+quantile(C0_draws, prob = c(0.025,0.25, 0.5, 0.975))
 P_over
