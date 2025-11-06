@@ -2,9 +2,9 @@ library(readxl)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-DA <- read_excel("SCS_BAC_and_BrAC_split_TOP.xlsx")
+data <- read_excel("SCS_BAC_and_BrAC_split_TOP.xlsx")
 
-DA <- DA %>%
+data <- data %>%
   rename(
     sex = Sex,
     beta = `Beta60 (g/kg/h)`,
@@ -19,9 +19,39 @@ DA <- DA %>%
   )
 
 
+data$Beta60 <- abs(data$beta)  # because Beta60 in file is negative of slope. :contentReference[oaicite:2]{index=2}
+library(brms)
+# scale continuous covariates for stability
+data$Age_z    <- scale(data$age)
+data$Weight_z <- scale(data$weight)
+data$Dose_z   <- scale(data$AAC)
+
+# formula: change covariates as appropriate
+f <- bf(Beta60 ~ sex + Age_z + Weight_z)
+
+priors <- c(
+  prior(normal(0,10), class = "b"),
+  prior(cauchy(0,2), class = "sigma", lb = 0),
+  prior(constant(7), class = "nu"))
+
+fit <- brm(f, data = data, 
+           prior = priors,
+           family = student(),
+           chains = 4, iter = 4000, warmup = 1000, seed = 42,
+           control = list(adapt_delta = 0.98))
 
 
+new <- data.frame(sex=0, Age_z=(70-mean(data$age))/sd(data$age),
+                  Weight_z=(70-mean(data$weight))/sd(data$weight))  # fill as appropriate
 
+# get posterior draws for beta_* (posterior_predict gives draws from data model)
+beta_draws <- posterior_predict(fit, newdata = new, draws = 4000)
+# Or use posterior_linpred + draw noise manually; posterior_predict is simpler.
 
+Ct <- 0.15   # example
+t <- 2       # hours
+C0_draws <- Ct + beta_draws * t
 
+P_over <- mean(C0_draws > 0.47)        # e.g. legal limit 0.47 g/kg
+quantile(C0_draws, prob = c(0.025, 0.5, 0.975))
 
