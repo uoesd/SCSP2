@@ -49,7 +49,7 @@ simpler model with only one parameter(beta), easier to calculate, suitable for n
 Check if age, weight and height have linear relationships with beta.
 Or have any patterns?
 ```{r}
-beta_reg1 <- DA |>
+beta_reg1 <- data |>
   pivot_longer(
     cols = c(age, weight, height),
     names_to = "variables",
