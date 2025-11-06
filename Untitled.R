@@ -41,17 +41,16 @@ fit <- brm(f, data = data,
            control = list(adapt_delta = 0.98))
 
 
-new <- data.frame(sex=0, Age_z=(70-mean(data$age))/sd(data$age),
-                  Weight_z=(70-mean(data$weight))/sd(data$weight))  # fill as appropriate
+new <- data.frame(sex= 'female', Age_z=(70-mean(data$age))/sd(data$age),
+                  Weight_z=(70-mean(data$weight))/sd(data$weight))
 
-# get posterior draws for beta_* (posterior_predict gives draws from data model)
 beta_draws <- posterior_predict(fit, newdata = new, draws = 4000)
-# Or use posterior_linpred + draw noise manually; posterior_predict is simpler.
 
-Ct <- 0.15   # example
-t <- 2       # hours
+Ct <- 0.15   
+t <- 2      
 C0_draws <- Ct + beta_draws * t
 
-P_over <- mean(C0_draws > 0.47)        # e.g. legal limit 0.47 g/kg
+P_over <- mean(C0_draws > 0.47)        
 quantile(C0_draws, prob = c(0.025, 0.5, 0.975))
 
+P_over
