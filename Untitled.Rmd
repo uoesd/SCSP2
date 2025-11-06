@@ -67,7 +67,7 @@ ggplot(beta_reg1, aes(x = value, y = beta)) +
 use drop(), look into AIC and R^2
 
 
-# Hypothesis test: 
+# Hypothesis test(70yr female example-better use 2.5th quantile?): 
 H0: C0 < limit, H1: C0 > limit 
 
 
