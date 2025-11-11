@@ -117,10 +117,6 @@ loo_B <- loo(fit_B, moment_match = TRUE)
 loo_C <- loo(fit_C, moment_match = TRUE)
 print(loo_compare(loo_A, loo_B, loo_C))
 
-
-message("Proportion pareto_k > 0.7 for Model A:", mean(pareto_k_values(loo_A) > 0.7))
-message("Proportion pareto_k > 0.7 for Model B:", mean(pareto_k_values(loo_B) > 0.7))
-message("Proportion pareto_k > 0.7 for Model C:", mean(pareto_k_values(loo_C) > 0.7))
 # formula: change covariates as appropriate
 f <- bf(Beta60 ~ 1 + sex + age + weight)
 
@@ -160,3 +156,6 @@ P_over
 # empirical 2.5th percentile of beta distribution:
 emp_beta_2.5 <- quantile(dat$beta, probs = 0.025, na.rm = TRUE)
 emp_beta_97.5 <- quantile(dat$beta, probs = 0.975, na.rm = TRUE)
+
+lm(beta~1+sex+age_s, data)
+summary(lm(beta~1 + sex + weight_s + age_s, data))
