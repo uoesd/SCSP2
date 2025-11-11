@@ -49,7 +49,7 @@ data <- data %>%
     maxBAC_s = (maxBAC - mean(maxBAC, na.rm = TRUE)) / sd(maxBAC, na.rm = TRUE),
     BACpeaktime_s = (BACpeaktime - mean(BACpeaktime, na.rm = TRUE)) / sd(BACpeaktime, na.rm = TRUE)
   )
-data$Beta60 <- abs(data$beta)  # because Beta60 in file is negative of slope. :contentReference[oaicite:2]{index=2}
+data$beta <- abs(data$beta)  # because Beta60 in file is negative of slope. :contentReference[oaicite:2]{index=2}
 
 print(num_summary)
 ggplot(data, aes(x = beta)) + geom_histogram(bins = 40) + ggtitle("Histogram of beta")
