@@ -1,0 +1,157 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+  11pt,
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{5}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead[L]{\textit{Short report title}}
+\fancyhead[R]{\leftmark}
+\fancyfoot[C]{\thepage}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{titling}
+\pretitle{\begin{center}\LARGE\bfseries}
+\posttitle{\end{center}\vspace{1em}}
+\usepackage{caption}
+\captionsetup[figure]{labelfont=bf,textfont=it}
+\captionsetup[table]{labelfont=bf}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Report Title: Example Report},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Report Title: Example Report}
+\author{Group 3\\
+Department / Course}
+\date{November 12, 2025}
+
+\begin{document}
+\maketitle
+
+{
+\setcounter{tocdepth}{2}
+\tableofcontents
+}
+\#\#Abstract A short summary of the report --- 1 paragraph. Keep it
+concise and informative. \#\#Introduction Explain goals, context,
+dataset, or background. \#\#Methods Describe methods used. Show code
+chunks inline as needed.
+
+\section{Advantage of current method}\label{advantage-of-current-method}
+
+simpler model with only one parameter(beta), easier to calculate,
+suitable for no dataset situations
+
+\section{Motivations: Need improve?
+Why?}\label{motivations-need-improve-why}
+
+\section{Disadvantage of current
+method}\label{disadvantage-of-current-method}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  beta is fixed for all individuals, we need to consider the
+  heterogeneity in individuals.
+\item
+  Deviated aim: Police Scotland aims at assessing the probabilities that
+  a person is over the limit, while the parameter beta only concentrates
+  on the range between 2.5\% and 97.5\%.
+\end{enumerate}
+
+\section{New method: build a linear regression model for
+beta}\label{new-method-build-a-linear-regression-model-for-beta}
+
+Check if age, weight and height have linear relationships with beta. Or
+have any patterns?
+\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-2-1.pdf}}
+\# Model selection: use drop(), look into AIC and R\^{}2
+
+\section{Hypothesis test(70yr female example-better use 2.5th
+quantile?):}\label{hypothesis-test70yr-female-example-better-use-2.5th-quantile}
+
+H0: C0 \textless{} limit, H1: C0 \textgreater{} limit
+
+\section{Calculate V\_d:}\label{calculate-v_d}
+
+in the Widmark's equation assumption, beta and V\_d are independent, so
+we need to check whether Cov(V\_d, beta) = 0
+
+\section{Further research:}\label{further-research}
+
+casual effect: biased data selection, (e.g.~inner correlations between
+sex and height)
+
+\end{document}

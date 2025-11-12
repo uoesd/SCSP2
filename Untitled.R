@@ -61,9 +61,9 @@ ggplot(data, aes(x = weight, y = beta)) + geom_point() + geom_smooth(method = "l
 formula_main <- bf(beta ~ 1 + sex + age_s + weight_s + height_s)
 emp_mean <- mean(data$beta, na.rm = TRUE)
 emp_sd   <- sd(data$beta, na.rm = TRUE)
-chains <- 4
-iter <- 4000
-warmup <- 500
+chains <- 2
+iter <- 1000
+warmup <- 200
 control <- list(adapt_delta = 0.98, max_treedepth = 15)
 seed <- 2025
 
@@ -113,22 +113,24 @@ priors <- c(
 fit <- brm(formula_main, data = data, 
            prior = priors,
            family = student(),
-           chains = 4, iter = 4000, warmup = 1000, seed = 42,
+           chains = 2, iter = 1000, warmup = 200, seed = 42,
            control = list(adapt_delta = 0.98))
 
 print(summary(fit_A))
 print(summary(fit_B))
 print(summary(fit_C))
-plot(fit_A)
-plot(fit_B)
-plot(fit_C)
+#plot(fit_A)
+#plot(fit_B)install.packages("tinytex")
+tinytex::install_tinytex()   # installs TinyTeX (no admin usually required)
 
-yrep_A <- posterior_predict(fit_A, draws = 2000)
-ppc_dens_overlay(data$beta, yrep_A[1:2000, ]) + ggtitle("PPC density - Model A")
-yrep_B <- posterior_predict(fit_B, draws = 2000)
-ppc_dens_overlay(data$beta, yrep_B[1:2000, ]) + ggtitle("PPC density - Model B")
-yrep_C <- posterior_predict(fit_C, draws = 2000)
-ppc_dens_overlay(data$beta, yrep_C[1:2000, ]) + ggtitle("PPC density - Model C")
+#plot(fit_C)
+
+yrep_A <- posterior_predict(fit_A, draws = 200)
+ppc_dens_overlay(data$beta, yrep_A[1:200, ]) + ggtitle("PPC density - Model A")
+yrep_B <- posterior_predict(fit_B, draws = 200)
+ppc_dens_overlay(data$beta, yrep_B[1:200, ]) + ggtitle("PPC density - Model B")
+yrep_C <- posterior_predict(fit_C, draws = 200)
+ppc_dens_overlay(data$beta, yrep_C[1:200, ]) + ggtitle("PPC density - Model C")
 
 loo_A <- loo(fit_A, moment_match = TRUE)
 loo_B <- loo(fit_B, moment_match = TRUE)
@@ -149,7 +151,7 @@ new <- tibble(
     sex = 'female'
   )
 
-beta_draws <- posterior_predict(fit_A, newdata = new, draws = 2000)
+beta_draws <- posterior_predict(fit_A, newdata = new, draws = 1600)
 Ct <- 0.15   
 t <- 2      
 C0_draws <- Ct + beta_draws * t
@@ -169,9 +171,9 @@ library(ggplot2)
 
 # 1) Draw posterior predictive samples for observed rows
 # posterior_predict returns matrix draws x observations (includes observation noise)
-pp_draws <- posterior_predict(fit_B, ndraws = 2000)  # 2000 draws is enough; increase if needed
+pp_draws <- posterior_predict(fit_B, ndraws = 1600)  # 2000 draws is enough; increase if needed
 # posterior_epred returns expected mean draws (no obs noise) if you prefer
-epred_draws <- posterior_epred(fit_B, ndraws = 2000)
+epred_draws <- posterior_epred(fit_B, ndraws = 1600)
 
 n_draws <- nrow(pp_draws)
 n_obs <- ncol(pp_draws)           # should be 100 in your case
@@ -254,9 +256,9 @@ mcmc_trace(as.array(fit_A), pars = c("b_Intercept", "b_weight_s"))
 ###
 library(knitr)
 
-Before fitting the Bayesian regression, appropriate priors were specified for the intercept, regression coefficients, and residual standard deviation.
-We use weak information priors, allowing the observed data to dominate inference process.
-The chosen priors are summarised below:
+#Before fitting the Bayesian regression, appropriate priors were specified for the intercept, regression coefficients, and residual standard deviation.
+#We use weak information priors, allowing the observed data to dominate inference process.
+#The chosen priors are summarised below:
 
 priors_table <- tribble(
   ~Parameter, ~Prior, ~Role,
@@ -275,33 +277,33 @@ ggplot(data, aes(x = beta)) +
        y = "Density") +
   theme_minimal()
 
-The intercept prior was specified as a Normal(0.184, 0.066) distribution, 
-where the mean corresponds to the empirical average of β estimated from the observed data
-and the standard deviation (0.066 ≈ 2 × empirical SD) provides sufficient uncertainty to cover the plausible physiological range.
-As shown in Figure, the red curve (prior) fits well with the empirical histogram, this ensures the prior reflects realistic biology without constraining the data.
+#The intercept prior was specified as a Normal(0.184, 0.066) distribution, 
+#where the mean corresponds to the empirical average of β estimated from the observed data
+#and the standard deviation (0.066 ≈ 2 × empirical SD) provides sufficient uncertainty to cover the plausible physiological range.
+#As shown in Figure, the red curve (prior) fits well with the empirical histogram, this ensures the prior reflects realistic biology without constraining the data.
 
-For the regression coefficients, a Normal(0, 0.01) prior was used.
-This setting assumes that each predictor may have a limited but non-zero influence on β after standardisation.
-This approach follows recommendations from Gelman et al. (2008)
+#For the regression coefficients, a Normal(0, 0.01) prior was used.
+#This setting assumes that each predictor may have a limited but non-zero influence on β after standardisation.
+#This approach follows recommendations from Gelman et al. (2008)
 
-Reference:
-Gelman, A., Jakulin, A., Pittau, M. G., & Su, Y.-S. (2008).
-A weakly informative default prior distribution for logistic and other regression models.
-Annals of Applied Statistics, 2(4), 1360–1383.
-https://doi.org/10.1214/08-AOAS191
+#Reference:
+#Gelman, A., Jakulin, A., Pittau, M. G., & Su, Y.-S. (2008).
+#A weakly informative default prior distribution for logistic and other regression models.
+#Annals of Applied Statistics, 2(4), 1360–1383.
+#https://doi.org/10.1214/08-AOAS191
 
-The residual standard deviation σ was assigned an Exponential(1) prior.
-This prior keeps σ positive and allows the model to capture unexplained variation in β.
-This choice is consistent with the guidance of Gelman (2006) and Gelman et al. (2020).
+#The residual standard deviation σ was assigned an Exponential(1) prior.
+#This prior keeps σ positive and allows the model to capture unexplained variation in β.
+#This choice is consistent with the guidance of Gelman (2006) and Gelman et al. (2020).
 
-References:
-Gelman, A. (2006). Prior distributions for variance parameters in hierarchical models.
-Bayesian Analysis, 1(3), 515–533.
-https://doi.org/10.1214/06-BA117A
+#References:
+#Gelman, A. (2006). Prior distributions for variance parameters in hierarchical models.
+#Bayesian Analysis, 1(3), 515–533.
+#https://doi.org/10.1214/06-BA117A
 
-Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter, B., Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., & Modrák, M. (2020). 
-Bayesian workflow. arXiv preprint arXiv:2011.01808. 
-https://arxiv.org/abs/2011.01808
+#Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter, B., Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., & Modrák, M. (2020). 
+#Bayesian workflow. arXiv preprint arXiv:2011.01808. 
+#https://arxiv.org/abs/2011.01808
 
 
 r2_A <- median(as.numeric(bayes_R2(fit_A)))
