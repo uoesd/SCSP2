@@ -57,12 +57,12 @@ ggplot(data, aes(y = beta)) + geom_boxplot() + ggtitle("Boxplot of beta")
 ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
 ggplot(data, aes(x = weight, y = beta)) + geom_point() + geom_smooth(method = "loess") + ggtitle("beta vs weight")
 
-formula_main <- bf(beta ~ 1 + sex + age_s + weight_s + height_s + AAC_s + drinkingtime_s + maxBAC_s + BACpeaktime_s)
+formula_main <- bf(beta ~ 1 + sex + age_s + weight_s + height_s)
 emp_mean <- mean(data$beta, na.rm = TRUE)
 emp_sd   <- sd(data$beta, na.rm = TRUE)
 chains <- 4
 iter <- 4000
-warmup <- 1500
+warmup <- 500
 control <- list(adapt_delta = 0.98, max_treedepth = 15)
 seed <- 2025
 # Student-t intercept prior (robust)
@@ -98,6 +98,17 @@ fit_C <- brm(formula = formula_main,
              family = gaussian(),
              prior = prior_C,
              chains = chains, iter = iter, warmup = warmup, control = control, seed = seed)
+priors <- c(
+  prior(normal(0,2), class = "b"),
+  prior(cauchy(0,2), class = "sigma", lb = 0),
+  prior(constant(8), class = "nu"))
+
+fit <- brm(formula_main, data = data, 
+           prior = priors,
+           family = student(),
+           chains = 4, iter = 4000, warmup = 1000, seed = 42,
+           control = list(adapt_delta = 0.98))
+
 print(summary(fit_A))
 print(summary(fit_B))
 print(summary(fit_C))
@@ -105,57 +116,127 @@ plot(fit_A)
 plot(fit_B)
 plot(fit_C)
 
-yrep_A <- posterior_predict(fit_A, draws = 200)
-ppc_dens_overlay(data$beta, yrep_A[1:200, ]) + ggtitle("PPC density - Model A")
-yrep_B <- posterior_predict(fit_B, draws = 200)
-ppc_dens_overlay(data$beta, yrep_B[1:200, ]) + ggtitle("PPC density - Model B")
-yrep_C <- posterior_predict(fit_C, draws = 200)
-ppc_dens_overlay(data$beta, yrep_C[1:200, ]) + ggtitle("PPC density - Model C")
+yrep_A <- posterior_predict(fit_A, draws = 2000)
+ppc_dens_overlay(data$beta, yrep_A[1:2000, ]) + ggtitle("PPC density - Model A")
+yrep_B <- posterior_predict(fit_B, draws = 2000)
+ppc_dens_overlay(data$beta, yrep_B[1:2000, ]) + ggtitle("PPC density - Model B")
+yrep_C <- posterior_predict(fit_C, draws = 2000)
+ppc_dens_overlay(data$beta, yrep_C[1:2000, ]) + ggtitle("PPC density - Model C")
 
 loo_A <- loo(fit_A, moment_match = TRUE)
 loo_B <- loo(fit_B, moment_match = TRUE)
 loo_C <- loo(fit_C, moment_match = TRUE)
 print(loo_compare(loo_A, loo_B, loo_C))
 
-# formula: change covariates as appropriate
-f <- bf(Beta60 ~ 1 + sex + age + weight)
 
-priors <- c(
-  prior(normal(0,2), class = "b"),
-  prior(cauchy(0,2), class = "sigma", lb = 0),
-  prior(constant(8), class = "nu"))
+new <- tibble(
+  sex = factor("female", levels = levels(data$sex)),
+  age = 70,
+  weight = 70,
+  height = 160
+) %>%
+  mutate(
+    age_s = (age - mean(data$age, na.rm = TRUE)) / sd(data$age, na.rm = TRUE),
+    weight_s = (weight - mean(data$weight, na.rm = TRUE)) / sd(data$weight, na.rm = TRUE),
+    height_s = (height - mean(data$height, na.rm = TRUE)) / sd(data$height, na.rm = TRUE),
+    sex = 'female'
+  )
 
-fit <- brm(f, data = data, 
-           prior = priors,
-           family = student(),
-           chains = 4, iter = 4000, warmup = 1000, seed = 42,
-           control = list(adapt_delta = 0.98))
-
-fit
-plot(fit)
-new <fitnew <- data.frame(sex= 'female', age = 70,
-                  weight = 70)
-
-new2 <- data.frame(sex= data$sex, age = data$age,
-                   weight = data$weight)
-
-beta_draws <- posterior_predict(fit, newdata = new, draws = 2000)
-beta_draws2 <- posterior_predict(fit, newdata = new2, draws = 2)
-
+beta_draws <- posterior_predict(fit_A, newdata = new, draws = 2000)
 Ct <- 0.15   
 t <- 2      
 C0_draws <- Ct + beta_draws * t
-
-
-
 P_over <- mean(C0_draws > 0.47)        
 quantile(C0_draws, prob = c(0.025,0.25, 0.5, 0.975))
 P_over
-
-
 # empirical 2.5th percentile of beta distribution:
-emp_beta_2.5 <- quantile(dat$beta, probs = 0.025, na.rm = TRUE)
-emp_beta_97.5 <- quantile(dat$beta, probs = 0.975, na.rm = TRUE)
+emp_beta_2.5 <- quantile(data$beta, probs = 0.025, na.rm = TRUE)
+quantile(C0_draws, probs = 0.025, na.rm = TRUE)
 
-lm(beta~1+sex+age_s, data)
-summary(lm(beta~1 + sex + weight_s + age_s, data))
+# Evaluate predictive performance on training set (observed beta)
+# Assumes: 'data' is your dataframe (with observed beta) and 'fit_A' is your brms fit object
+library(brms)
+library(posterior)
+library(dplyr)
+library(ggplot2)
+
+# 1) Draw posterior predictive samples for observed rows
+# posterior_predict returns matrix draws x observations (includes observation noise)
+pp_draws <- posterior_predict(fit_B, ndraws = 2000)  # 2000 draws is enough; increase if needed
+# posterior_epred returns expected mean draws (no obs noise) if you prefer
+epred_draws <- posterior_epred(fit_B, ndraws = 2000)
+
+n_draws <- nrow(pp_draws)
+n_obs <- ncol(pp_draws)           # should be 100 in your case
+
+# 2) For each observation compute 50% and 95% predictive intervals (from pp_draws)
+alpha_lo_95 <- 0.025; alpha_hi_95 <- 0.975
+alpha_lo_50 <- 0.25;  alpha_hi_50 <- 0.75
+
+pp_summary <- tibble(
+  obs = seq_len(n_obs),
+  beta_obs = data$beta  # observed true beta for each row
+) %>%
+  mutate(
+    pred_mean = colMeans(epred_draws),
+    pred_median = apply(epred_draws, 2, median),
+    # 95% PI from posterior_predict (includes obs noise)
+    PI95_low = apply(pp_draws, 2, quantile, probs = alpha_lo_95),
+    PI95_high = apply(pp_draws, 2, quantile, probs = alpha_hi_95),
+    # 50% PI
+    PI50_low = apply(pp_draws, 2, quantile, probs = alpha_lo_50),
+    PI50_high = apply(pp_draws, 2, quantile, probs = alpha_hi_50),
+    # point error metrics
+    abs_err_mean = abs(pred_mean - beta_obs),
+    sq_err_mean = (pred_mean - beta_obs)^2,
+    # PIT value (proportion of predictive draws <= observed)
+    PIT = sapply(1:n_obs, function(j) mean(pp_draws[, j] <= beta_obs[j]))
+  )
+
+# 3) Coverage counts
+covered_95 <- sum(pp_summary$beta_obs >= pp_summary$PI95_low & pp_summary$beta_obs <= pp_summary$PI95_high, na.rm = TRUE)
+covered_50 <- sum(pp_summary$beta_obs >= pp_summary$PI50_low & pp_summary$beta_obs <= pp_summary$PI50_high, na.rm = TRUE)
+
+prop_95 <- covered_95 / n_obs
+prop_50 <- covered_50 / n_obs
+
+# 4) Point-prediction summary (MAE, RMSE) using posterior mean
+MAE <- mean(pp_summary$abs_err_mean, na.rm = TRUE)
+RMSE <- sqrt(mean(pp_summary$sq_err_mean, na.rm = TRUE))
+
+# 5) Bayesian R^2 (using brms helper)
+r2_draws <- as.numeric(bayes_R2(fit_A))  # ensures numeric vector
+r2_median <- median(r2_draws)
+r2_CI <- quantile(r2_draws, c(0.025, 0.975))
+
+# 6) Print results
+cat("Observations (n):", n_obs, "\n")
+cat("95% predictive interval coverage:", covered_95, "/", n_obs, " = ", round(100*prop_95,2), "%\n")
+cat("50% predictive interval coverage:", covered_50, "/", n_obs, " = ", round(100*prop_50,2), "%\n")
+cat("MAE (using posterior mean):", signif(MAE,4), "\n")
+cat("RMSE (using posterior mean):", signif(RMSE,4), "\n")
+cat("Bayesian R^2 median:", signif(r2_median,4), " (95% CI:", signif(r2_CI[1],4), "-", signif(r2_CI[2],4), ")\n")
+
+# 7) PIT histogram (should be flat if predictive distribution calibrated)
+ggplot(pp_summary, aes(x = PIT)) +
+  geom_histogram(bins = 20, color = "black", fill = "skyblue") +
+  labs(title = "PIT histogram (calibration): ideally flat", x = "PIT value", y = "count")
+
+# 8) Optional: list the observation indices that fall outside 95% PI
+outliers_95_idx <- pp_summary %>% filter(!(beta_obs >= PI95_low & beta_obs <= PI95_high)) %>% pull(obs)
+cat("Indices outside 95% PI (count):", length(outliers_95_idx), "\n")
+if (length(outliers_95_idx) > 0) cat("Examples:", head(outliers_95_idx, 20), "\n")
+
+# 9) If you want a flexible "how many are correctly predicted" with tolerance:
+#    Define tolerance tol (absolute error), e.g., tol = 0.01 g/kg/h
+tol <- 0.01
+n_within_tol <- sum(pp_summary$abs_err_mean <= tol, na.rm = TRUE)
+cat("Number of obs with abs error <= ", tol, ": ", n_within_tol, "/", n_obs,
+    " (", round(100 * n_within_tol / n_obs,1), "% )\n", sep = "")
+
+lm(beta~1, data)
+summary(lm(beta~1 + sex + weight_s + age_s+height_s, data))
+# Example: after fitting fit_A
+mcmc_trace(as.array(fit_A), pars = c("b_Intercept", "b_weight_s"))
+
+
