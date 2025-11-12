@@ -23,8 +23,22 @@ data <- data %>%
     drinkingtime = `Drinking Time (h)`,
     maxBAC = `Maximum BAC (g/Kg)`,
     BACpeaktime = `BAC Peak time (min)`) %>%
-  mutate(sex = factor(sex))
+  mutate(sex = factor(sex),
+         Vd = AAC / (weight * Co))
 
+ggplot(data, aes(x = Vd)) + geom_histogram(bins = 30) + ggtitle("Histogram of raw Vd (naive calc)")
+ggplot(data, aes(x = Vd, y = beta)) + geom_point() + geom_smooth(method = "loess") +
+  labs(title = "beta vs log(Vd)")
+
+cov_xy <- cov(data$Vd, data$beta)
+cor_xy <- cor(data$Vd, data$beta)
+cor.test(data$Vd, data$beta)
+
+summary(lm(Vd~ 0+I(1/weight) + I(age/weight) + I(height/weight) + sex, data))
+summary(lm(Vd~ 0 + sex + weight + age + height , data))
+
+
+summary(lm(beta~0+ sex + age + height + weight, data))
 
 
 num_summary <- data %>%
@@ -48,9 +62,8 @@ data <- data %>%
     AAC_s = (AAC - mean(AAC, na.rm = TRUE)) / sd(AAC, na.rm = TRUE),
     drinkingtime_s = (drinkingtime - mean(drinkingtime, na.rm = TRUE)) / sd(drinkingtime, na.rm = TRUE),
     maxBAC_s = (maxBAC - mean(maxBAC, na.rm = TRUE)) / sd(maxBAC, na.rm = TRUE),
-    BACpeaktime_s = (BACpeaktime - mean(BACpeaktime, na.rm = TRUE)) / sd(BACpeaktime, na.rm = TRUE)
-  )
-data$beta <- abs(data$beta)  # because Beta60 in file is negative of slope. :contentReference[oaicite:2]{index=2}
+    BACpeaktime_s = (BACpeaktime - mean(BACpeaktime, na.rm = TRUE)) / sd(BACpeaktime, na.rm = TRUE))
+data$beta <- abs(data$beta) 
 
 print(num_summary)
 ggplot(data, aes(x = beta)) + geom_histogram(bins = 40) + ggtitle("Histogram of beta")
@@ -58,27 +71,29 @@ ggplot(data, aes(y = beta)) + geom_boxplot() + ggtitle("Boxplot of beta")
 ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
 ggplot(data, aes(x = weight, y = beta)) + geom_point() + geom_smooth(method = "loess") + ggtitle("beta vs weight")
 
-formula_main <- bf(beta ~ 1 + sex + age_s + weight_s + height_s)
+formula_main <- bf(beta ~ 0 + sex + age_s + weight_s + height_s)
 emp_mean <- mean(data$beta, na.rm = TRUE)
 emp_sd   <- sd(data$beta, na.rm = TRUE)
-chains <- 2
-iter <- 1000
-warmup <- 200
+chains <- 4
+iter <- 4000
+warmup <- 1000
 control <- list(adapt_delta = 0.98, max_treedepth = 15)
 seed <- 2025
 
 # Student-t intercept prior (robust)
-prior_A <- c(set_prior(paste0("student_t(3, ", signif(emp_mean, 3), ", ", signif(emp_sd * 2, 3), ")"), class = "Intercept"),
+prior_A <- c(set_prior("student_t(3, 0.18, 0.03", class = "b", coef = "sexmale"),
+             set_prior("student_t(3, 0.15, 0.03", class = "b", coef = "sexfemale"),
              set_prior("normal(0, 0.01)", class = "b"),
              set_prior("exponential(1)", class = "sigma"))
 
 
 # Student-t likelihood prior includes nu
-prior_B <- c(prior_A, set_prior("gamma(2, 0.1)", class = "nu"))
+prior_B <- c(prior_A, set_prior("constant(100)", class = "nu"))
 
 
 # Normal intercept prior (sensitivity)
-prior_C <- c(set_prior(paste0("normal(", signif(emp_mean,3), ", ", signif(emp_sd * 2, 3), ")"), class = "Intercept"),
+prior_C <- c(set_prior("normal(0.18, 0.03)", class = "b", coef = "sexmale"),
+             set_prior("normal(0.15, 0.03)", class = "b", coef = "sexfemale"),
              set_prior("normal(0, 0.01)", class = "b"),
              set_prior("exponential(1)", class = "sigma"))
 
@@ -105,25 +120,14 @@ fit_C <- brm(formula = formula_main,
              prior = prior_C,
              chains = chains, iter = iter, warmup = warmup, control = control, seed = seed)
 
-priors <- c(
-  prior(normal(0,2), class = "b"),
-  prior(cauchy(0,2), class = "sigma", lb = 0),
-  prior(constant(8), class = "nu"))
 
-fit <- brm(formula_main, data = data, 
-           prior = priors,
-           family = student(),
-           chains = 2, iter = 1000, warmup = 200, seed = 42,
-           control = list(adapt_delta = 0.98))
 
 print(summary(fit_A))
 print(summary(fit_B))
 print(summary(fit_C))
 #plot(fit_A)
-#plot(fit_B)install.packages("tinytex")
-tinytex::install_tinytex()   # installs TinyTeX (no admin usually required)
-
-#plot(fit_C)
+#plot(fit_B)
+plot(fit_C)
 
 yrep_A <- posterior_predict(fit_A, draws = 200)
 ppc_dens_overlay(data$beta, yrep_A[1:200, ]) + ggtitle("PPC density - Model A")
@@ -151,7 +155,7 @@ new <- tibble(
     sex = 'female'
   )
 
-beta_draws <- posterior_predict(fit_A, newdata = new, draws = 1600)
+beta_draws <- posterior_predict(fit_C, newdata = new, draws = 1600)
 Ct <- 0.15   
 t <- 2      
 C0_draws <- Ct + beta_draws * t
@@ -171,9 +175,9 @@ library(ggplot2)
 
 # 1) Draw posterior predictive samples for observed rows
 # posterior_predict returns matrix draws x observations (includes observation noise)
-pp_draws <- posterior_predict(fit_B, ndraws = 1600)  # 2000 draws is enough; increase if needed
+pp_draws <- posterior_predict(fit_C, ndraws = 1600)  # 2000 draws is enough; increase if needed
 # posterior_epred returns expected mean draws (no obs noise) if you prefer
-epred_draws <- posterior_epred(fit_B, ndraws = 1600)
+epred_draws <- posterior_epred(fit_C, ndraws = 1600)
 
 n_draws <- nrow(pp_draws)
 n_obs <- ncol(pp_draws)           # should be 100 in your case
@@ -214,7 +218,7 @@ MAE <- mean(pp_summary$abs_err_mean, na.rm = TRUE)
 RMSE <- sqrt(mean(pp_summary$sq_err_mean, na.rm = TRUE))
 
 # 5) Bayesian R^2 (using brms helper)
-r2_draws <- as.numeric(bayes_R2(fit_A))  # ensures numeric vector
+r2_draws <- as.numeric(bayes_R2(fit_C))  # ensures numeric vector
 r2_median <- median(r2_draws)
 r2_CI <- quantile(r2_draws, c(0.025, 0.975))
 
@@ -243,8 +247,6 @@ n_within_tol <- sum(pp_summary$abs_err_mean <= tol, na.rm = TRUE)
 cat("Number of obs with abs error <= ", tol, ": ", n_within_tol, "/", n_obs,
     " (", round(100 * n_within_tol / n_obs,1), "% )\n", sep = "")
 
-lm(beta~1, data)
-summary(lm(beta~1 + sex + weight_s + age_s+height_s, data))
 # Example: after fitting fit_A
 mcmc_trace(as.array(fit_A), pars = c("b_Intercept", "b_weight_s"))
 
