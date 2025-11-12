@@ -34,12 +34,12 @@ cov_xy <- cov(data$Vd, data$beta)
 cor_xy <- cor(data$Vd, data$beta)
 cor.test(data$Vd, data$beta)
 
-summary(lm(Vd~ 0+I(1/weight) + I(age/weight) + I(height/weight) + sex, data))
+summary(lm(Vd~ 0+I(1/weight):sex + I(age/weight):sex + I(height/weight):sex + sex, data))
 summary(lm(Vd~ 0 + sex + weight + age + height , data))
 
 
 summary(lm(beta~0+ sex + age + height + weight, data))
-
+summary(lm(beta~0+ weight:sex, data))
 
 num_summary <- data %>%
   summarise(
@@ -71,7 +71,11 @@ ggplot(data, aes(y = beta)) + geom_boxplot() + ggtitle("Boxplot of beta")
 ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
 ggplot(data, aes(x = weight, y = beta)) + geom_point() + geom_smooth(method = "loess") + ggtitle("beta vs weight")
 
-formula_main <- bf(beta ~ 0 + sex + age_s + weight_s + height_s)
+f_beta <- bf(beta ~ 0 + sex + age_s + weight_s + height_s)
+f_beta1 <- bf(beta ~ 0 + sex + age_s + weight_s + height_s + maxBAC_s+AAC_s)
+f_Vd <- bf(Vd ~ 0+ I(1/weight) + I(age/weight) + I(height/weight) + sex)
+f_Vd1 <- bf(Vd ~ 0+ weight:sex)
+
 emp_mean <- mean(data$beta, na.rm = TRUE)
 emp_sd   <- sd(data$beta, na.rm = TRUE)
 chains <- 4
@@ -97,24 +101,32 @@ prior_C <- c(set_prior("normal(0.18, 0.03)", class = "b", coef = "sexmale"),
              set_prior("normal(0, 0.01)", class = "b"),
              set_prior("exponential(1)", class = "sigma"))
 
-
+priors_joint <- c(
+  set_prior("normal(0, 0.01)", class = "b", resp = "beta"),
+  set_prior("exponential(1)", class = "sigma", resp = "beta"),
+  set_prior("student_t(3, 0.18, 0.03", class = "b", coef = "sexmale", resp = "beta"),
+  set_prior("student_t(3, 0.15, 0.03", class = "b", coef = "sexfemale", resp = "beta"),
+  set_prior("student_t(3, 0.0, 0.5)", class = "Intercept", resp = "logvd"),  
+  set_prior("normal(0, 0.2)", class = "b", resp = "logvd"),
+  set_prior("exponential(1)", class = "sigma", resp = "logvd")
+)
 
 message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
-fit_A <- brm(formula = formula_main,
+fit_A <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior_A,
              chains = chains, iter = iter, warmup = warmup, control = control, seed = seed)
 
 message("Fitting Model B (student-t likelihood + student-t prior)...")
-fit_B <- brm(formula = formula_main,
+fit_B <- brm(formula = f_beta,
              data = data,
              family = student(),
              prior = prior_B,
              chains = chains, iter = iter, warmup = warmup, control = control, seed = seed)
 
 message("Fitting Model C (gaussian likelihood + normal intercept prior - sensitivity)...")
-fit_C <- brm(formula = formula_main,
+fit_C <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior_C,
