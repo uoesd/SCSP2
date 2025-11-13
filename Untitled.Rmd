@@ -47,8 +47,7 @@ source("Group13code.R")
 ```
 
 
-
-# Advantage of current method
+### Advantage of current method
 simpler model with only one parameter(beta), easier to calculate, suitable for no dataset situations
 
 
@@ -91,4 +90,59 @@ in the Widmark's equation assumption, beta and V_d are independent, so we need t
 # Further research:
 casual effect: biased data selection, 
 (e.g. inner correlations between sex and height)
+
+
+## REPORT
+# Exclusive summary
+background
+Goal - 1, 2, 3
+main data + elimination rate explanation
+method - model we used
+result
+
+
+
+
+# Dataset- in table
+Description - how many observations do we have?
+where we get the resourse, reference?
+explain each variables in table
+Prelimary analysis - initial formula: explain beta60 +  - motivation to improve?
+
+variable correlations? Why?
+hypothesis needed? 
+why 2.5 quantiles?
+
+
+# Model selsction - why Baysian?
+Any advantage, any improvement? More accurate? 
+
+# How model works on the 70 year-old madam
+explanation
+why prior setted?
+how result reflect?
+
+# Testing another assumption(condition):
+explain all variables we used
+explain needed references
+whether formula reasonable?
+whether beta0 relate to Vt? 
+how related? 
+hows the result? 
+how new model fit?
+
+
+#Limitation
+our model limit
+data collected reason - cannot reflect the real world
+model reason
+other reason
+
+
+
+
+
+
+
+
 
