@@ -1,10 +1,12 @@
 ---
-title: "Report Title: Example Report"
-author: |
-  Group 3  
-  Department / Course
+title: 'Report Title: Example Report'
+author: "Group 3  \nDepartment / Course\n"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
+  html_document:
+    toc: true
+    toc_depth: '2'
+    df_print: paged
   pdf_document:
     latex_engine: xelatex
     keep_tex: true
@@ -14,19 +16,19 @@ output:
 fontsize: 11pt
 geometry: margin=1in
 header-includes:
-  - \usepackage{fancyhdr}
-  - \pagestyle{fancy}
-  - \fancyhead[L]{\textit{Short report title}}
-  - \fancyhead[R]{\leftmark}
-  - \fancyfoot[C]{\thepage}
-  - \usepackage{setspace}
-  - \onehalfspacing
-  - \usepackage{titling}
-  - \pretitle{\begin{center}\LARGE\bfseries}
-  - \posttitle{\end{center}\vspace{1em}}
-  - \usepackage{caption}
-  - \captionsetup[figure]{labelfont=bf,textfont=it}
-  - \captionsetup[table]{labelfont=bf}
+- \usepackage{fancyhdr}
+- \pagestyle{fancy}
+- \fancyhead[L]{\textit{Short report title}}
+- \fancyhead[R]{\leftmark}
+- \fancyfoot[C]{\thepage}
+- \usepackage{setspace}
+- \onehalfspacing
+- \usepackage{titling}
+- \pretitle{\begin{center}\LARGE\bfseries}
+- \posttitle{\end{center}\vspace{1em}}
+- \usepackage{caption}
+- \captionsetup[figure]{labelfont=bf,textfont=it}
+- \captionsetup[table]{labelfont=bf}
 ---
 
 
@@ -103,30 +105,54 @@ result
 
 
 
-# Dataset- in table
-Description - how many observations do we have?
+# Overview of Datasets
+## Variable Description 
+- how many observations do we have?
 where we get the resourse, reference?
 explain each variables in table
-Prelimary analysis - initial formula: explain beta60 +  - motivation to improve?
+## Prelimary analysis 
+- initial formula: explain beta60 +  - motivation to improve?
 
 variable correlations? Why?
 hypothesis needed? 
 why 2.5 quantiles?
 
 
-# Model selsction - why Baysian?
-Any advantage, any improvement? More accurate? 
+# Model selection regarding key variable 'beta60'
+## Advantage of current method
+simpler model with only one parameter(beta), easier to calculate, suitable for no dataset situations
 
-# How model works on the 70 year-old madam
-explanation
-why prior setted?
-how result reflect?
+## New model motivation
+Current model disadvantage:
+1. beta is fixed for all individuals, we need to consider the heterogeneity in individuals.
+2. Deviated aim: Police Scotland aims at assessing the probabilities that a person is over the limit, while the parameter beta only concentrates on the range between 2.5% and 97.5%.
+
+
+
+
+# Bayesian model
+intro
+New model (Bayesian) 
+## Model Selection and Evaluation
+- why Bayesian?
+Any advantage, any improvement? More accurate? ...
+##explanation
+###why prior setted?
+## how result reflect?
+
+
+
+## Model fitting example
+How our new model works on the 70 year-old madam?
+
 
 # Testing another assumption(condition):
+## variable explanation
 explain all variables we used
 explain needed references
+##Testing
 whether formula reasonable?
-whether beta0 relate to Vt? 
+whether beta60 relate to Vt? 
 how related? 
 hows the result? 
 how new model fit?
@@ -136,7 +162,7 @@ how new model fit?
 our model limit
 data collected reason - cannot reflect the real world
 model reason
-other reason
+other reason: variables
 
 
 
