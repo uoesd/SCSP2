@@ -24,7 +24,14 @@ data <- data %>%
     maxBAC = `Maximum BAC (g/Kg)`,
     BACpeaktime = `BAC Peak time (min)`) %>%
   mutate(sex = factor(sex),
-         Vd = AAC / (weight * Co))
+         Vd = AAC / (weight * Co), 
+         TBW = ifelse(
+           sex == "Male",
+           2.447 - 0.09516 * age + 0.1074 * height + 0.3362 * weight,   # Male formula
+           -2.097 + 0.1069 * height + 0.2466 * weight),
+         T_Vd = TBW / weight)                 
+
+ggplot(data, aes(x = Vd, y = T_Vd) )+ geom_point()
 
 ggplot(data, aes(x = Vd)) + geom_histogram(bins = 30) + ggtitle("Histogram of raw Vd (naive calc)")
 ggplot(data, aes(x = Vd, y = beta)) + geom_point() + geom_smooth(method = "loess") +
@@ -33,10 +40,6 @@ ggplot(data, aes(x = Vd, y = beta)) + geom_point() + geom_smooth(method = "loess
 cov_xy <- cov(data$Vd, data$beta)
 cor_xy <- cor(data$Vd, data$beta)
 cor.test(data$Vd, data$beta)
-
-summary(lm(Vd~ 0+I(1/weight):sex + I(age/weight):sex + I(height/weight):sex + sex, data))
-summary(lm(Vd~ 0 + sex + weight + age + height , data))
-
 
 summary(lm(beta~0+ sex + age + height + weight, data))
 summary(lm(beta~0+ weight:sex, data))
@@ -73,8 +76,6 @@ ggplot(data, aes(x = weight, y = beta)) + geom_point() + geom_smooth(method = "l
 
 f_beta <- bf(beta ~ 0 + sex + age_s + weight_s + height_s)
 f_beta1 <- bf(beta ~ 0 + sex + age_s + weight_s + height_s + maxBAC_s+AAC_s)
-f_Vd <- bf(Vd ~ 0+ I(1/weight) + I(age/weight) + I(height/weight) + sex)
-f_Vd1 <- bf(Vd ~ 0+ weight:sex)
 
 emp_mean <- mean(data$beta, na.rm = TRUE)
 emp_sd   <- sd(data$beta, na.rm = TRUE)
@@ -335,3 +336,39 @@ kable(model_comp_final,
       caption = "Model comparison based on LOO and Bayesian R²",
       align = "lrrr",
       digits = 4)
+
+
+##outlier, Blood water content, TBW, rho, 
+
+
+
+####3
+
+summary(lm(Vd~ 0 + I(1/weight):sex + I(age/weight):sex + I(height/weight):sex + sex, data))
+summary(lm(Vd~ 0 + sex + weight + age + height , data))
+summary(lm(Vd~ 0 + T_Vd:sex, data))
+
+f_Vd <- bf(Vd ~ 0+ I(1/weight) + I(age/weight) + I(height/weight) + sex)
+f_Vd1 <- bf(Vd ~ 0 + T_Vd:sex)
+
+
+priors_joint <- c(
+  set_prior("student_t(3, 0.0, 0.2)", class = "Intercept", resp = "beta"),   # guess: beta ~ 0.2 scale (adjust)
+  set_prior("normal(0, 0.05)", class = "b", resp = "beta"),
+  set_prior("exponential(1)", class = "sigma", resp = "beta"),# logVd scale unknown
+  set_prior("normal(1/0.838, 0.055)", class = "b", resp = "Vd", coef = "T_Vd:sexfemale"),
+  set_prior("normal(1/0.825, 0.085)", class = "b", resp = "Vd", coef = "T_Vd:sexmale"),
+  set_prior("exponential(1)", class = "sigma", resp = "Vd")
+)
+
+# Fit the joint model (this may take time). Use student family if you prefer robust errors.
+fit_joint <- brm(
+  formula = mvbind(beta, logVd) ~ 0 + (1 | resp) + (1 | resp:sex) +
+    # include same predictors separately by using resp-specific formulas above
+    f_beta + f_logVd,
+  data = joint_df,
+  prior = priors_joint,
+  chains = 4, iter = 4000, warmup = 1500,
+  control = list(adapt_delta = 0.98, max_treedepth = 15),
+  seed = 2025
+)
