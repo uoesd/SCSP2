@@ -86,8 +86,8 @@ control <- list(adapt_delta = 0.98, max_treedepth = 15)
 seed <- 2025
 
 # Student-t intercept prior (robust)
-prior_A <- c(set_prior("student_t(3, 0.18, 0.03", class = "b", coef = "sexmale"),
-             set_prior("student_t(3, 0.15, 0.03", class = "b", coef = "sexfemale"),
+prior_A <- c(set_prior("student_t(3, 0.18, 0.06", class = "b", coef = "sexmale"),
+             set_prior("student_t(3, 0.15, 0.06", class = "b", coef = "sexfemale"),
              set_prior("normal(0, 0.01)", class = "b"),
              set_prior("exponential(1)", class = "sigma"))
 
@@ -165,7 +165,12 @@ new <- tibble(
     age_s = (age - mean(data$age, na.rm = TRUE)) / sd(data$age, na.rm = TRUE),
     weight_s = (weight - mean(data$weight, na.rm = TRUE)) / sd(data$weight, na.rm = TRUE),
     height_s = (height - mean(data$height, na.rm = TRUE)) / sd(data$height, na.rm = TRUE),
-    sex = 'female'
+    sex = 'female',
+    TBW = ifelse(
+      sex == "Male",
+      2.447 - 0.09516 * age + 0.1074 * height + 0.3362 * weight,   # Male formula
+      -2.097 + 0.1069 * height + 0.2466 * weight),
+    T_Vd = TBW / weight
   )
 
 beta_draws <- posterior_predict(fit_C, newdata = new, draws = 1600)
@@ -338,7 +343,7 @@ kable(model_comp_final,
       digits = 4)
 
 
-##outlier, Blood water content, TBW, rho, 
+##outlier, 倒推Blood water content, TBW, rho, 
 
 
 
@@ -348,27 +353,68 @@ summary(lm(Vd~ 0 + I(1/weight):sex + I(age/weight):sex + I(height/weight):sex + 
 summary(lm(Vd~ 0 + sex + weight + age + height , data))
 summary(lm(Vd~ 0 + T_Vd:sex, data))
 
-f_Vd <- bf(Vd ~ 0+ I(1/weight) + I(age/weight) + I(height/weight) + sex)
-f_Vd1 <- bf(Vd ~ 0 + T_Vd:sex)
+f_beta <- bf(beta ~ 0 + sex + age_s + weight_s + height_s)
+f_Vd<- bf(Vd ~ 0 + T_Vd:sex)
 
 
 priors_joint <- c(
-  set_prior("student_t(3, 0.0, 0.2)", class = "Intercept", resp = "beta"),   # guess: beta ~ 0.2 scale (adjust)
-  set_prior("normal(0, 0.05)", class = "b", resp = "beta"),
-  set_prior("exponential(1)", class = "sigma", resp = "beta"),# logVd scale unknown
-  set_prior("normal(1/0.838, 0.055)", class = "b", resp = "Vd", coef = "T_Vd:sexfemale"),
-  set_prior("normal(1/0.825, 0.085)", class = "b", resp = "Vd", coef = "T_Vd:sexmale"),
+  set_prior("normal(0, 0.01)", class = "b", resp = "beta"),
+  set_prior("exponential(1)", class = "sigma", resp = "beta"),
+  set_prior("student_t(3, 0.18, 0.03", class = "b", coef = "sexmale", resp = "beta"),
+  set_prior("student_t(3, 0.15, 0.03", class = "b", coef = "sexfemale", resp = "beta"),
+  set_prior("normal(1/0.838, 0.2)", class = "b", resp = "Vd", coef = "T_Vd:sexfemale"),
+  set_prior("normal(1/0.825, 0.2)", class = "b", resp = "Vd", coef = "T_Vd:sexmale"),
   set_prior("exponential(1)", class = "sigma", resp = "Vd")
 )
 
 # Fit the joint model (this may take time). Use student family if you prefer robust errors.
 fit_joint <- brm(
-  formula = mvbind(beta, logVd) ~ 0 + (1 | resp) + (1 | resp:sex) +
-    # include same predictors separately by using resp-specific formulas above
-    f_beta + f_logVd,
-  data = joint_df,
+  formula = f_beta + f_Vd + set_rescor(TRUE),
+  data = data,
   prior = priors_joint,
   chains = 4, iter = 4000, warmup = 1500,
   control = list(adapt_delta = 0.98, max_treedepth = 15),
-  seed = 2025
+  seed = 2025,
+  save_pars = save_pars(all = TRUE)
 )
+print(summary(fit_joint))
+plot(fit_joint)  
+pp_check(fit_joint, resp = "beta", type = "dens_overlay", ndraws = 200)
+pp_check(fit_joint, resp = "Vd", type = "dens_overlay", ndraws = 200)
+loo_joint <- loo(fit_joint, moment_match = TRUE)
+print(loo_joint)
+
+epred_beta  <- posterior_epred(fit_joint, resp = "beta",  ndraws = 1000)  # 200 x N matrix
+epred_Vd    <- posterior_epred(fit_joint, resp = "Vd",    ndraws = 1000)
+
+pred_mean_beta <- colMeans(epred_beta)
+pred_mean_Vd   <- colMeans(epred_Vd)
+plot(pred_mean_Vd, data$Vd, xlab = "Predicted mean Vd", ylab = "Observed Vd")
+abline(0,1, col = "red")
+
+plot(pred_mean_beta, data$beta, xlab = "Predicted mean beta", ylab = "Observed beta")
+abline(0,1, col = "red")
+
+post <- as_draws_df(fit_joint)
+
+if ("rescor__" %in% names(post)) {
+  post_rescor <- post$rescor__
+  cat("Posterior median residual correlation (beta, logVd): ", median(post_rescor), "\n")
+} else {
+  # alternative extraction
+  try({
+    mcm <- posterior_samples(fit_joint)
+    if ("rescor__beta__logVd" %in% names(mcm)) {
+      cat("median rescor: ", median(mcm$rescor__beta__logVd), "\n")
+    }
+  }, silent = TRUE)
+}
+
+pp_new_beta  <- posterior_epred(fit_joint, newdata = new, resp = "beta", draws = 4000, re_formula = NULL)
+pp_new_Vd <- posterior_epred(fit_joint, newdata = new, resp = "Vd", draws = 4000, re_formula = NULL)
+# Note: epred returns expected mean (no residual). If you want individual draws including residual noise:
+pp_new_beta_ind  <- posterior_predict(fit_joint, newdata = new, resp = "beta", draws = 4000)
+pp_new_Vd_ind <- posterior_predict(fit_joint, newdata = new, resp = "Vd", draws = 4000)
+beta_draws  <- as.vector(pp_new_beta_ind)
+Vd_draws <- as.vector(pp_new_Vd_ind)
+
