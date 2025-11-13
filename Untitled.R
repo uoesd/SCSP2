@@ -29,7 +29,11 @@ data <- data %>%
            sex == "Male",
            2.447 - 0.09516 * age + 0.1074 * height + 0.3362 * weight,   # Male formula
            -2.097 + 0.1069 * height + 0.2466 * weight),
-         T_Vd = TBW / weight)                 
+         T_Vd = TBW / weight,
+         TV = ifelse(
+           sex == "Male",
+           1.40864*T_Vd,   # Male formula
+           1.29720*T_Vd))                 
 
 ggplot(data, aes(x = Vd, y = T_Vd) )+ geom_point()
 
@@ -86,31 +90,21 @@ control <- list(adapt_delta = 0.98, max_treedepth = 15)
 seed <- 2025
 
 # Student-t intercept prior (robust)
-prior_A <- c(set_prior("student_t(3, 0.18, 0.06", class = "b", coef = "sexmale"),
-             set_prior("student_t(3, 0.15, 0.06", class = "b", coef = "sexfemale"),
-             set_prior("normal(0, 0.01)", class = "b"),
+prior_A <- c(set_prior("normal(0, 0.01)", class = "b"),
+             set_prior("student_t(3, 0.15, 0.02", class = "b", coef = "sexmale"),
+             set_prior("student_t(3, 0.18, 0.02", class = "b", coef = "sexfemale"),
              set_prior("exponential(1)", class = "sigma"))
-
 
 # Student-t likelihood prior includes nu
 prior_B <- c(prior_A, set_prior("constant(100)", class = "nu"))
 
 
 # Normal intercept prior (sensitivity)
-prior_C <- c(set_prior("normal(0.18, 0.03)", class = "b", coef = "sexmale"),
-             set_prior("normal(0.15, 0.03)", class = "b", coef = "sexfemale"),
+prior_C <- c(set_prior("normal(0.15, 0.03)", class = "b", coef = "sexmale"),
+             set_prior("normal(0.18, 0.03)", class = "b", coef = "sexfemale"),
              set_prior("normal(0, 0.01)", class = "b"),
              set_prior("exponential(1)", class = "sigma"))
 
-priors_joint <- c(
-  set_prior("normal(0, 0.01)", class = "b", resp = "beta"),
-  set_prior("exponential(1)", class = "sigma", resp = "beta"),
-  set_prior("student_t(3, 0.18, 0.03", class = "b", coef = "sexmale", resp = "beta"),
-  set_prior("student_t(3, 0.15, 0.03", class = "b", coef = "sexfemale", resp = "beta"),
-  set_prior("student_t(3, 0.0, 0.5)", class = "Intercept", resp = "logvd"),  
-  set_prior("normal(0, 0.2)", class = "b", resp = "logvd"),
-  set_prior("exponential(1)", class = "sigma", resp = "logvd")
-)
 
 message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
 fit_A <- brm(formula = f_beta,
@@ -173,7 +167,7 @@ new <- tibble(
     T_Vd = TBW / weight
   )
 
-beta_draws <- posterior_predict(fit_C, newdata = new, draws = 1600)
+beta_draws <- posterior_predict(fit_A, newdata = new, draws = 1600)
 Ct <- 0.15   
 t <- 2      
 C0_draws <- Ct + beta_draws * t
@@ -193,9 +187,9 @@ library(ggplot2)
 
 # 1) Draw posterior predictive samples for observed rows
 # posterior_predict returns matrix draws x observations (includes observation noise)
-pp_draws <- posterior_predict(fit_C, ndraws = 1600)  # 2000 draws is enough; increase if needed
+pp_draws <- posterior_predict(fit_A, ndraws = 1600)  # 2000 draws is enough; increase if needed
 # posterior_epred returns expected mean draws (no obs noise) if you prefer
-epred_draws <- posterior_epred(fit_C, ndraws = 1600)
+epred_draws <- posterior_epred(fit_A, ndraws = 1600)
 
 n_draws <- nrow(pp_draws)
 n_obs <- ncol(pp_draws)           # should be 100 in your case
@@ -357,11 +351,12 @@ f_beta <- bf(beta ~ 0 + sex + age_s + weight_s + height_s)
 f_Vd<- bf(Vd ~ 0 + T_Vd:sex)
 
 
+
 priors_joint <- c(
   set_prior("normal(0, 0.01)", class = "b", resp = "beta"),
   set_prior("exponential(1)", class = "sigma", resp = "beta"),
-  set_prior("student_t(3, 0.18, 0.03", class = "b", coef = "sexmale", resp = "beta"),
-  set_prior("student_t(3, 0.15, 0.03", class = "b", coef = "sexfemale", resp = "beta"),
+  set_prior("student_t(3, 0.15, 0.03", class = "b", coef = "sexmale", resp = "beta"),
+  set_prior("student_t(3, 0.18, 0.03", class = "b", coef = "sexfemale", resp = "beta"),
   set_prior("normal(1/0.838, 0.2)", class = "b", resp = "Vd", coef = "T_Vd:sexfemale"),
   set_prior("normal(1/0.825, 0.2)", class = "b", resp = "Vd", coef = "T_Vd:sexmale"),
   set_prior("exponential(1)", class = "sigma", resp = "Vd")
@@ -417,4 +412,58 @@ pp_new_beta_ind  <- posterior_predict(fit_joint, newdata = new, resp = "beta", d
 pp_new_Vd_ind <- posterior_predict(fit_joint, newdata = new, resp = "Vd", draws = 4000)
 beta_draws  <- as.vector(pp_new_beta_ind)
 Vd_draws <- as.vector(pp_new_Vd_ind)
+
+pp_Vd <- posterior_predict(fit_joint, resp = "Vd", ndraws = 4000)
+pp_Vd1 <- posterior_epred(fit_joint, resp = "Vd", ndraws = 4000)
+
+Vd_obs <- data$Vd
+
+
+
+Vd_low  <- apply(pp_Vd, 2, quantile, 0.025)
+Vd_high <- apply(pp_Vd, 2, quantile, 0.975)
+mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
+
+
+Vd_low  <- apply(pp_Vd1, 2, quantile, 0.25)
+Vd_high <- apply(pp_Vd1, 2, quantile, 0.75)
+mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
+data <- data %>% mutate(TV = ifelse(
+                         sex == "Male",
+                         1.40864*T_Vd,   # Male formula
+                         1.29720*T_Vd))            
+
+
+Vd_mean <- colMeans(pp_Vd)
+plot(Vd_mean, data$Vd, pch=19)
+abline(0,1,col="red")
+plot(data$TV, data$Vd, pch=19)
+abline(0,1,col="red")
+PIT_Vd <- sapply(1:ncol(pp_Vd), function(i) mean(pp_Vd[,i] <= Vd_obs[i]))
+hist(PIT_Vd, breaks=20)
+
+
+pp_beta <- posterior_predict(fit_joint, resp = "beta", ndraws = 4000)
+beta_obs <- data$beta
+beta_low  <- apply(pp_beta, 2, quantile, 0.025)
+beta_high <- apply(pp_beta, 2, quantile, 0.975)
+mean(beta_obs >= beta_low & beta_obs <= beta_high)
+
+beta_mean <- colMeans(pp_beta)
+plot(beta_mean, beta_obs, pch=19)
+abline(0,1,col="red")
+PIT_beta <- sapply(1:ncol(pp_beta), function(i) mean(pp_beta[,i] <= beta_obs[i]))
+hist(PIT_beta, breaks=20)
+
+MSE_Vd <- mean(abs(Vd_mean - data$Vd) , na.rm = TRUE )
+MSE_Vd
+MSE_TV <- mean(abs(data$TV - data$Vd) , na.rm = TRUE )
+MSE_TV
+
+beta_A <- posterior_predict(fit_A, ndraws = 4000)
+
+MSE_beta<- mean(abs(beta_mean - data$beta) , na.rm = TRUE )
+MSE_beta
+MSE_betaA <- mean(abs(beta_A - data$beta) , na.rm = TRUE )
+MSE_betaA
 
