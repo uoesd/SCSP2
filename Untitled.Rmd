@@ -188,7 +188,7 @@ kable(priors_table,
       caption = "Table 1: weak information priors used in the Bayesian regression model")
 ```
 
-Regression coefficients were assigned Normal(0,1) priors, following the Stan Development Team’s “Prior Choice Recommendations”. For the residual standard deviation we used a half-Student-t prior with 3 degrees of freedom and a scale of 5, again following the Stan development team's recommendations.12
+Regression coefficients were assigned Normal(0,1) priors, following the Stan Development Team’s “Prior Choice Recommendations”. For the residual standard deviation we used a half-Student-t prior with 3 degrees of freedom and a scale of 5, again following the Stan development team's recommendations.
 
 #Reference
 Stan Development Team. (n.d.). Prior choice recommendations. GitHub. https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
