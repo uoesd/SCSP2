@@ -288,7 +288,7 @@ mcmc_trace(as.array(fit_A), pars = c("b_Intercept", "b_weight_s"))
 
 
 
-### N
+### NN
 priors_table <- tribble(~Parameter, ~Prior,
                         "Regression coefficients (bi)", "Normal(0, 1)",
                         "Residual SD (σ)", "Student-t(3, 0, 5)")
