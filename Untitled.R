@@ -288,72 +288,24 @@ mcmc_trace(as.array(fit_A), pars = c("b_Intercept", "b_weight_s"))
 
 
 
-###
-library(knitr)
+### N
+priors_table <- tribble(~Parameter, ~Prior,
+                        "Regression coefficients (bi)", "Normal(0, 1)",
+                        "Residual SD (σ)", "Student-t(3, 0, 5)")
 
-#Before fitting the Bayesian regression, appropriate priors were specified for the intercept, regression coefficients, and residual standard deviation.
-#We use weak information priors, allowing the observed data to dominate inference process.
-#The chosen priors are summarised below:
-
-priors_table <- tribble(
-  ~Parameter, ~Prior, ~Role,
-  "Intercept", "Normal(0.184, 0.066)", "Average alcohol elimination rate",
-  "Coefficients (b)", "Normal(0, 0.01)", "Covariate effects",
-  "Residual SD (σ)", "Exponential(1)", "Random variation")
-
-kable(priors_table,
-      align = "lcl")
-
-ggplot(data, aes(x = beta)) +
-  geom_histogram(aes(y = ..density..), bins = 40, fill = "skyblue", color = "black") +
-  stat_function(fun = dnorm, args = list(mean = emp_mean, sd = emp_sd * 2), color = "red", size = 1.2) +
-  labs(title = "Empirical β distribution vs Normal prior for intercept",
-       x = expression(beta~" elimination rate (g/kg/h)"),
-       y = "Density") +
-  theme_minimal()
-
-#The intercept prior was specified as a Normal(0.184, 0.066) distribution, 
-#where the mean corresponds to the empirical average of β estimated from the observed data
-#and the standard deviation (0.066 ≈ 2 × empirical SD) provides sufficient uncertainty to cover the plausible physiological range.
-#As shown in Figure, the red curve (prior) fits well with the empirical histogram, this ensures the prior reflects realistic biology without constraining the data.
-
-#For the regression coefficients, a Normal(0, 0.01) prior was used.
-#This setting assumes that each predictor may have a limited but non-zero influence on β after standardisation.
-#This approach follows recommendations from Gelman et al. (2008)
-
-#Reference:
-#Gelman, A., Jakulin, A., Pittau, M. G., & Su, Y.-S. (2008).
-#A weakly informative default prior distribution for logistic and other regression models.
-#Annals of Applied Statistics, 2(4), 1360–1383.
-#https://doi.org/10.1214/08-AOAS191
-
-#The residual standard deviation σ was assigned an Exponential(1) prior.
-#This prior keeps σ positive and allows the model to capture unexplained variation in β.
-#This choice is consistent with the guidance of Gelman (2006) and Gelman et al. (2020).
-
-#References:
-#Gelman, A. (2006). Prior distributions for variance parameters in hierarchical models.
-#Bayesian Analysis, 1(3), 515–533.
-#https://doi.org/10.1214/06-BA117A
-
-#Gelman, A., Vehtari, A., Simpson, D., Margossian, C. C., Carpenter, B., Yao, Y., Kennedy, L., Gabry, J., Bürkner, P.-C., & Modrák, M. (2020). 
-#Bayesian workflow. arXiv preprint arXiv:2011.01808. 
-#https://arxiv.org/abs/2011.01808
 
 
 r2_A <- median(as.numeric(bayes_R2(fit_A)))
 r2_B <- median(as.numeric(bayes_R2(fit_B)))
 r2_C <- median(as.numeric(bayes_R2(fit_C)))
 
-model_comp_final <- tribble(
-  ~Model, ~`elpd_diff`, ~`se_diff`, ~`Bayesian R²`,
-  "A",  0.0,  0.0, 0.1315,
-  "B", -0.7,  0.3, 0.1307,
-  "C",  0.0,  0.0, 0.1316
-)
+model_comp_final <- tribble(~Model, ~`elpd_diff`, ~`se_diff`, ~`Bayesian R²`,
+                            "A",  0.0,  0.0, 0.1315,
+                            "B", -0.7,  0.3, 0.1307,
+                            "C",  0.0,  0.0, 0.1316)
 
 kable(model_comp_final,
-      caption = "Model comparison based on LOO and Bayesian R²",
+      caption = "Table 2: Model comparison based on LOO and Bayesian R²",
       align = "lrrr",
       digits = 4)
 
