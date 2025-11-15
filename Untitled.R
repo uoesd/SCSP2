@@ -33,7 +33,8 @@ data <- data %>%
          TV = ifelse(
            sex == "Male",
            1.40864*T_Vd,   # Male formula
-           1.29720*T_Vd))                 
+           1.29720*T_Vd),
+         BMI = weight/(height/100)**2)                 
 
 ggplot(data, aes(x = Vd, y = T_Vd) )+ geom_point()
 
@@ -45,8 +46,12 @@ cov_xy <- cov(data$Vd, data$beta)
 cor_xy <- cor(data$Vd, data$beta)
 cor.test(data$Vd, data$beta)
 
-summary(lm(beta~0+ sex + age + height + weight, data))
-summary(lm(beta~0+ sex + weight + height+AAC, data))
+model1<-lm(beta~0+ sex + BMI + T_Vd, data)
+model <- lm(beta~ 0+ sex + weight + AAC +TBW + drinkingtime, data)
+summary(model)
+summary(model1)
+AIC(model)
+AIC(model1)
 
 num_summary <- data %>%
   summarise(

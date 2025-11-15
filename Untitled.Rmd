@@ -56,9 +56,18 @@ The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scien
 
 * The courts will be forced to make decisions under estimated $\beta$ if we only give a single estimation of $beta$, since the calculated $C_0$ is either over or under the legal limit.
 * Differences between individuals are ignored, for example age and sex, which may affect $\beta$.
-* $\beta$ value at $2.5\%$ is over conservative.
+* $\beta$ value at $2.5\%$ is over conservative and most uncertainties are hiding.
 
-In this report, we will introduce a Bayesian regression model with considering the differences between individuals, gives a posterior distribution of $\beta$ by using both samples and chosen priors.
+In this report, we will introduce a Bayesian regression model with considering the differences between individuals, the model gives a posterior distribution of $\beta$ by using both samples and chosen priors (prior knowledge of $\beta$). Then we randomly simulate $4000$ $\beta$ values from posterior distribution and find out the probability of the person's BAC over limit while driving. 
+
+When dealing
+
+
+
+
+
+To make it easier, we write the method in a R function so other expert witness can also get the results by easily plugging new person's data.
+
 
 # Motivations: Need improve? Why?
 # Disadvantage of current method
