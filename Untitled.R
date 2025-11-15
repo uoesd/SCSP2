@@ -47,11 +47,27 @@ cor_xy <- cor(data$Vd, data$beta)
 cor.test(data$Vd, data$beta)
 
 model1<-lm(beta~0+ sex + BMI + T_Vd, data)
-model <- lm(beta~ 0+ sex + weight + AAC +TBW + drinkingtime, data)
+model <- lm(beta~ 0+ sex+ weight + height, data)
 summary(model)
 summary(model1)
 AIC(model)
 AIC(model1)
+
+data$age_group <- ifelse(data$age > 60, "old", "young")
+
+# Convert to factor (optional)
+data$age_group <- factor(data$age_group, levels = c("young", "old"))
+
+# Basic boxplot
+boxplot(beta ~ age_group,
+        data = data,
+        main = "Beta Elimination Rate by Age Group",
+        xlab = "Age Group",
+        ylab = "Beta (g/kg/h)",
+        col = c("lightblue", "lightgreen"))
+
+
+
 
 num_summary <- data %>%
   summarise(

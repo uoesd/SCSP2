@@ -58,15 +58,19 @@ The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scien
 * Differences between individuals are ignored, for example age and sex, which may affect $\beta$.
 * $\beta$ value at $2.5\%$ is over conservative and most uncertainties are hiding.
 
-In this report, we will introduce a Bayesian regression model with considering the differences between individuals, the model gives a posterior distribution of $\beta$ by using both samples and chosen priors (prior knowledge of $\beta$). Then we randomly simulate $4000$ $\beta$ values from posterior distribution and find out the probability of the person's BAC over limit while driving. 
+In this report, we will introduce a Bayesian regression model with considering the heterogeneity between individuals, the model gives a posterior distribution of $\beta$ by using both samples and prior knowledge. Then we randomly simulate $4000$ $\beta$ values from posterior distribution and find out the probability of the person's BAC over limit while driving. 
 
-When dealing
+In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet etc. As we don't have corresponding data, in our regression model of $\beta$ is mainly dominate by gender, but we still find some useful variables:
+-Gender: Female's BAC elimination rate is larger than male on average, it is explained by liver weight represents a greater fraction of lean body mass in the female gender[2].
+-
+-
 
+When it is too late to use a blood or breath test and the only information available is eyewitness testimony of the quantity of alcohol consumed. We have to use Widmark's equation:
+$$C_t = \frac{A}{Weight \times V_d} - \beta t$$
+where $A$ is Amount of Alcohol Consumed (g), $V_d$ is the volume of distribution that need to be found. Forensic scientists use
+the same method again to estimate $V_d$ separately with $\beta$. But $V_d$ and $\beta$ are not independent, so we build a joint Bayesian regression model, which can simulate them together to solve with the correlation. Then again after simulation, each $C_t$ is calculated by each pair of $\beta$ and $V_d$, so expert witness can still find a probability of $C_t$ exceeding the limit.
 
-
-
-
-To make it easier, we write the method in a R function so other expert witness can also get the results by easily plugging new person's data.
+To make it easier, we write the method in a function so other expert witness can also get the results by easily plugging new person's data.
 
 
 # Motivations: Need improve? Why?
@@ -171,7 +175,11 @@ other reason: variables
 
 
 
-
-
-
+空腹低 长期饮酒高CTP2E1活性高 性别肝脏大小 药物抑制酒精代谢
+测两次血预测beta
+如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
 https://www.sciencedirect.com/science/article/pii/S0379073810000770?via%3Dihub
+
+P.Y. Kwo, V.A. Ramchandani, S. O’Connor, D. Amann, L.G. Carr, K. Sandrasegaran, K.K. Kopecky, T.K. Li
+Gender differences in alcohol metabolism: relationship to liver volume and effect of adjusting for body mass
+Gastroenterology, 115 (1998), pp. 1552-1557
