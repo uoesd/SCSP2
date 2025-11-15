@@ -53,18 +53,6 @@ summary(model1)
 AIC(model)
 AIC(model1)
 
-data$age_group <- ifelse(data$age > 60, "old", "young")
-
-# Convert to factor (optional)
-data$age_group <- factor(data$age_group, levels = c("young", "old"))
-
-# Basic boxplot
-boxplot(beta ~ age_group,
-        data = data,
-        main = "Beta Elimination Rate by Age Group",
-        xlab = "Age Group",
-        ylab = "Beta (g/kg/h)",
-        col = c("lightblue", "lightgreen"))
 
 
 
