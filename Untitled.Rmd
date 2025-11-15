@@ -175,6 +175,7 @@ other reason: variables
 
 
 
+<<<<<<< HEAD
 #N
 
 Before fitting a Bayesian regression model, appropriate priors need to be specified for all regression coefficients and residual standard deviation. We use weak information priors, allowing the observed data to dominate inference process.The chosen priors are summarised below:
@@ -200,6 +201,8 @@ Stan Development Team. (n.d.). Prior choice recommendations. GitHub. https://git
 
 
 
+=======
+>>>>>>> bb3d1a6f16b0f748d3d6a2b63e99aaba40d20726
 空腹低 长期饮酒高CTP2E1活性高 性别肝脏大小 药物抑制酒精代谢
 测两次血预测beta
 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
