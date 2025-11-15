@@ -46,7 +46,7 @@ cor_xy <- cor(data$Vd, data$beta)
 cor.test(data$Vd, data$beta)
 
 summary(lm(beta~0+ sex + age + height + weight, data))
-summary(lm(beta~0+ weight:sex, data))
+summary(lm(beta~0+ sex + weight + height+AAC, data))
 
 num_summary <- data %>%
   summarise(
@@ -466,4 +466,4 @@ MSE_beta<- mean(abs(beta_mean - data$beta) , na.rm = TRUE )
 MSE_beta
 MSE_betaA <- mean(abs(beta_A - data$beta) , na.rm = TRUE )
 MSE_betaA
-
+#prior noninformative or theoratical for coefficie

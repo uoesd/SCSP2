@@ -94,7 +94,7 @@
 \title{Report Title: Example Report}
 \author{Group 3\\
 Department / Course}
-\date{November 12, 2025}
+\date{November 15, 2025}
 
 \begin{document}
 \maketitle
@@ -103,15 +103,42 @@ Department / Course}
 \setcounter{tocdepth}{2}
 \tableofcontents
 }
-\#\#Abstract A short summary of the report --- 1 paragraph. Keep it
-concise and informative. \#\#Introduction Explain goals, context,
-dataset, or background. \#\#Methods Describe methods used. Show code
-chunks inline as needed.
+\section{Executive Summary}\label{executive-summary}
 
-\section{Advantage of current method}\label{advantage-of-current-method}
+In the UK it is a criminal offence to drive a motor vehicle with a blood
+or breath alcohol concentration above the prescribed limit. When a
+person is arrested for driving under the influence of alcohol it is not
+usually possible to perform an accurate test of the level of alcohol in
+the blood or breath immediately. Breath tests can be used as an initial
+screening tool at the scene, but these are not sufficiently accurate for
+prosecution. Instead, people are taken to a police station or hospital,
+where the test can be carried out using proper laboratory protocols. As
+the body clears alcohol from the blood through time this means that if
+the individual was over the limit, the measured blood alcohol
+concentration(BAC) will be lower at the time of measurement than it was
+when the person was driving a motor vehicle. To deal with this
+situation, If the BAC after time \(t\) (hours) is measured as \(C_t\)
+(g/kg), the BAC at time \(0\) is estimated as \(C_0 = C_t - βt\), where
+\(\beta\) (\(g/kg/h\)) is BAC elimination rate.
 
-simpler model with only one parameter(beta), easier to calculate,
-suitable for no dataset situations
+The key point is how to find a precise \(\beta\) to estimate \(C_0\).
+Forensic scientists currently \(2.5\%\) percentile of \(\beta\)
+distribution constructing from samples as the estimated \(\beta\) value
+for every individuals. This method is obviously not rigorous enough for
+the courts since:
+
+\begin{itemize}
+\tightlist
+\item
+  The courts will be forced to make decisions under estimated \(\beta\)
+  if we only give a single estimation of \(beta\), since the calculated
+  \(C_0\) is either over or under the legal limit.
+\item
+  Differences between individuals are ignored, for example age and sex,
+  which may affect \(\beta\).
+\item
+  \(\beta\) value at \(2.5\%\) is over conservative.
+\end{itemize}
 
 \section{Motivations: Need improve?
 Why?}\label{motivations-need-improve-why}
@@ -136,8 +163,10 @@ beta}\label{new-method-build-a-linear-regression-model-for-beta}
 
 Check if age, weight and height have linear relationships with beta. Or
 have any patterns?
-\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-2-1.pdf}}
-\# Model selection: use drop(), look into AIC and R\^{}2
+
+\section{Model selection:}\label{model-selection}
+
+use drop(), look into AIC and R\^{}2
 
 \section{Hypothesis test(70yr female example-better use 2.5th
 quantile?):}\label{hypothesis-test70yr-female-example-better-use-2.5th-quantile}
@@ -153,5 +182,67 @@ we need to check whether Cov(V\_d, beta) = 0
 
 casual effect: biased data selection, (e.g.~inner correlations between
 sex and height)
+
+\subsection{REPORT}\label{report}
+
+\section{Exclusive summary}\label{exclusive-summary}
+
+background Goal - 1, 2, 3 main data + elimination rate explanation
+method - model we used result
+
+\section{Overview of Datasets}\label{overview-of-datasets}
+
+\subsection{Variable Description}\label{variable-description}
+
+\begin{itemize}
+\tightlist
+\item
+  how many observations do we have? where we get the resourse,
+  reference? explain each variables in table \#\# Prelimary analysis
+\item
+  initial formula: explain beta60 + - motivation to improve?
+\end{itemize}
+
+variable correlations? Why? hypothesis needed? why 2.5 quantiles?
+
+\section{Model selection regarding key variable
+`beta60'}\label{model-selection-regarding-key-variable-beta60}
+
+\subsection{Advantage of current
+method}\label{advantage-of-current-method}
+
+simpler model with only one parameter(beta), easier to calculate,
+suitable for no dataset situations
+
+\subsection{New model motivation}\label{new-model-motivation}
+
+Current model disadvantage: 1. beta is fixed for all individuals, we
+need to consider the heterogeneity in individuals. 2. Deviated aim:
+Police Scotland aims at assessing the probabilities that a person is
+over the limit, while the parameter beta only concentrates on the range
+between 2.5\% and 97.5\%.
+
+\section{Bayesian model}\label{bayesian-model}
+
+intro New model (Bayesian) \#\# Model Selection and Evaluation - why
+Bayesian? Any advantage, any improvement? More accurate? \ldots{}
+\#\#explanation \#\#\#why prior setted? \#\# how result reflect?
+
+\subsection{Model fitting example}\label{model-fitting-example}
+
+How our new model works on the 70 year-old madam?
+
+\section{Testing another
+assumption(condition):}\label{testing-another-assumptioncondition}
+
+\subsection{variable explanation}\label{variable-explanation}
+
+explain all variables we used explain needed references
+
+\#\#Testing whether formula reasonable? whether beta60 relate to Vt? how
+related? hows the result? how new model fit?
+
+\#Limitation our model limit data collected reason - cannot reflect the
+real world model reason other reason: variables
 
 \end{document}

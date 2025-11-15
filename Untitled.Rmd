@@ -3,10 +3,6 @@ title: 'Report Title: Example Report'
 author: "Group 3  \nDepartment / Course\n"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
-  html_document:
-    toc: true
-    toc_depth: '2'
-    df_print: paged
   pdf_document:
     latex_engine: xelatex
     keep_tex: true
@@ -33,25 +29,36 @@ header-includes:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE,
-message = FALSE,
-warning = FALSE,
-fig.width = 6, fig.height = 4,
-dpi = 150)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	fig.height = 4,
+	fig.width = 6,
+	message = FALSE,
+	warning = FALSE,
+	dpi = 150
+)
 library(knitr)
 library(kableExtra)
 
 ```
 
-```{r message=FALSE, warning=FALSE, code=readLines("Group13code.R"), include=FALSE}
+```{r eval=FALSE, message=FALSE, warning=FALSE, code=readLines("Group13code.R"), include=FALSE}
 # Do not change this code chunk
 source("Group13code.R")
 ```
 
 
-### Advantage of current method
-simpler model with only one parameter(beta), easier to calculate, suitable for no dataset situations
+# Executive Summary
 
+In the UK it is a criminal offence to drive a motor vehicle with a blood or breath alcohol concentration above the prescribed limit. When a person is arrested for driving under the influence of alcohol it is not usually possible to perform an accurate test of the level of alcohol in the blood or breath immediately. Breath tests can be used as an initial screening tool at the scene, but these are not sufficiently accurate for prosecution. Instead, people are taken to a police station or hospital, where the test can be carried out using proper laboratory protocols. As the body clears alcohol from the blood through time this means that if the individual was over the limit, the measured blood alcohol concentration(BAC) will be lower at the time of measurement than it was when the person was driving a motor vehicle. To deal with this situation, If the BAC after time $t$ (hours) is measured as $C_t$ (g/kg), the BAC at time $0$ is estimated as $C_0 = C_t - βt$, where $\beta$ ($g/kg/h$) is BAC elimination rate. 
+
+The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scientists currently $2.5\%$ percentile of $\beta$ distribution constructing from samples as the estimated $\beta$ value for every individuals. This method is obviously not rigorous enough for the courts, since:
+
+* The courts will be forced to make decisions under estimated $\beta$ if we only give a single estimation of $beta$, since the calculated $C_0$ is either over or under the legal limit.
+* Differences between individuals are ignored, for example age and sex, which may affect $\beta$.
+* $\beta$ value at $2.5\%$ is over conservative.
+
+In this report, we will introduce a Bayesian regression model with considering the differences between individuals, gives a posterior distribution of $\beta$ by using both samples and chosen priors.
 
 # Motivations: Need improve? Why?
 # Disadvantage of current method
@@ -62,21 +69,7 @@ simpler model with only one parameter(beta), easier to calculate, suitable for n
 # New method: build a linear regression model for beta
 Check if age, weight and height have linear relationships with beta.
 Or have any patterns?
-```{r}
-beta_reg1 <- data |>
-  pivot_longer(
-    cols = c(age, weight, height),
-    names_to = "variables",
-    values_to = "value"
-  )
 
-ggplot(beta_reg1, aes(x = value, y = beta)) + 
-  geom_point(alpha = 0.5) +
-  geom_smooth(method = "lm", se = FALSE) + 
-  facet_wrap(~ variables, scales = "free_x") +
-  theme_minimal()
- 
-```
 # Model selection: 
 use drop(), look into AIC and R^2
 
@@ -150,6 +143,7 @@ How our new model works on the 70 year-old madam?
 ## variable explanation
 explain all variables we used
 explain needed references
+
 ##Testing
 whether formula reasonable?
 whether beta60 relate to Vt? 
