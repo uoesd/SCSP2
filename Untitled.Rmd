@@ -175,27 +175,11 @@ other reason: variables
 
 
 
-#N
 
-Before fitting a Bayesian regression model, appropriate priors need to be specified for all regression coefficients and residual standard deviation. We use weak information priors, allowing the observed data to dominate inference process.The chosen priors are summarised below:
-
-```{r}
-priors_table <- tribble(~Parameter, ~Prior,
-                        "Regression coefficients (bi)", "Normal(0, 1)",
-                        "Residual SD (σ)", "Student-t(3, 0, 5)")
-
-kable(priors_table,
-      caption = "Table 1: weak information priors used in the Bayesian regression model")
-```
-
-Regression coefficients were assigned Normal(0,1) priors, following the Stan Development Team’s “Prior Choice Recommendations”. For the residual standard deviation we used a half-Student-t prior with 3 degrees of freedom and a scale of 5, again following the Stan development team's recommendations.
-
-#Reference
-Stan Development Team. (n.d.). Prior choice recommendations. GitHub. https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
-
-
-
-
+model1<-lm(beta~0+ sex + BMI + T_Vd, data)
+model <- lm(beta~ 0+ sex+ weight + height, data)
+summary(model)
+summary(model1)
 
 
 
