@@ -175,7 +175,6 @@ other reason: variables
 
 
 
-<<<<<<< HEAD
 #N
 
 Before fitting a Bayesian regression model, appropriate priors need to be specified for all regression coefficients and residual standard deviation. We use weak information priors, allowing the observed data to dominate inference process.The chosen priors are summarised below:
