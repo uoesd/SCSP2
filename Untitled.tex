@@ -202,8 +202,6 @@ really matter unless the subject has age-related liver disease, but
 because of moral and ethical, we don't find much research of alcohol
 test on elderly person with liver disease.
 
-\subsection{Key Variables}\label{key-variables}
-
 \section{Bayesian regression model
 (BRM)}\label{bayesian-regression-model-brm}
 
@@ -266,11 +264,27 @@ results will be affected.
 
 \subsection{Model Selection}\label{model-selection}
 
-\section{Key Variables}\label{key-variables-1}
+\subsubsection{Key Variables}\label{key-variables}
 
-\section{Priors}\label{priors}
+\subsubsection{Priors}\label{priors}
 
 \subsection{Testing Model}\label{testing-model}
+
+=======
+
+\begin{center}
+\begin{tabular}{ c c c }
+ cell1 & cell2 & cell3 \\ 
+ cell4 & cell5 & cell6 \\  
+ cell7 & cell8 & cell9    
+\end{tabular}
+\end{center}
+
+\section{New method: build a linear regression model for
+beta}\label{new-method-build-a-linear-regression-model-for-beta}
+
+Check if age, weight and height have linear relationships with beta. Or
+have any patterns?
 
 \section{Calculate V\_d:}\label{calculate-v_d}
 
@@ -291,13 +305,50 @@ method - model we used result
 
 \section{Overview of Datasets}\label{overview-of-datasets}
 
+\subsection{Data collection}\label{data-collection}
+
 \subsection{Variable Description}\label{variable-description}
 
 \begin{itemize}
 \tightlist
 \item
   how many observations do we have? where we get the resourse,
-  reference? explain each variables in table \#\# Prelimary analysis
+  reference? explain each variables in table
+\end{itemize}
+
+The variables identified for the analysis are demographic and
+physiological characteristics from the tested individuals after drinking
+alcohol. Our variable selection is informed by their established
+relevance to human liver metabolic function, especially sex, age, weight
+and height are included due to the significant influence on liver
+metabolism.
+
+\begin{itemize}
+\tightlist
+\item
+  Sex: Biological sex of the individual, male or female
+\item
+  Age:
+\item
+  Weight\\
+\item
+  Height
+\item
+  Beta60:
+\item
+  Co:
+\end{itemize}
+
+Page, Participant number, FigureOnPage, Sample Type\ldots{} clearly
+inrevelant,
+
+Maximum BAC/BrAC,BAC peak time 也可推断为无关factor
+与police预测受测者驾驶中酒精浓度的目标不同
+
+\subsection{Prelimary analysis}\label{prelimary-analysis}
+
+\begin{itemize}
+\tightlist
 \item
   initial formula: explain beta60 + - motivation to improve?
 \end{itemize}
@@ -344,11 +395,20 @@ related? hows the result? how new model fit?
 \#Limitation our model limit data collected reason - cannot reflect the
 real world model reason other reason: variables
 
+\textless\textless\textless\textless\textless\textless\textless{} HEAD
 \#N
 
 \#Reference Stan Development Team. (n.d.). Prior choice recommendations.
 GitHub.
 \url{https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations}
+
+=======
+\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater{}
+42864825696dc33449e0ad1b18dfd34828d0e5c2
+
+model1\textless-lm(beta\textasciitilde0+ sex + BMI + T\_Vd, data) model
+\textless- lm(beta\textasciitilde{} 0+ sex+ weight + height, data)
+summary(model) summary(model1)
 
 =======
 \textgreater\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater{}

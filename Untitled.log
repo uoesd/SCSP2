@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.12)  16 NOV 2025 00:34
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.12)  16 NOV 2025 00:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -958,21 +958,21 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 101.
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) (./Untitled.toc
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 7.665pt on input line 3.
+(Font)              scaled to size 7.665pt on input line 4.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 5.475pt on input line 3.
+(Font)              scaled to size 5.475pt on input line 4.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.95099pt on input line 3.
+(Font)              scaled to size 10.95099pt on input line 4.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.66568pt on input line 3.
+(Font)              scaled to size 7.66568pt on input line 4.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 5.4755pt on input line 3.
+(Font)              scaled to size 5.4755pt on input line 4.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 10.94882pt on input line 3.
+(Font)              scaled to size 10.94882pt on input line 4.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 7.66417pt on input line 3.
+(Font)              scaled to size 7.66417pt on input line 4.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 5.47441pt on input line 3.
+(Font)              scaled to size 5.47441pt on input line 4.
 [1
 
 ])
@@ -1011,6 +1011,43 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [5]
+Underfull \hbox (badness 10000) in paragraph at lines 333--335
+
+ []
+
+Missing character: There is no 也 (U+4E5F) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 可 (U+53EF) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 推 (U+63A8) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 断 (U+65AD) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 为 (U+4E3A) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 无 (U+65E0) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 关 (U+5173) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 与 (U+4E0E) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 预 (U+9884) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 测 (U+6D4B) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 受 (U+53D7) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 测 (U+6D4B) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 者 (U+8005) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 驾 (U+9A7E) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 驶 (U+9A76) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 中 (U+4E2D) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 酒 (U+9152) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 精 (U+7CBE) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 浓 (U+6D53) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 度 (U+5EA6) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 的 (U+7684) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 目 (U+76EE) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 标 (U+6807) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 不 (U+4E0D) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no 同 (U+540C) in font [lmroman10-regular]:mapping=tex-text;!
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[6]
 Missing character: There is no 空 (U+7A7A) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 腹 (U+8179) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 低 (U+4F4E) in font [lmroman10-regular]:mapping=tex-text;!
@@ -1188,7 +1225,7 @@ Missing character: There is no 抽 (U+62BD) in font [lmroman10-regular]:mapping=
 Missing character: There is no 血 (U+8840) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 。 (U+3002) in font [lmroman10-regular]:mapping=tex-text;!
 
-Overfull \hbox (14.66191pt too wide) in paragraph at lines 353--359
+Overfull \hbox (14.66191pt too wide) in paragraph at lines 413--419
 \TU/lmr/m/n/10.95 beta 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
  []
 
@@ -1199,7 +1236,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[6]
+[7]
 
 Package caption Warning: Unused \captionsetup[figure] on input line 70.
 See the caption package documentation for explanation.
@@ -1215,19 +1252,19 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[7] (./Untitled.aux)
+[8] (./Untitled.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-10-24>
  ***********
  ) 
 Here is how much of TeX's memory you used:
- 20164 strings out of 470195
- 366545 string characters out of 5477999
- 929289 words of memory out of 5000000
- 48469 multiletter control sequences out of 15000+600000
+ 20166 strings out of 470195
+ 366618 string characters out of 5477999
+ 929436 words of memory out of 5000000
+ 48471 multiletter control sequences out of 15000+600000
  634260 words of font info for 92 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 90i,12n,114p,351b,397s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,12n,114p,351b,405s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Untitled.pdf (7 pages).
+Output written on Untitled.pdf (8 pages).

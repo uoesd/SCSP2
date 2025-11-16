@@ -309,32 +309,6 @@ mcmc_trace(as.array(fit_A), pars = c("b_Intercept", "b_weight_s"))
 
 
 
-
-### NN
-
-priors_table <- tribble(~Parameter, ~Prior,
-                        "Regression coefficients (bi)", "Normal(0, 1)",
-                        "Residual SD (σ)", "Student-t(3, 0, 5)")
-
-r2_A <- median(as.numeric(bayes_R2(fit_A)))
-r2_B <- median(as.numeric(bayes_R2(fit_B)))
-r2_C <- median(as.numeric(bayes_R2(fit_C)))
-
-model_comp_final <- tribble(~Model, ~`elpd_diff`, ~`se_diff`, ~`Bayesian R²`,
-                            "A",  0.0,  0.0, 0.1315,
-                            "B", -0.7,  0.3, 0.1307,
-                            "C",  0.0,  0.0, 0.1316)
-
-kable(model_comp_final,
-      caption = "Table 2: Model comparison based on LOO and Bayesian R²",
-      align = "lrrr",
-      digits = 4)
-
-
-##outlier, 倒推Blood water content, TBW, rho, 
-
-
-
 ####3
 
 

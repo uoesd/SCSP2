@@ -133,6 +133,18 @@ F1
 
 ## Testing Model
 
+=======
+\begin{center}
+\begin{tabular}{ c c c }
+ cell1 & cell2 & cell3 \\ 
+ cell4 & cell5 & cell6 \\  
+ cell7 & cell8 & cell9    
+\end{tabular}
+\end{center}
+
+# New method: build a linear regression model for beta
+Check if age, weight and height have linear relationships with beta.
+Or have any patterns?
 
 
 
@@ -159,10 +171,32 @@ result
 
 
 # Overview of Datasets
+## Data collection
+
+
 ## Variable Description 
 - how many observations do we have?
 where we get the resourse, reference?
 explain each variables in table
+
+The variables identified for the analysis are demographic and physiological characteristics from the tested individuals after drinking alcohol. Our variable selection is informed by their established relevance to human liver metabolic function, especially sex, age, weight and height are included due to the significant influence on liver metabolism.
+
+
+* Sex: Biological sex of the individual, male or female
+* Age: 
+* Weight  
+* Height
+* Beta60:
+* Co:
+
+Page, Participant number, FigureOnPage, Sample Type... clearly inrevelant,
+
+Maximum BAC/BrAC,BAC peak time 也可推断为无关factor 与police预测受测者驾驶中酒精浓度的目标不同
+
+
+
+ 
+
 ## Prelimary analysis 
 - initial formula: explain beta60 +  - motivation to improve?
 
@@ -222,6 +256,7 @@ other reason: variables
 
 
 
+<<<<<<< HEAD
 #N
 
 
@@ -231,7 +266,13 @@ Stan Development Team. (n.d.). Prior choice recommendations. GitHub. https://git
 
 
 
+=======
+>>>>>>> 42864825696dc33449e0ad1b18dfd34828d0e5c2
 
+model1<-lm(beta~0+ sex + BMI + T_Vd, data)
+model <- lm(beta~ 0+ sex+ weight + height, data)
+summary(model)
+summary(model1)
 
 
 
