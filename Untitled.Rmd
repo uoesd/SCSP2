@@ -79,6 +79,14 @@ To make it easier, we write the method in a function so other expert witness can
 2. Deviated aim: Police Scotland aims at assessing the probabilities that a person is over the limit, while the parameter beta only concentrates on the range between 2.5% and 97.5%.
 
 
+\begin{center}
+\begin{tabular}{ c c c }
+ cell1 & cell2 & cell3 \\ 
+ cell4 & cell5 & cell6 \\  
+ cell7 & cell8 & cell9    
+\end{tabular}
+\end{center}
+
 # New method: build a linear regression model for beta
 Check if age, weight and height have linear relationships with beta.
 Or have any patterns?
@@ -112,10 +120,32 @@ result
 
 
 # Overview of Datasets
+## Data collection
+
+
 ## Variable Description 
 - how many observations do we have?
 where we get the resourse, reference?
 explain each variables in table
+
+The variables identified for the analysis are demographic and physiological characteristics from the tested individuals after drinking alcohol. Our variable selection is informed by their established relevance to human liver metabolic function, especially sex, age, weight and height are included due to the significant influence on liver metabolism.
+
+
+* Sex: Biological sex of the individual, male or female
+* Age: 
+* Weight  
+* Height
+* Beta60:
+* Co:
+
+Page, Participant number, FigureOnPage, Sample Type... clearly inrevelant,
+
+Maximum BAC/BrAC,BAC peak time 也可推断为无关factor 与police预测受测者驾驶中酒精浓度的目标不同
+
+
+
+ 
+
 ## Prelimary analysis 
 - initial formula: explain beta60 +  - motivation to improve?
 
