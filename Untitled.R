@@ -145,11 +145,6 @@ plot(fit_A)
 plot(fit_B)
 plot(fit_C)
 
-yrep_A <- posterior_predict(fit_A, draws = 500)
-ppc_dens_overlay(data$beta, yrep_A[1:500, ]) + ggtitle("PPC density - Model A")
-yrep_B <- posterior_predict(fit_B, draws = 500)
-ppc_dens_overlay(data$beta, yrep_B[1:500, ]) + ggtitle("PPC density - Model B")
-
 
 loo_A <- loo(fit_A, moment_match = TRUE)
 loo_B <- loo(fit_B, moment_match = TRUE)
@@ -188,16 +183,11 @@ quantile(C0_draws, probs = 0.025, na.rm = TRUE)
 
 # Evaluate predictive performance on training set (observed beta)
 # Assumes: 'data' is your dataframe (with observed beta) and 'fit_A' is your brms fit object
-library(brms)
-library(posterior)
-library(dplyr)
-library(ggplot2)
-
 # 1) Draw posterior predictive samples for observed rows
 # posterior_predict returns matrix draws x observations (includes observation noise)
-pp_draws <- posterior_predict(fit_C, ndraws = 1600)  # 2000 draws is enough; increase if needed
+pp_draws <- posterior_predict(fit_C, ndraws = 2000)  # 2000 draws is enough; increase if needed
 # posterior_epred returns expected mean draws (no obs noise) if you prefer
-epred_draws <- posterior_epred(fit_C, ndraws = 1600)
+epred_draws <- posterior_epred(fit_C, ndraws = 2000)
 
 n_draws <- nrow(pp_draws)
 n_obs <- ncol(pp_draws)           # should be 100 in your case
@@ -271,6 +261,7 @@ cat("Number of obs with abs error <= ", tol, ": ", n_within_tol, "/", n_obs,
 mcmc_trace(as.array(fit_C), pars = c("b_Intercept", "b_weight_s"))
 
 
+pp_check(fit_C, type = "loo_pit_qq")
 
 
 ####3
@@ -428,5 +419,5 @@ F2 <- ggplot(all, aes(x = .iteration,
        color = "Chain") +
   theme_bw()
 
-yrep_C <- posterior_predict(fit_C, draws = 500)
-F3 <- ppc_dens_overlay(data$beta, yrep_C[1:500, ]) + ggtitle("PPC density - Model C")
+yrep_C <- exp(posterior_predict(fit_C, draws = 500))
+F3 <- ppc_dens_overlay(exp(data$beta), yrep_C[1:500, ]) + ggtitle("PPC density")

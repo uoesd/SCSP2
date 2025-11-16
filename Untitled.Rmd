@@ -78,7 +78,7 @@ To make it easier, we write the method in a function so other expert witness can
 
 It is very important to normalized all variables like weight and height. Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse. Also when we normalized numerical variables, we can use $N(0,1)$ to be the priors of coefficients.
 
-Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail. After simulation we can take exponential of the results. As shown in figure, $\beta$ forms a good normal distribution shape after log-transferring.
+Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail, all outliers (if have) can be scaled. As shown in figure, $\beta$ forms a good normal distribution shape after log-transferring. After simulation we can take exponential of the results.
 
 ```{r Figure 1, eval=FALSE, fig.cap="Figure 1: $\log(\beta)$ distribution.", message=FALSE, include=FALSE}
 F1
@@ -144,10 +144,12 @@ kable(priors_table,
       caption = "Table 1: weak information priors used in the Bayesian regression model")
 ```
 
-## Testing Model
+## Model Results and Testing 
 
-
-
+Figure 3 is the Posterior Predictive Check (PPC) density plot comparing with true value of $\beta$ (Here we have take exponential of both true value and predicted value). Notice that our BRM model fits a good posterior distribution even at right tail.
+```{r Figure 3, echo=FALSE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
+F3
+```
 
 
 
