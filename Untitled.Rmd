@@ -151,6 +151,8 @@ All variables have been standardised, so choosing Normal(0,·) as the weak infor
 
 If future research involves different populations, larger sample sizes, or additional biological information, the prior distributions can be adjusted accordingly to ensure they are applicable to any new dataset.
 
+reference：
+Jones, A. W. (2010). Evidence-based survey of the elimination rates of ethanol from blood with applications in forensic casework. Forensic Science International, 200, 1–20. https://doi.org/10.1016/j.forsciint.2010.02.021
 
 ## Model Results
 
@@ -326,8 +328,6 @@ summary(model1)
 测两次血预测beta
 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
 https://www.sciencedirect.com/science/article/pii/S0379073810000770?via%3Dihub
-
-Jones, A. W. (2010). Evidence-based survey of the elimination rates of ethanol from blood with applications in forensic casework. Forensic Science International, 200, 1–20. https://doi.org/10.1016/j.forsciint.2010.02.021
 
 P.Y. Kwo, V.A. Ramchandani, S. O’Connor, D. Amann, L.G. Carr, K. Sandrasegaran, K.K. Kopecky, T.K. Li
 Gender differences in alcohol metabolism: relationship to liver volume and effect of adjusting for body mass
