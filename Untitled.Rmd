@@ -8,7 +8,7 @@ output:
     keep_tex: true
     toc: true
     number_sections: true
-    toc_depth: 2
+    toc_depth: 3
 fontsize: 11pt
 geometry: margin=1in
 header-includes:
@@ -62,12 +62,13 @@ In this report, we will introduce a Bayesian regression model with considering t
 
 In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet, etc. As we don't have corresponding data, in our regression model of $\beta$ is mainly dominate by gender, but we still find some useful variables:
 
--Gender: Female's BAC elimination rate is larger than male on average, it is explained by liver weight represents a greater fraction of lean body mass in the female gender[2].
+- Gender: Female's BAC elimination rate is larger than male on average, it is explained by   liver weight represents a greater fraction of lean body mass in the female gender [2].
 
--Drinking time after BAC peak: If the person keep drinking after BAC reaches peak, the measured $\beta$ will be smaller since $\beta$ is measured start at BAC peak time till the end.
+- Drinking time after BAC peak: If the person keep drinking after BAC reaches peak, the      measured $\beta$ will be smaller since $\beta$ is measured start at BAC peak time till     the end.
 
 When it is too late to use a blood or breath test and the only information available is eyewitness testimony of the quantity of alcohol consumed. We have to use Widmark's equation:
 $$C_t = \frac{A}{Weight \times V_d} - \beta t$$
+
 where $A$ is Amount of Alcohol Consumed (g), $V_d$ is the volume of distribution that need to be found. Forensic scientists use
 the same method again to estimate $V_d$ separately with $\beta$. But $V_d$ and $\beta$ are not independent, so we build a joint Bayesian regression model, which can simulate them together to solve with the correlation. Then again after simulation, each $C_t$ is calculated by each pair of $\beta$ and $V_d$, so expert witness can still find a probability of $C_t$ exceeding the limit.
 
@@ -76,11 +77,21 @@ To make it easier, we write the method in a function so other expert witness can
 
 # Data Description
 
-It is very important to normalized all variables like weight and height. Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse.
+It is very important to normalized all variables like weight and height. Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse. The other important reason is centering the covariates can reduce autocorrelation 
+
+$$\rho_k = \frac{Cov(\beta^i, \beta^{i+k})}{\sigma^2},$$
+
+then the Effective Sample Size (ESS): 
+
+$$ n_{\text{eff}} = \frac{n}{1 + 2 \sum_{k=1}^{\infty}\rho_k}$$ 
+
+is lager, which means the MCMC method converge faster (for example if we set $4$ chains with each chains $4000$ iterations, $1000$ burn-in, the $n_{\text{eff}} = 10000$ means the number of independent samples is $10000$ out of $16000$). Larger $n_{\text{eff}}$ in same number of iterations means smaller variance of estimated exoectation since:
+
+$$\mathrm{V}(\hat{E}(\beta)) \approx \frac{\sigma^2}{n_{\text{eff}}}.$$
 
 Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail, all outliers (if have) can be scaled. As shown in figure, $\beta$ forms a good normal distribution shape after log-transferring. After simulation we can take exponential of the results.
 
-```{r Figure 1, echo=TRUE, fig.cap="Figure 1: log(beta) distribution.", message=FALSE}
+```{r Figure 1, echo=FALSE, fig.cap="Figure 1: log(beta) distribution.", message=FALSE}
 F1
 ```
 
@@ -95,18 +106,20 @@ of moral and ethical, we don't find much research of alcohol test on elderly per
 ## Reason for BRM
 
 Comparing with fitting linear regression model for $\beta_i$, which can be expressed as:
-$$\hat{\beta}_i = \hat{\gamma}_{1}\,\text{female}_i
-+ \hat{\gamma}_{2}\,\text{male}_i
-+ \hat{\gamma}_{3}\,\text{weight}_i
-+ \hat{\gamma}_{4}\,\text{height}_i + \sigma^2$$
-and giving a exact value of $\hat{\beta}$, BRM can model uncertainty from each coefficient $\gamma$, since $\beta$ from each individuals may affect by variables in different level. We provide priors and sample likelihoods for each variables, BRM will apply bayesian rule to each variables and output simulation results of coefficients specifically for each individual:
 
-$$\hat{\beta}_i = \hat{\gamma}_{1,i}\,\text{female}_i
-+ \hat{\gamma}_{2,i}\,\text{male}_i
-+ \hat{\gamma}_{3,i}\,\text{weight}_i
-+ \hat{\gamma}_{4,i}\,\text{height}_i + \sigma^2_i.$$
+$$\hat{\beta}_{i,j} = \hat{\gamma}_{1}\,\text{female}_j
++ \hat{\gamma}_{2}\,\text{male}_j
++ \hat{\gamma}_{3}\,\text{weight}_j
++ \hat{\gamma}_{4}\,\text{height}_j + \sigma^2_i$$
 
-Since we have simulation results of $\hat{\beta}$, we can offer a probability for the courts.
+and giving a exact value of $\hat{\beta_i}$ for $i_{th}$ estimation of $\hat{\beta}$ under $\sigma^2_i$ for $j_{th}$ individuals, BRM can model uncertainty from each coefficient $\hat{\gamma}$. We provide priors and sample likelihoods for each variables' coefficients, BRM will apply bayesian rule to each and output simulation results of each coefficients, not only for $\hat{\beta}$. $\hat{\beta}$s are calculated from simulation results of $\hat{\gamma_j}$, which is:
+
+$$\hat{\beta}_{i,j} = \hat{\gamma}_{1,i}\,\text{female}_j
++ \hat{\gamma}_{2,i}\,\text{male}_j
++ \hat{\gamma}_{3,i}\,\text{weight}_j
++ \hat{\gamma}_{4,i}\,\text{height}_j + \sigma^2_i.$$
+
+Since we have log-transformed $\beta$ data points, we will take exponential of $\hat{\beta_{i,j}}$ to get actual value.
 
 
 ## How BRM works
@@ -124,7 +137,7 @@ Also for the MCMC simulation method, we set $4$ chains, each chains $2000$ draws
 
 For $500$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As Figure 1 showed, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $100$ draws. Clearly that if we keep the first $50$ draws, the results will be affected. 
 
-```{r Figure 2, echo=TRUE, fig.cap="Figure 2: MCMC Simulations Traceplot.", message=FALSE}
+```{r Figure 2, echo=FALSE, fig.cap="Figure 2: MCMC Simulations Traceplot.", message=FALSE}
 F2
 ```
 
@@ -136,7 +149,7 @@ F2
 
 Before fitting the Bayesian regression model, appropriate prior distributions need to be specified for all regression coefficients and the residual standard deviation. We use weakly informative priors so that the observed data dominate the inference process. The selected prior distributions are summarized as follows:
 
-```{r}
+```{r echo=FALSE}
 priors_table <- tribble(~Parameter, ~Prior,
                         "Regression coefficient for male ", "Normal(0, 2)",
                         "Regression coefficient for female", "Normal(0, 2)",
@@ -158,17 +171,26 @@ Jones, A. W. (2010). Evidence-based survey of the elimination rates of ethanol f
 
 ### Fitting result
 
-After $4000$ iterations in $4$ chains, Figure 3 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since we all chains have converged and warm-up numbers is enough. Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero.
+After $2000$ iterations in $4$ chains, Figure 3 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since we all chains have converged and warm-up length is enough. Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero. Also $\sigma$ value is estimated  under log-transformed $\beta$.
 
-```{r Figure 3, echo=TRUE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
-mcmc_plot(fit_C, type = "dens_overlay")
-
+```{r Figure 3, echo=FALSE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
+F3
 ```
 
+Figure 4 shows the trace plots for all variable coefficients, it can be seen that all $4$ chains mix well and all values are picking after convergent.
+
+```{r Figure 4, echo=FALSE, fig.cap="Figure 4: Traceplot of all coefficients and variance sigma.", message=FALSE}
+F4
+```
+Table $1$ gives the estimate exact value of 
+```{r, echo=FALSE, fig.cap="", message=FALSE}
+T1
+```
 ### PPC Density
 Figure 3 is the Posterior Predictive Check (PPC) density plot comparing with true value of $\beta$ (Here we have taken exponential of both true value and predicted value). Notice that predicted posterior distribution matches $\beta$ sample distribution pretty well, which get the mean, spread, skew both right even at right tail.
-```{r Figure 3, echo=TRUE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
-F3
+
+```{r Figure 5, echo=FALSE, fig.cap="Figure 5: PPC density of 500 predict results.", message=FALSE}
+F5
 ```
 
 
@@ -176,18 +198,19 @@ F3
 ### LOO-PIT QQ plot
 The Leave-One-Out Probability Integral Transform Quantile-Quantile plot (LOO-PIT QQ plot) can check if the predictions calibrated correctly and if the predictive distributions biased, which is defined as:
 $$ \mathrm{LOO\text{-}PIT}_i = P(\tilde{y}_i \le y_i |y_{-i}) .$$
+
 Here we still use Monte Carlo method to simulate it, as:
+
 $$
 \mathrm{LOO\text{-}PIT}_i
 = \frac{1}{S} \sum_{s=1}^{S} 
 \mathbf{1}\!\left( \tilde{y}_{i,-i}^{(s)} \le y_i \right)
 $$
 where $S$ is the number of posterior draws (we set it 10000 here). 
-We will use it to check if our posterior is under or over dispersion, the good model's PIT plot should be flat over $Uniform(0,1)$. For our model, the PIT histogram (Figure 4) is flat everywhere except probability near 0.55, which is acceptable by the randomness of MCMC method. A U-shape (points over dot line at two tails) in PIT plots means overestimates variance, it doesn't appear in our plot gives evidence of our choices on variables and likelihood family.
+We will use it to check if our posterior is under or over dispersion, the good model's PIT plot should be flat over $Uniform(0,1)$. For our model, the PIT histogram (Figure 4) is flat everywhere except probability near 0.55 and 0.8, which are acceptable by the randomness of MCMC method. A U-shape (points over dot line at two tails) in PIT plots means overestimates variance, it doesn't appear in our plot gives evidence of our choices on variables and likelihood family.
 
-```{r Figure 4, echo=FALSE, fig.cap="Figure 4: Probability Integral Transform (PIT) histogram.", message=FALSE}
-pp_check(fit_C, type = "loo_pit_qq")
-
+```{r Figure 6, echo=FALSE, fig.cap="Figure 6: Probability Integral Transform (PIT) histogram.", message=FALSE}
+F6
 ```
 
 
@@ -312,18 +335,9 @@ other reason: variables
 
 
 
->>>>>>> 42864825696dc33449e0ad1b18dfd34828d0e5c2
-
-model1<-lm(beta~0+ sex + BMI + T_Vd, data)
-model <- lm(beta~ 0+ sex+ weight + height, data)
-summary(model)
-summary(model1)
 
 
 
-
-=======
->>>>>>> bb3d1a6f16b0f748d3d6a2b63e99aaba40d20726
 空腹低 长期饮酒高CTP2E1活性高 性别肝脏大小 药物抑制酒精代谢
 测两次血预测beta
 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。

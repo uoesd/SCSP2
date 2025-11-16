@@ -100,7 +100,7 @@ Department / Course}
 \maketitle
 
 {
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{3}
 \tableofcontents
 }
 \section{Executive Summary}\label{executive-summary}
@@ -154,26 +154,30 @@ As we don't have corresponding data, in our regression model of
 \(\beta\) is mainly dominate by gender, but we still find some useful
 variables:
 
--Gender: Female's BAC elimination rate is larger than male on average,
-it is explained by liver weight represents a greater fraction of lean
-body mass in the female gender{[}2{]}.
-
--Drinking time after BAC peak: If the person keep drinking after BAC
-reaches peak, the measured \(\beta\) will be smaller since \(\beta\) is
-measured start at BAC peak time till the end.
+\begin{itemize}
+\item
+  Gender: Female's BAC elimination rate is larger than male on average,
+  it is explained by liver weight represents a greater fraction of lean
+  body mass in the female gender {[}2{]}.
+\item
+  Drinking time after BAC peak: If the person keep drinking after BAC
+  reaches peak, the measured \(\beta\) will be smaller since \(\beta\)
+  is measured start at BAC peak time till the end.
+\end{itemize}
 
 When it is too late to use a blood or breath test and the only
 information available is eyewitness testimony of the quantity of alcohol
 consumed. We have to use Widmark's equation:
-\[C_t = \frac{A}{Weight \times V_d} - \beta t\] where \(A\) is Amount of
-Alcohol Consumed (g), \(V_d\) is the volume of distribution that need to
-be found. Forensic scientists use the same method again to estimate
-\(V_d\) separately with \(\beta\). But \(V_d\) and \(\beta\) are not
-independent, so we build a joint Bayesian regression model, which can
-simulate them together to solve with the correlation. Then again after
-simulation, each \(C_t\) is calculated by each pair of \(\beta\) and
-\(V_d\), so expert witness can still find a probability of \(C_t\)
-exceeding the limit.
+\[C_t = \frac{A}{Weight \times V_d} - \beta t\]
+
+where \(A\) is Amount of Alcohol Consumed (g), \(V_d\) is the volume of
+distribution that need to be found. Forensic scientists use the same
+method again to estimate \(V_d\) separately with \(\beta\). But \(V_d\)
+and \(\beta\) are not independent, so we build a joint Bayesian
+regression model, which can simulate them together to solve with the
+correlation. Then again after simulation, each \(C_t\) is calculated by
+each pair of \(\beta\) and \(V_d\), so expert witness can still find a
+probability of \(C_t\) exceeding the limit.
 
 To make it easier, we write the method in a function so other expert
 witness can also get the results by easily plugging new person's data.
@@ -183,8 +187,22 @@ witness can also get the results by easily plugging new person's data.
 It is very important to normalized all variables like weight and height.
 Since \(\beta\) is a small value, the coefficients of large value
 variables are pretty small, near 0, which will make \(\beta\) estimation
-worse. Also when we normalized numerical variables, we can use
-\(N(0,1)\) to be the priors of coefficients.
+worse. The other important reason is centering the covariates can reduce
+autocorrelation
+
+\[\rho_k = \frac{Cov(\beta^i, \beta^{i+k})}{\sigma^2},\]
+
+then the Effective Sample Size (ESS):
+
+\[ n_{\text{eff}} = \frac{n}{1 + 2 \sum_{k=1}^{\infty}\rho_k}\]
+
+is lager, which means the MCMC method converge faster (for example if we
+set \(4\) chains with each chains \(4000\) iterations, \(1000\) burn-in,
+the \(n_{\text{eff}} = 10000\) means the number of independent samples
+is \(10000\) out of \(16000\)). Larger \(n_{\text{eff}}\) in same number
+of iterations means smaller variance of estimated exoectation since:
+
+\[\mathrm{V}(\hat{E}(\beta)) \approx \frac{\sigma^2}{n_{\text{eff}}}.\]
 
 Then we prefer to \(\beta\) to \(\log(\beta)\) since the original
 \(\beta\) distribution has heavy tail, all outliers (if have) can be
@@ -210,13 +228,16 @@ test on elderly person with liver disease.
 \subsection{Reason for BRM}\label{reason-for-brm}
 
 Comparing with fitting linear regression model for \(\beta_i\), which
-can be expressed as: \[\hat{\beta}_i = \hat{\gamma}_{1}\,\text{female}_i
+can be expressed as:
+
+\[\hat{\beta}_i = \hat{\gamma}_{1}\,\text{female}_i
 + \hat{\gamma}_{2}\,\text{male}_i
 + \hat{\gamma}_{3}\,\text{weight}_i
-+ \hat{\gamma}_{4}\,\text{height}_i + \sigma^2\] and giving a exact
-value of \(\hat{\beta}\), BRM can model uncertainty from each
-coefficient \(\gamma\), since \(\beta\) from each individuals may affect
-by variables in different level. We provide priors and sample
++ \hat{\gamma}_{4}\,\text{height}_i + \sigma^2\]
+
+and giving a exact value of \(\hat{\beta}\), BRM can model uncertainty
+from each coefficient \(\gamma\), since \(\beta\) from each individuals
+may affect by variables in different level. We provide priors and sample
 likelihoods for each variables, BRM will apply bayesian rule to each
 variables and output simulation results of coefficients specifically for
 each individual:
@@ -270,43 +291,76 @@ affected.
 
 \subsubsection{Priors}\label{priors}
 
-Before fitting a Bayesian regression model, appropriate priors need to
-be specified for all regression coefficients and residual standard
-deviation. We use weak information priors, allowing the observed data to
-dominate inference process.The chosen priors are summarised below:
-Regression coefficients were assigned Normal(0,1) priors, following the
-Stan Development Team's ``Prior Choice Recommendations''. For the
-residual standard deviation we used a half-Student-t prior with 3
-degrees of freedom and a scale of 5, again following the Stan
-development team's recommendations.
+Before fitting the Bayesian regression model, appropriate prior
+distributions need to be specified for all regression coefficients and
+the residual standard deviation. We use weakly informative priors so
+that the observed data dominate the inference process. The selected
+prior distributions are summarized as follows:
 
-\subsection{Model Results and Testing}\label{model-results-and-testing}
+All variables have been standardised, so choosing Normal(0,·) as the
+weak information prior is reasonable. Based on the review by Jones
+(2010), sex is considered one of the primary factors influencing alcohol
+elimination rates. Therefore, we set a relatively wide prior Normal(0,
+2) for the sex coefficients, allowing their effects to vary across a
+broad and reasonable range without being overly constrained by the
+prior. For other standardized variables (such as weight and height),
+since their impact on β is considered relatively small, we used a more
+shrinkage weakly informative prior Normal(0, 0.5) to prevent
+unreasonably large effects. The residual standard deviation is given an
+exponential(1) prior, which is a commonly used positive weakly
+informative prior that can avoid unreasonably high noise.
+
+If future research involves different populations, larger sample sizes,
+or additional biological information, the prior distributions can be
+adjusted accordingly to ensure they are applicable to any new dataset.
+
+reference： Jones, A. W. (2010). Evidence-based survey of the
+elimination rates of ethanol from blood with applications in forensic
+casework. Forensic Science International, 200, 1--20.
+\url{https://doi.org/10.1016/j.forsciint.2010.02.021}
+
+\subsection{Model Results}\label{model-results}
+
+\subsubsection{Fitting result}\label{fitting-result}
+
+After \(4000\) iterations in \(4\) chains, Figure 3 shows posterior
+results for each variables' coefficients, all coefficients show good
+normal patterns since we all chains have converged and warm-up numbers
+is enough. Since the \(\beta\) is log-transformed, the value of
+`b\_sexfemale' and `b\_sexmale' is not typical value of \(\beta\) like
+\(0.19\) when other coefficients are all near zero.
+
+\subsubsection{PPC Density}\label{ppc-density}
 
 Figure 3 is the Posterior Predictive Check (PPC) density plot comparing
-with true value of \(\beta\) (Here we have take exponential of both true
-value and predicted value). Notice that predicted posterior distribution
-matches \(\beta\) sample distribution pretty well, which get the mean,
-spread, skew both right even at right tail.
+with true value of \(\beta\) (Here we have taken exponential of both
+true value and predicted value). Notice that predicted posterior
+distribution matches \(\beta\) sample distribution pretty well, which
+get the mean, spread, skew both right even at right tail.
 
-The Probability Integral Transform (PIT) histogram can check if the
-predictions calibrated correctly, which is defined as:
-\[ \text{PIT}_i = P(\tilde{y}_i \le y_i) .\] We will use it to check if
-our posterior is under or over dispersion, the good model's PIT plot
-should be \(Uniform(0,1)\). For our model, the PIT histogram (Figure 4)
-is flat everywhere except probability near 0.55, which is acceptable by
-the randomness of MCMC method. A U-shape in PIT plots means
+\subsection{Model Testing}\label{model-testing}
+
+\subsubsection{LOO-PIT QQ plot}\label{loo-pit-qq-plot}
+
+The Leave-One-Out Probability Integral Transform Quantile-Quantile plot
+(LOO-PIT QQ plot) can check if the predictions calibrated correctly and
+if the predictive distributions biased, which is defined as:
+\[ \mathrm{LOO\text{-}PIT}_i = P(\tilde{y}_i \le y_i |y_{-i}) .\]
+
+Here we still use Monte Carlo method to simulate it, as:
+
+\[
+\mathrm{LOO\text{-}PIT}_i
+= \frac{1}{S} \sum_{s=1}^{S} 
+\mathbf{1}\!\left( \tilde{y}_{i,-i}^{(s)} \le y_i \right)
+\] where \(S\) is the number of posterior draws (we set it 10000 here).
+We will use it to check if our posterior is under or over dispersion,
+the good model's PIT plot should be flat over \(Uniform(0,1)\). For our
+model, the PIT histogram (Figure 4) is flat everywhere except
+probability near 0.55, which is acceptable by the randomness of MCMC
+method. A U-shape (points over dot line at two tails) in PIT plots means
 overestimates variance, it doesn't appear in our plot gives evidence of
 our choices on variables and likelihood family.
-
-=======
-
-\begin{center}
-\begin{tabular}{ c c c }
- cell1 & cell2 & cell3 \\ 
- cell4 & cell5 & cell6 \\  
- cell7 & cell8 & cell9    
-\end{tabular}
-\end{center}
 
 \section{New method: build a linear regression model for
 beta}\label{new-method-build-a-linear-regression-model-for-beta}
@@ -423,25 +477,12 @@ related? hows the result? how new model fit?
 \#Limitation our model limit data collected reason - cannot reflect the
 real world model reason other reason: variables
 
-\textless\textless\textless\textless\textless\textless\textless{} HEAD
 \#N
 
-\#Reference Stan Development Team. (n.d.). Prior choice recommendations.
-GitHub.
-\url{https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations}
+\#Reference
 
-=======
-\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater{}
-42864825696dc33449e0ad1b18dfd34828d0e5c2
-
-model1\textless-lm(beta\textasciitilde0+ sex + BMI + T\_Vd, data) model
-\textless- lm(beta\textasciitilde{} 0+ sex+ weight + height, data)
-summary(model) summary(model1)
-
-=======
-\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater{}
-bb3d1a6f16b0f748d3d6a2b63e99aaba40d20726 空腹低 长期饮酒高CTP2E1活性高
-性别肝脏大小 药物抑制酒精代谢 测两次血预测beta
+空腹低 长期饮酒高CTP2E1活性高 性别肝脏大小 药物抑制酒精代谢
+测两次血预测beta
 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
 \url{https://www.sciencedirect.com/science/article/pii/S0379073810000770?via\%3Dihub}
 

@@ -1,0 +1,29 @@
+\contentsline {section}{\numberline {1}Executive Summary}{2}{section.1}%
+\contentsline {section}{\numberline {2}Data Description}{3}{section.2}%
+\contentsline {section}{\numberline {3}Bayesian regression model (BRM)}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Reason for BRM}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}How BRM works}{5}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Model Selection}{5}{subsection.3.3}%
+\contentsline {subsubsection}{\numberline {3.3.1}Key Variables}{5}{subsubsection.3.3.1}%
+\contentsline {subsubsection}{\numberline {3.3.2}Priors}{5}{subsubsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.4}Model Results}{6}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}Fitting result}{6}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}PPC Density}{6}{subsubsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.5}Model Testing}{6}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}LOO-PIT QQ plot}{6}{subsubsection.3.5.1}%
+\contentsline {section}{\numberline {4}New method: build a linear regression model for beta}{7}{section.4}%
+\contentsline {section}{\numberline {5}Calculate V\_d:}{7}{section.5}%
+\contentsline {section}{\numberline {6}Further research:}{7}{section.6}%
+\contentsline {subsection}{\numberline {6.1}REPORT}{7}{subsection.6.1}%
+\contentsline {section}{\numberline {7}Exclusive summary}{7}{section.7}%
+\contentsline {section}{\numberline {8}Overview of Datasets}{8}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Data collection}{8}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Variable Description}{8}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Prelimary analysis}{8}{subsection.8.3}%
+\contentsline {section}{\numberline {9}Model selection regarding key variable `beta60'}{8}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Advantage of current method}{8}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}New model motivation}{9}{subsection.9.2}%
+\contentsline {section}{\numberline {10}Bayesian model}{9}{section.10}%
+\contentsline {subsection}{\numberline {10.1}Model fitting example}{9}{subsection.10.1}%
+\contentsline {section}{\numberline {11}Testing another assumption(condition):}{9}{section.11}%
+\contentsline {subsection}{\numberline {11.1}variable explanation}{9}{subsection.11.1}%

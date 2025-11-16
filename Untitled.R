@@ -110,7 +110,7 @@ fit_C <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior_d,
-             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
+             chains = 4, iter = 2000, warmup = 500, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
 
 
@@ -287,35 +287,7 @@ MSE_betaA <- mean(abs(beta_A - data$beta) , na.rm = TRUE )
 MSE_betaA
 #prior noninformative or theoratical for coefficie
 
-
-
-
-
-F1 <- ggplot(data, aes(x = beta)) +
-  geom_density() +
-  labs(title = "Density Plot", x = "log(Beta)", y = "Density")
-
-fit_d <- brm(formula = f_beta,
-             data = data,
-             family = gaussian(),
-             prior = prior_C,
-             chains = 4, iter = 100, warmup = 30, control = list(adapt_delta = 0.98, max_treedepth = 15))
-
-all <- as_draws_df(fit_d, inc_warmup = TRUE)
-
-F2 <- ggplot(all, aes(x = .iteration,
-                y = b_sexmale,
-                color = factor(.chain))) +
-  geom_line(alpha = 0.6, linewidth = 0.3) +
-  labs(x = "Iteration (including warmup)",
-       y = "b_sexfemale",
-       color = "Chain") +
-  theme_bw()
-
-yrep_C <- exp(posterior_predict(fit_C, draws = 2000))
-F3 <- ppc_dens_overlay(exp(data$beta), yrep_C[1:2000, ]) + ggtitle("PPC density")
-
-
+###################
 
 pp_draws <- exp(posterior_predict(fit_C, ndraws = 10000))
 
@@ -371,7 +343,7 @@ cat("RMSE (using posterior mean):", signif(RMSE,4), "\n")
 cat("Bayesian R^2 median:", signif(r2_median,4), " (95% CI:", signif(r2_CI[1],4), "-", signif(r2_CI[2],4), ")\n")
 
 # 7) PIT histogram (should be flat if predictive distribution calibrated)
-F4 <- ggplot(pp_summary, aes(x = PIT)) +
+ggplot(pp_summary, aes(x = PIT)) +
   geom_histogram(bins = 20, color = "black") +
   labs(title = "PIT histogram", x = "PIT value", y = "Count")
 
@@ -387,12 +359,59 @@ n_within_tol <- sum(pp_summary$abs_err_mean <= tol, na.rm = TRUE)
 cat("Number of obs with abs error <= ", tol, ": ", n_within_tol, "/", n_obs,
     " (", round(100 * n_within_tol / n_obs,1), "% )\n", sep = "")
 
-# Example: after fitting fit_A
-mcmc_trace(as.array(fit_C), pars = c("b_sexmale", "b_weight_s"))
+
+F1 <- ggplot(data, aes(x = beta)) +
+  geom_density() +
+  labs(title = "Density Plot", x = "log(Beta)", y = "Density")
+
+fit_d <- brm(formula = f_beta,
+             data = data,
+             family = gaussian(),
+             prior = prior_C,
+             chains = 4, iter = 100, warmup = 30, control = list(adapt_delta = 0.98, max_treedepth = 15))
+
+all <- as_draws_df(fit_d, inc_warmup = TRUE)
+
+F2 <- ggplot(all, aes(x = .iteration,
+                y = b_sexmale,
+                color = factor(.chain))) +
+  geom_line(alpha = 0.6, linewidth = 0.3) +
+  labs(x = "Iteration (including warmup)",
+       y = "b_sexfemale",
+       color = "Chain") +
+  theme_bw()
+
+F3 <- mcmc_plot(fit_C, type = "dens_overlay")
+
+F4 <- mcmc_trace(fit_C, 
+                 pars = c("b_sexfemale", "b_sexmale",
+                          "b_weight_s", "b_height_s",
+                          "b_drinkingtime_s","b_BACpeaktime_s", "sigma"))
+
+s <- summary(fit_C)
+tab_all <- rbind(as.data.frame(s$fixed),
+                 as.data.frame(s$random$ID))
+T1 <- knitr::kable(
+      tab_all,
+      digits = 3,
+      caption = "Table: Posterior Summary of Fixed Effects from BRM")
 
 
-pp_check(fit_C, ndraws = 500)
+yrep_C <- exp(posterior_predict(fit_C, draws = 2000))
+F5 <- ppc_dens_overlay(exp(data$beta), yrep_C[1:2000, ]) + ggtitle("PPC density")
+
+F6 <- pp_check(fit_C, type = "loo_pit_qq")
+
+F7 <- ggplot(data, aes(x = exp(data$beta), y = colMeans(pp_draws), colour = sex)) +
+        geom_point() +
+        labs(title = "Observed vs Predicted", x = "Observed", y = "Predicted") + 
+        theme(aspect.ratio = 1)
+pp_draws <- exp(posterior_predict(fit_C, ndraws = 10000))
+
+
 ggplot(data, aes(x = exp(data$beta), y = colMeans(pp_draws), colour = sex)) +
   geom_point() +
   labs(title = "Observed vs Predicted", x = "Observed", y = "Predicted") + 
   theme(aspect.ratio = 1)
+
+
