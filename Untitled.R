@@ -61,41 +61,10 @@ summary(model1)
 AIC(model)
 AIC(model1)
 
-data$age_group <- ifelse(data$age > 60, "old", "young")
-
-# Convert to factor (optional)
-data$age_group <- factor(data$age_group, levels = c("young", "old"))
-
-# Basic boxplot
-boxplot(beta ~ age_group,
-        data = data,
-        main = "Beta Elimination Rate by Age Group",
-        xlab = "Age Group",
-        ylab = "Beta (g/kg/h)",
-        col = c("lightblue", "lightgreen"))
 
 
-
-
-num_summary <- data %>%
-  summarise(
-    n = n(),
-    mean_beta = mean(beta, na.rm = TRUE),
-    median_beta = median(beta, na.rm = TRUE),
-    sd_beta = sd(beta, na.rm = TRUE),
-    q2.5_beta = quantile(beta, 0.025, na.rm = TRUE),
-    q97.5_beta = quantile(beta, 0.975, na.rm = TRUE),
-    min_beta = min(beta, na.rm = TRUE),
-    max_beta = max(beta, na.rm = TRUE),
-    prop_neg = mean(beta < 0, na.rm = TRUE)
-  )
-
-print(num_summary)
-ggplot(data, aes(x = beta)) + geom_histogram(bins = 40) + ggtitle("Histogram of beta")
-ggplot(data, aes(y = beta)) + geom_boxplot() + ggtitle("Boxplot of beta")
 ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
-ggplot(data, aes(x = weight, y = beta)) + geom_point() + geom_smooth(method = "loess") + ggtitle("beta vs weight")
-
+                                                          
 f_beta <- bf(beta ~ 0+ sex + weight_s + height_s + drinkingtime_s + BACpeaktime_s)
 
 # Student-t intercept prior (robust)
