@@ -133,16 +133,22 @@ F2
 ### Key Variables
 
 ### Priors
-Before fitting a Bayesian regression model, appropriate priors need to be specified for all regression coefficients and residual standard deviation. We use weak information priors, allowing the observed data to dominate inference process.The chosen priors are summarised below:
-Regression coefficients were assigned Normal(0,1) priors, following the Stan Development Team’s “Prior Choice Recommendations”. For the residual standard deviation we used a half-Student-t prior with 3 degrees of freedom and a scale of 5, again following the Stan development team's recommendations.
+Before fitting the Bayesian regression model, appropriate prior distributions need to be specified for all regression coefficients and the residual standard deviation. We use weakly informative priors so that the observed data dominate the inference process. The selected prior distributions are summarized as follows:
 
-```{r eval=FALSE, include=FALSE}
+```{r}
 priors_table <- tribble(~Parameter, ~Prior,
                         "Regression coefficients (bi)", "Normal(0, 1)",
-                        "Residual SD (σ)", "Student-t(3, 0, 5)")
+                        "Residual SD (σ)", "Exponential(1)")
+
 kable(priors_table,
       caption = "Table 1: weak information priors used in the Bayesian regression model")
 ```
+
+All variables have been standardized, so a normal distribution (0,1) is an appropriate weakly informative prior.
+Future data considerations.
+
+If future studies include different populations, larger sample sizes, or external biological knowledge (e.g., published estimates of sex differences in β), the priors can be adjusted—either narrowed (Normal(0,0.5)) when more information is available or widened (Normal(0,2)) when greater heterogeneity is expected. Prior-predictive checks should be used to verify suitability for any new dataset.
+
 
 ## Model Results
 
