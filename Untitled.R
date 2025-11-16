@@ -170,7 +170,7 @@ new <- tibble(
     T_Vd = TBW / weight
   )
 
-beta_draws <- posterior_predict(fit_A, newdata = new, draws = 1600)
+beta_draws <- posterior_predict(fit_C, newdata = new, draws = 1600)
 Ct <- 0.15   
 t <- 2      
 C0_draws <- Ct + exp(beta_draws) * t
@@ -180,88 +180,6 @@ P_over
 # empirical 2.5th percentile of beta distribution:
 emp_beta_2.5 <- quantile(data$beta, probs = 0.025, na.rm = TRUE)
 quantile(C0_draws, probs = 0.025, na.rm = TRUE)
-
-# Evaluate predictive performance on training set (observed beta)
-# Assumes: 'data' is your dataframe (with observed beta) and 'fit_A' is your brms fit object
-# 1) Draw posterior predictive samples for observed rows
-# posterior_predict returns matrix draws x observations (includes observation noise)
-pp_draws <- posterior_predict(fit_C, ndraws = 2000)  # 2000 draws is enough; increase if needed
-# posterior_epred returns expected mean draws (no obs noise) if you prefer
-epred_draws <- posterior_epred(fit_C, ndraws = 2000)
-
-n_draws <- nrow(pp_draws)
-n_obs <- ncol(pp_draws)           # should be 100 in your case
-
-# 2) For each observation compute 50% and 95% predictive intervals (from pp_draws)
-alpha_lo_95 <- 0.025; alpha_hi_95 <- 0.975
-alpha_lo_50 <- 0.25;  alpha_hi_50 <- 0.75
-
-pp_summary <- tibble(
-  obs = seq_len(n_obs),
-  beta_obs = data$beta  # observed true beta for each row
-) %>%
-  mutate(
-    pred_mean = colMeans(epred_draws),
-    pred_median = apply(epred_draws, 2, median),
-    # 95% PI from posterior_predict (includes obs noise)
-    PI95_low = apply(pp_draws, 2, quantile, probs = alpha_lo_95),
-    PI95_high = apply(pp_draws, 2, quantile, probs = alpha_hi_95),
-    # 50% PI
-    PI50_low = apply(pp_draws, 2, quantile, probs = alpha_lo_50),
-    PI50_high = apply(pp_draws, 2, quantile, probs = alpha_hi_50),
-    # point error metrics
-    abs_err_mean = abs(pred_mean - beta_obs),
-    sq_err_mean = (pred_mean - beta_obs)^2,
-    # PIT value (proportion of predictive draws <= observed)
-    PIT = sapply(1:n_obs, function(j) mean(pp_draws[, j] <= beta_obs[j]))
-  )
-
-# 3) Coverage counts
-covered_95 <- sum(pp_summary$beta_obs >= pp_summary$PI95_low & pp_summary$beta_obs <= pp_summary$PI95_high, na.rm = TRUE)
-covered_50 <- sum(pp_summary$beta_obs >= pp_summary$PI50_low & pp_summary$beta_obs <= pp_summary$PI50_high, na.rm = TRUE)
-
-prop_95 <- covered_95 / n_obs
-prop_50 <- covered_50 / n_obs
-
-# 4) Point-prediction summary (MAE, RMSE) using posterior mean
-MAE <- mean(pp_summary$abs_err_mean, na.rm = TRUE)
-RMSE <- sqrt(mean(pp_summary$sq_err_mean, na.rm = TRUE))
-
-# 5) Bayesian R^2 (using brms helper)
-r2_draws <- as.numeric(bayes_R2(fit_C))  # ensures numeric vector
-r2_median <- median(r2_draws)
-r2_CI <- quantile(r2_draws, c(0.025, 0.975))
-
-# 6) Print results
-cat("Observations (n):", n_obs, "\n")
-cat("95% predictive interval coverage:", covered_95, "/", n_obs, " = ", round(100*prop_95,2), "%\n")
-cat("50% predictive interval coverage:", covered_50, "/", n_obs, " = ", round(100*prop_50,2), "%\n")
-cat("MAE (using posterior mean):", signif(MAE,4), "\n")
-cat("RMSE (using posterior mean):", signif(RMSE,4), "\n")
-cat("Bayesian R^2 median:", signif(r2_median,4), " (95% CI:", signif(r2_CI[1],4), "-", signif(r2_CI[2],4), ")\n")
-
-# 7) PIT histogram (should be flat if predictive distribution calibrated)
-ggplot(pp_summary, aes(x = PIT)) +
-  geom_histogram(bins = 20, color = "black", fill = "skyblue") +
-  labs(title = "PIT histogram (calibration): ideally flat", x = "PIT value", y = "count")
-
-# 8) Optional: list the observation indices that fall outside 95% PI
-outliers_95_idx <- pp_summary %>% filter(!(beta_obs >= PI95_low & beta_obs <= PI95_high)) %>% pull(obs)
-cat("Indices outside 95% PI (count):", length(outliers_95_idx), "\n")
-if (length(outliers_95_idx) > 0) cat("Examples:", head(outliers_95_idx, 20), "\n")
-
-# 9) If you want a flexible "how many are correctly predicted" with tolerance:
-#    Define tolerance tol (absolute error), e.g., tol = 0.01 g/kg/h
-tol <- 0.01
-n_within_tol <- sum(pp_summary$abs_err_mean <= tol, na.rm = TRUE)
-cat("Number of obs with abs error <= ", tol, ": ", n_within_tol, "/", n_obs,
-    " (", round(100 * n_within_tol / n_obs,1), "% )\n", sep = "")
-
-# Example: after fitting fit_A
-mcmc_trace(as.array(fit_C), pars = c("b_Intercept", "b_weight_s"))
-
-
-pp_check(fit_C, type = "loo_pit_qq")
 
 
 ####3
@@ -419,5 +337,83 @@ F2 <- ggplot(all, aes(x = .iteration,
        color = "Chain") +
   theme_bw()
 
-yrep_C <- exp(posterior_predict(fit_C, draws = 500))
-F3 <- ppc_dens_overlay(exp(data$beta), yrep_C[1:500, ]) + ggtitle("PPC density")
+yrep_C <- exp(posterior_predict(fit_C, draws = 2000))
+F3 <- ppc_dens_overlay(exp(data$beta), yrep_C[1:2000, ]) + ggtitle("PPC density")
+
+
+
+pp_draws <- exp(posterior_predict(fit_C, ndraws = 2000))
+
+n_draws <- nrow(pp_draws)
+n_obs <- ncol(pp_draws)         
+
+# 2) For each observation compute 50% and 95% predictive intervals (from pp_draws)
+alpha_lo_95 <- 0.025; alpha_hi_95 <- 0.975
+alpha_lo_50 <- 0.25;  alpha_hi_50 <- 0.75
+
+pp_summary <- tibble(
+  obs = seq_len(n_obs),
+  beta_obs = exp(data$beta)  # observed true beta for each row
+) %>%
+  mutate(
+    pred_mean = colMeans(pp_draws),
+    pred_median = apply(pp_draws, 2, median),
+    # 95% PI from posterior_predict (includes obs noise)
+    PI95_low = apply(pp_draws, 2, quantile, probs = alpha_lo_95),
+    PI95_high = apply(pp_draws, 2, quantile, probs = alpha_hi_95),
+    # 50% PI
+    PI50_low = apply(pp_draws, 2, quantile, probs = alpha_lo_50),
+    PI50_high = apply(pp_draws, 2, quantile, probs = alpha_hi_50),
+    # point error metrics
+    abs_err_mean = abs(pred_mean - beta_obs),
+    sq_err_mean = (pred_mean - beta_obs)^2,
+    # PIT value (proportion of predictive draws <= observed)
+    PIT = sapply(1:n_obs, function(j) mean(pp_draws[, j] <= beta_obs[j]))
+  )
+
+# 3) Coverage counts
+covered_95 <- sum(pp_summary$beta_obs >= pp_summary$PI95_low & pp_summary$beta_obs <= pp_summary$PI95_high, na.rm = TRUE)
+covered_50 <- sum(pp_summary$beta_obs >= pp_summary$PI50_low & pp_summary$beta_obs <= pp_summary$PI50_high, na.rm = TRUE)
+
+prop_95 <- covered_95 / n_obs
+prop_50 <- covered_50 / n_obs
+
+# 4) Point-prediction summary (MAE, RMSE) using posterior mean
+MAE <- mean(pp_summary$abs_err_mean, na.rm = TRUE)
+RMSE <- sqrt(mean(pp_summary$sq_err_mean, na.rm = TRUE))
+
+# 5) Bayesian R^2 (using brms helper)
+r2_draws <- as.numeric(bayes_R2(fit_C))  # ensures numeric vector
+r2_median <- median(r2_draws)
+r2_CI <- quantile(r2_draws, c(0.025, 0.975))
+
+# 6) Print results
+cat("Observations (n):", n_obs, "\n")
+cat("95% predictive interval coverage:", covered_95, "/", n_obs, " = ", round(100*prop_95,2), "%\n")
+cat("50% predictive interval coverage:", covered_50, "/", n_obs, " = ", round(100*prop_50,2), "%\n")
+cat("MAE (using posterior mean):", signif(MAE,4), "\n")
+cat("RMSE (using posterior mean):", signif(RMSE,4), "\n")
+cat("Bayesian R^2 median:", signif(r2_median,4), " (95% CI:", signif(r2_CI[1],4), "-", signif(r2_CI[2],4), ")\n")
+
+# 7) PIT histogram (should be flat if predictive distribution calibrated)
+F4 <- ggplot(pp_summary, aes(x = PIT)) +
+  geom_histogram(bins = 20, color = "black") +
+  labs(title = "PIT histogram", x = "PIT value", y = "Count")
+
+# 8) Optional: list the observation indices that fall outside 95% PI
+outliers_95_idx <- pp_summary %>% filter(!(beta_obs >= PI95_low & beta_obs <= PI95_high)) %>% pull(obs)
+cat("Indices outside 95% PI (count):", length(outliers_95_idx), "\n")
+if (length(outliers_95_idx) > 0) cat("Examples:", head(outliers_95_idx, 20), "\n")
+
+# 9) If you want a flexible "how many are correctly predicted" with tolerance:
+#    Define tolerance tol (absolute error), e.g., tol = 0.01 g/kg/h
+tol <- 0.01
+n_within_tol <- sum(pp_summary$abs_err_mean <= tol, na.rm = TRUE)
+cat("Number of obs with abs error <= ", tol, ": ", n_within_tol, "/", n_obs,
+    " (", round(100 * n_within_tol / n_obs,1), "% )\n", sep = "")
+
+# Example: after fitting fit_A
+mcmc_trace(as.array(fit_C), pars = c("b_sexmale", "b_weight_s"))
+
+
+pp_check(fit_C, type = "loo_pit_qq")

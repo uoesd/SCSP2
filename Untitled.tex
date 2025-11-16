@@ -187,8 +187,10 @@ worse. Also when we normalized numerical variables, we can use
 \(N(0,1)\) to be the priors of coefficients.
 
 Then we prefer to \(\beta\) to \(\log(\beta)\) since the original
-\(\beta\) value have heavy tail. After simulation we can take
-exponential of the results.
+\(\beta\) distribution has heavy tail, all outliers (if have) can be
+scaled. As shown in figure, \(\beta\) forms a good normal distribution
+shape after log-transferring. After simulation we can take exponential
+of the results.
 
 Since \(\beta\) is a constant rate, measured when the BAC curve reaches
 peak and starts to decrease, so variables like AAC and Maximum BAC will
@@ -243,10 +245,10 @@ standard MCMC (like Metropolis-Hastings) since it is faster and cost
 less.
 
 After setting priors for \(\gamma_j\), we need specify a family for
-\(\beta\) as the the likelihood of the observed data. In our sample, it
-is better to use the most common normal distribution likelihood, it is
-normal and can express \(\beta\) values good without restrict samples'
-shape.
+\(\beta\) as the the likelihood of the observed data. In our sample, we
+have already taken \(\log(\beta)\), so it is better to use the most
+common normal distribution likelihood, it is normal and can express
+\(\beta\) values good without restrict samples' shape.
 
 Also for the MCMC simulation method, we set \(4\) chains, each chains
 \(2000\) draws with \(500\) burn-in draws. Since MCMC is a random walk
@@ -258,9 +260,9 @@ mode.
 For \(500\) burn-in draws, since MCMC starts from an initial value which
 often far from the true posterior region, so the chains need some steps
 to walk to the correct trace. As Figure 1 showed, it is an example of
-the MCMC process of `sexfemale' when using \(4\) chains, \(50\) draws
-with 30 warm-ups. Clearly that if we keep the first \(30\) draws, the
-results will be affected.
+the MCMC process of `sexfemale' when using \(4\) chains, \(100\) draws.
+Clearly that if we keep the first \(50\) draws, the results will be
+affected.
 
 \subsection{Model Selection}\label{model-selection}
 
@@ -268,7 +270,33 @@ results will be affected.
 
 \subsubsection{Priors}\label{priors}
 
-\subsection{Testing Model}\label{testing-model}
+Before fitting a Bayesian regression model, appropriate priors need to
+be specified for all regression coefficients and residual standard
+deviation. We use weak information priors, allowing the observed data to
+dominate inference process.The chosen priors are summarised below:
+Regression coefficients were assigned Normal(0,1) priors, following the
+Stan Development Team's ``Prior Choice Recommendations''. For the
+residual standard deviation we used a half-Student-t prior with 3
+degrees of freedom and a scale of 5, again following the Stan
+development team's recommendations.
+
+\subsection{Model Results and Testing}\label{model-results-and-testing}
+
+Figure 3 is the Posterior Predictive Check (PPC) density plot comparing
+with true value of \(\beta\) (Here we have take exponential of both true
+value and predicted value). Notice that predicted posterior distribution
+matches \(\beta\) sample distribution pretty well, which get the mean,
+spread, skew both right even at right tail.
+
+The Probability Integral Transform (PIT) histogram can check if the
+predictions calibrated correctly, which is defined as:
+\[ \text{PIT}_i = P(\tilde{y}_i \le y_i) .\] We will use it to check if
+our posterior is under or over dispersion, the good model's PIT plot
+should be \(Uniform(0,1)\). For our model, the PIT histogram (Figure 4)
+is flat everywhere except probability near 0.55, which is acceptable by
+the randomness of MCMC method. A U-shape in PIT plots means
+overestimates variance, it doesn't appear in our plot gives evidence of
+our choices on variables and likelihood family.
 
 =======
 

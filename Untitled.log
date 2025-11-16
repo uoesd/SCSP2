@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.12)  16 NOV 2025 00:45
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.12)  16 NOV 2025 02:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1011,7 +1011,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [5]
-Underfull \hbox (badness 10000) in paragraph at lines 333--335
+Underfull \hbox (badness 10000) in paragraph at lines 361--363
 
  []
 
@@ -1048,6 +1048,14 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [6]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[7]
 Missing character: There is no 空 (U+7A7A) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 腹 (U+8179) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 低 (U+4F4E) in font [lmroman10-regular]:mapping=tex-text;!
@@ -1225,18 +1233,10 @@ Missing character: There is no 抽 (U+62BD) in font [lmroman10-regular]:mapping=
 Missing character: There is no 血 (U+8840) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 。 (U+3002) in font [lmroman10-regular]:mapping=tex-text;!
 
-Overfull \hbox (14.66191pt too wide) in paragraph at lines 413--419
+Overfull \hbox (14.66191pt too wide) in paragraph at lines 441--447
 \TU/lmr/m/n/10.95 beta 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
  []
 
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[7]
 
 Package caption Warning: Unused \captionsetup[figure] on input line 70.
 See the caption package documentation for explanation.
@@ -1260,11 +1260,11 @@ L3 programming layer <2025-10-24>
  ) 
 Here is how much of TeX's memory you used:
  20166 strings out of 470195
- 366618 string characters out of 5477999
- 929436 words of memory out of 5000000
+ 366630 string characters out of 5477999
+ 929448 words of memory out of 5000000
  48471 multiletter control sequences out of 15000+600000
  634260 words of font info for 92 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 90i,12n,114p,351b,405s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,12n,114p,351b,407s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on Untitled.pdf (8 pages).

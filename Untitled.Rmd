@@ -80,7 +80,7 @@ It is very important to normalized all variables like weight and height. Since $
 
 Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail, all outliers (if have) can be scaled. As shown in figure, $\beta$ forms a good normal distribution shape after log-transferring. After simulation we can take exponential of the results.
 
-```{r Figure 1, eval=FALSE, fig.cap="Figure 1: $\log(\beta)$ distribution.", message=FALSE, include=FALSE}
+```{r Figure 1, eval=FALSE, fig.cap="Figure 1: log(beta) distribution.", message=FALSE, include=FALSE}
 F1
 ```
 
@@ -124,7 +124,7 @@ Also for the MCMC simulation method, we set $4$ chains, each chains $2000$ draws
 
 For $500$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As Figure 1 showed, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $100$ draws. Clearly that if we keep the first $50$ draws, the results will be affected. 
 
-```{r Figure 2, echo=FALSE, fig.cap="Figure 2: MCMC Simulations Traceplot.", message=FALSE}
+```{r Figure 2, eval=FALSE, fig.cap="Figure 2: MCMC Simulations Traceplot.", message=FALSE, include=FALSE}
 F2
 ```
 
@@ -136,7 +136,7 @@ F2
 Before fitting a Bayesian regression model, appropriate priors need to be specified for all regression coefficients and residual standard deviation. We use weak information priors, allowing the observed data to dominate inference process.The chosen priors are summarised below:
 Regression coefficients were assigned Normal(0,1) priors, following the Stan Development Team’s “Prior Choice Recommendations”. For the residual standard deviation we used a half-Student-t prior with 3 degrees of freedom and a scale of 5, again following the Stan development team's recommendations.
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 priors_table <- tribble(~Parameter, ~Prior,
                         "Regression coefficients (bi)", "Normal(0, 1)",
                         "Residual SD (σ)", "Student-t(3, 0, 5)")
@@ -145,17 +145,28 @@ kable(priors_table,
 ```
 
 ## Model Results and Testing 
-
-Figure 3 is the Posterior Predictive Check (PPC) density plot comparing with true value of $\beta$ (Here we have take exponential of both true value and predicted value). Notice that our BRM model fits a good posterior distribution even at right tail.
-```{r Figure 3, echo=FALSE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
+### PPC Density
+Figure 3 is the Posterior Predictive Check (PPC) density plot comparing with true value of $\beta$ (Here we have taken exponential of both true value and predicted value). Notice that predicted posterior distribution matches $\beta$ sample distribution pretty well, which get the mean, spread, skew both right even at right tail.
+```{r Figure 3, echo=TRUE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
 F3
 ```
 
+### LOO-PIT QQ plot
+The Leave-One-Out Probability Integral Transform Quantile-Quantile plot (LOO-PIT QQ plot) can check if the predictions calibrated correctly and if the predictive distributions biased, which is defined as:
+$$ \mathrm{LOO\text{-}PIT}_i = P(\tilde{y}_i \le y_i |y_{-i}) .$$
+Here we still use Monte Carlo method to simulate it, as:
+$$
+\mathrm{LOO\text{-}PIT}_i
+= \frac{1}{S} \sum_{s=1}^{S} 
+\mathbf{1}\!\left( \tilde{y}_{i,-i}^{(s)} \le y_i \right)
+$$
+where $S$ is the number of posterior draws (we set it 10000 here). 
+We will use it to check if our posterior is under or over dispersion, the good model's PIT plot should be flat over $Uniform(0,1)$. For our model, the PIT histogram (Figure 4) is flat everywhere except probability near 0.55, which is acceptable by the randomness of MCMC method. A U-shape (points over dot line at two tails) in PIT plots means overestimates variance, it doesn't appear in our plot gives evidence of our choices on variables and likelihood family.
 
+```{r Figure 4, echo=FALSE, fig.cap="Figure 4: Probability Integral Transform (PIT) histogram.", message=FALSE}
+pp_check(fit_C, type = "loo_pit_qq")
 
-
-
-
+```
 
 =======
 \begin{center}
