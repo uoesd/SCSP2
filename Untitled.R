@@ -50,9 +50,7 @@ data$beta <- abs(data$beta)
 data$beta <- log(data$beta) 
 
 
-ggplot(data, aes(x = Vd, y = T_Vd) )+ geom_point()
-ggplot(data, aes(x = drinkingtime- BACpeaktime/60, y = beta) )+ geom_line()
-ggplot(data, aes(x = log(beta))) +
+F1 <- ggplot(data, aes(x = beta)) +
   geom_density() +
   labs(title = "Density Plot", x = "x", y = "Density")
 ggplot(data, aes(x = Vd)) + geom_histogram(bins = 30) + ggtitle("Histogram of raw Vd (naive calc)")
@@ -156,28 +154,12 @@ fit_C <- brm(formula = f_beta1,
              chains = chains, iter = iter, warmup = warmup, control = control, seed = seed)
 
 
-#fit_d <- brm(formula = f_beta,
-#             data = data,
- #            family = gaussian(),
- ##            prior = prior_C,
- #            chains = 4, iter = 50, warmup = 30, control = control, seed = seed)
-
-all <- as_draws_df(fit_d, inc_warmup = TRUE)
-
-ggplot(all, aes(x = .iteration,
-                y = b_sexmale,
-                color = factor(.chain))) +
-  geom_line(alpha = 0.6, linewidth = 0.3) +
-  labs(x = "Iteration (including warmup)",
-       y = "b_sexfemale",
-       color = "Chain") +
-  theme_bw()
 
 print(summary(fit_A))
 print(summary(fit_B))
 print(summary(fit_C))
-#plot(fit_A)
-#plot(fit_B)
+plot(fit_A)
+plot(fit_B)
 plot(fit_C)
 
 yrep_A <- posterior_predict(fit_A, draws = 500)
@@ -304,7 +286,7 @@ cat("Number of obs with abs error <= ", tol, ": ", n_within_tol, "/", n_obs,
     " (", round(100 * n_within_tol / n_obs,1), "% )\n", sep = "")
 
 # Example: after fitting fit_A
-mcmc_trace(as.array(fit_A), pars = c("b_Intercept", "b_weight_s"))
+mcmc_trace(as.array(fit_C), pars = c("b_Intercept", "b_weight_s"))
 
 
 
@@ -446,9 +428,23 @@ priors_table <- tribble(~Parameter, ~Prior,
 kable(priors_table,
       caption = "Table 1: weak information priors used in the Bayesian regression model")
 ```
+F1 <- ggplot(data, aes(x = beta)) +
+  geom_density() +
+  labs(title = "Density Plot", x = "x", y = "Density")
+ggplot(data, aes(x = Vd)) + geom_histogram(bins = 30) + ggtitle("Histogram of raw Vd (naive calc)")
+ggplot(data, aes(x = Vd, y = beta)) + geom_point() + geom_smooth(method = "loess") +
+  labs(title = "beta vs log(Vd)")
 
 
-F1 <- ggplot(all, aes(x = .iteration,
+fit_d <- brm(formula = f_beta,
+             data = data,
+             family = gaussian(),
+             prior = prior_C,
+             chains = 4, iter = 50, warmup = 30, control = control, seed = seed)
+
+all <- as_draws_df(fit_d, inc_warmup = TRUE)
+
+F2 <- ggplot(all, aes(x = .iteration,
                 y = b_sexmale,
                 color = factor(.chain))) +
   geom_line(alpha = 0.6, linewidth = 0.3) +
@@ -456,3 +452,4 @@ F1 <- ggplot(all, aes(x = .iteration,
        y = "b_sexfemale",
        color = "Chain") +
   theme_bw()
+

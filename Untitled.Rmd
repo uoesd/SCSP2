@@ -78,7 +78,7 @@ To make it easier, we write the method in a function so other expert witness can
 
 It is very important to normalized all variables like weight and height. Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse. Also when we normalized numerical variables, we can use $N(0,1)$ to be the priors of coefficients.
 
-Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ value have heavy tail. After simulation we can take exponential of the results.
+Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail. After simulation we can take exponential of the results.
 
 Since $\beta$ is a constant rate, measured when the BAC curve reaches peak and starts to decrease, so variables like AAC and Maximum BAC will not be used, since they are correlated with the value of BAC, not BAC elimination rate.
 
@@ -132,6 +132,15 @@ F1
 
 
 ## Testing Model
+
+
+
+
+
+
+
+
+
 
 =======
 \begin{center}
