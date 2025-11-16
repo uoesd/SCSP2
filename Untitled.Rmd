@@ -76,7 +76,7 @@ To make it easier, we write the method in a function so other expert witness can
 
 # Data Description
 
-It is very important to normalized all variables like weight and height. Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse. Also when we normalized numerical variables, we can use $N(0,1)$ to be the priors of coefficients.
+It is very important to normalized all variables like weight and height. Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse.
 
 Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail, all outliers (if have) can be scaled. As shown in figure, $\beta$ forms a good normal distribution shape after log-transferring. After simulation we can take exponential of the results.
 
@@ -144,13 +144,25 @@ kable(priors_table,
       caption = "Table 1: weak information priors used in the Bayesian regression model")
 ```
 
-## Model Results and Testing 
+## Model Results
+
+### Fitting result
+
+After $4000$ iterations in $4$ chains, Figure 3 shows posterior results for each variables' coefficients
+
+```{r Figure 3, echo=TRUE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
+mcmc_plot(fit_C, type = "dens_overlay")
+
+```
+
 ### PPC Density
 Figure 3 is the Posterior Predictive Check (PPC) density plot comparing with true value of $\beta$ (Here we have taken exponential of both true value and predicted value). Notice that predicted posterior distribution matches $\beta$ sample distribution pretty well, which get the mean, spread, skew both right even at right tail.
 ```{r Figure 3, echo=TRUE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
 F3
 ```
 
+
+## Model Testing
 ### LOO-PIT QQ plot
 The Leave-One-Out Probability Integral Transform Quantile-Quantile plot (LOO-PIT QQ plot) can check if the predictions calibrated correctly and if the predictive distributions biased, which is defined as:
 $$ \mathrm{LOO\text{-}PIT}_i = P(\tilde{y}_i \le y_i |y_{-i}) .$$

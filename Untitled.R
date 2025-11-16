@@ -96,7 +96,7 @@ ggplot(data, aes(y = beta)) + geom_boxplot() + ggtitle("Boxplot of beta")
 ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
 ggplot(data, aes(x = weight, y = beta)) + geom_point() + geom_smooth(method = "loess") + ggtitle("beta vs weight")
 
-f_beta <- bf(beta ~ 0+ sex+ weight_s + height_s + drinkingtime_s + BACpeaktime_s)
+f_beta <- bf(beta ~ 0+ sex + weight_s + height_s + drinkingtime_s + BACpeaktime_s)
 
 # Student-t intercept prior (robust)
 prior_A <- c(set_prior("normal(0, 0.01)", class = "b"),
@@ -109,9 +109,9 @@ prior_B <- c(prior_A, set_prior("constant(8)", class = "nu"))
 
 
 # Normal intercept prior (sensitivity)
-prior_C <- c(set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
+prior_C <- c(set_prior("normal(0, 1)", class = "b"),
+             set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
              set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
-             set_prior("normal(0, 0.01)", class = "b"),
              set_prior("exponential(1)", class = "sigma"))
 
 
@@ -120,21 +120,21 @@ fit_A <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior_A,
-             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15), seed = 1)
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
 message("Fitting Model B (student-t likelihood + student-t prior)...")
 fit_B <- brm(formula = f_beta,
              data = data,
              family = student(),
              prior = prior_B,
-             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15), seed = 1)
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
 message("Fitting Model C (gaussian likelihood + normal intercept prior - sensitivity)...")
 fit_C <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior_C,
-             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15), seed = 1)
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
 
 
