@@ -87,8 +87,8 @@ prior_C <- c(set_prior("normal(0, 1)", class = "b"),
              set_prior("exponential(1)", class = "sigma"))
 
 prior_d <- c(set_prior("normal(0, 0.5)", class = "b"),
-             set_prior("normal(0, 5)", class = "b", coef = "sexmale"),
-             set_prior("normal(0, 5)", class = "b", coef = "sexfemale"),
+             set_prior("normal(0, 2)", class = "b", coef = "sexmale"),
+             set_prior("normal(0, 2)", class = "b", coef = "sexfemale"),
              set_prior("exponential(1)", class = "sigma"))
 
 message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
@@ -299,7 +299,7 @@ fit_d <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior_C,
-             chains = 4, iter = 100, warmup = 30, control = control, seed = seed)
+             chains = 4, iter = 100, warmup = 30, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
 all <- as_draws_df(fit_d, inc_warmup = TRUE)
 

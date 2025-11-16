@@ -80,7 +80,7 @@ It is very important to normalized all variables like weight and height. Since $
 
 Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail, all outliers (if have) can be scaled. As shown in figure, $\beta$ forms a good normal distribution shape after log-transferring. After simulation we can take exponential of the results.
 
-```{r Figure 1, eval=FALSE, fig.cap="Figure 1: log(beta) distribution.", message=FALSE, include=FALSE}
+```{r Figure 1, echo=TRUE, fig.cap="Figure 1: log(beta) distribution.", message=FALSE}
 F1
 ```
 
@@ -124,7 +124,7 @@ Also for the MCMC simulation method, we set $4$ chains, each chains $2000$ draws
 
 For $500$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As Figure 1 showed, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $100$ draws. Clearly that if we keep the first $50$ draws, the results will be affected. 
 
-```{r Figure 2, eval=FALSE, fig.cap="Figure 2: MCMC Simulations Traceplot.", message=FALSE, include=FALSE}
+```{r Figure 2, echo=TRUE, fig.cap="Figure 2: MCMC Simulations Traceplot.", message=FALSE}
 F2
 ```
 
