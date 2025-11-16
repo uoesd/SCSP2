@@ -94,7 +94,7 @@
 \title{Report Title: Example Report}
 \author{Group 3\\
 Department / Course}
-\date{November 15, 2025}
+\date{November 16, 2025}
 
 \begin{document}
 \maketitle
@@ -115,7 +115,7 @@ prosecution. Instead, people are taken to a police station or hospital,
 where the test can be carried out using proper laboratory protocols. As
 the body clears alcohol from the blood through time this means that if
 the individual was over the limit, the measured blood alcohol
-concentration(BAC) will be lower at the time of measurement than it was
+concentration (BAC) will be lower at the time of measurement than it was
 when the person was driving a motor vehicle. To deal with this
 situation, If the BAC after time \(t\) (hours) is measured as \(C_t\)
 (g/kg), the BAC at time \(0\) is estimated as \(C_0 = C_t - βt\), where
@@ -125,7 +125,7 @@ The key point is how to find a precise \(\beta\) to estimate \(C_0\).
 Forensic scientists currently \(2.5\%\) percentile of \(\beta\)
 distribution constructing from samples as the estimated \(\beta\) value
 for every individuals. This method is obviously not rigorous enough for
-the courts since:
+the courts, since:
 
 \begin{itemize}
 \tightlist
@@ -137,41 +137,140 @@ the courts since:
   Differences between individuals are ignored, for example age and sex,
   which may affect \(\beta\).
 \item
-  \(\beta\) value at \(2.5\%\) is over conservative.
+  \(\beta\) value at \(2.5\%\) is over conservative and most
+  uncertainties are hiding.
 \end{itemize}
 
-\section{Motivations: Need improve?
-Why?}\label{motivations-need-improve-why}
+In this report, we will introduce a Bayesian regression model with
+considering the heterogeneity between individuals, the model gives a
+posterior distribution of \(\beta\) by using both samples and prior
+knowledge. Then we randomly simulate \(4000\) \(\beta\) values from
+posterior distribution and find out the probability of the person's BAC
+over limit while driving.
 
-\section{Disadvantage of current
-method}\label{disadvantage-of-current-method}
+In real world, \(\beta\) estimation is quite difficult, it depends on
+the individuals' liver condition, drinking habits, genetic, diet, etc.
+As we don't have corresponding data, in our regression model of
+\(\beta\) is mainly dominate by gender, but we still find some useful
+variables:
 
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  beta is fixed for all individuals, we need to consider the
-  heterogeneity in individuals.
-\item
-  Deviated aim: Police Scotland aims at assessing the probabilities that
-  a person is over the limit, while the parameter beta only concentrates
-  on the range between 2.5\% and 97.5\%.
-\end{enumerate}
+-Gender: Female's BAC elimination rate is larger than male on average,
+it is explained by liver weight represents a greater fraction of lean
+body mass in the female gender{[}2{]}.
 
-\section{New method: build a linear regression model for
-beta}\label{new-method-build-a-linear-regression-model-for-beta}
+-Drinking time after BAC peak: If the person keep drinking after BAC
+reaches peak, the measured \(\beta\) will be smaller since \(\beta\) is
+measured start at BAC peak time till the end.
 
-Check if age, weight and height have linear relationships with beta. Or
-have any patterns?
+When it is too late to use a blood or breath test and the only
+information available is eyewitness testimony of the quantity of alcohol
+consumed. We have to use Widmark's equation:
+\[C_t = \frac{A}{Weight \times V_d} - \beta t\] where \(A\) is Amount of
+Alcohol Consumed (g), \(V_d\) is the volume of distribution that need to
+be found. Forensic scientists use the same method again to estimate
+\(V_d\) separately with \(\beta\). But \(V_d\) and \(\beta\) are not
+independent, so we build a joint Bayesian regression model, which can
+simulate them together to solve with the correlation. Then again after
+simulation, each \(C_t\) is calculated by each pair of \(\beta\) and
+\(V_d\), so expert witness can still find a probability of \(C_t\)
+exceeding the limit.
 
-\section{Model selection:}\label{model-selection}
+To make it easier, we write the method in a function so other expert
+witness can also get the results by easily plugging new person's data.
 
-use drop(), look into AIC and R\^{}2
+\section{Data Description}\label{data-description}
 
-\section{Hypothesis test(70yr female example-better use 2.5th
-quantile?):}\label{hypothesis-test70yr-female-example-better-use-2.5th-quantile}
+It is very important to normalized all variables like weight and height.
+Since \(\beta\) is a small value, the coefficients of large value
+variables are pretty small, near 0, which will make \(\beta\) estimation
+worse. Also when we normalized numerical variables, we can use
+\(N(0,1)\) to be the priors of coefficients.
 
-H0: C0 \textless{} limit, H1: C0 \textgreater{} limit
+Then we prefer to \(\beta\) to \(\log(\beta)\) since the original
+\(\beta\) value have heavy tail. After simulation we can take
+exponential of the results.
+
+Since \(\beta\) is a constant rate, measured when the BAC curve reaches
+peak and starts to decrease, so variables like AAC and Maximum BAC will
+not be used, since they are correlated with the value of BAC, not BAC
+elimination rate.
+
+From the dataset, most data comes from age smaller than \(30\)
+(\(85/100\)), so even though age is sufficient variable for \(\beta\)
+the model can't really recognize it. Research shows that age doesn't
+really matter unless the subject has age-related liver disease, but
+because of moral and ethical, we don't find much research of alcohol
+test on elderly person with liver disease.
+
+\subsection{Key Variables}\label{key-variables}
+
+\section{Bayesian regression model
+(BRM)}\label{bayesian-regression-model-brm}
+
+\subsection{Reason for BRM}\label{reason-for-brm}
+
+Comparing with fitting linear regression model for \(\beta_i\), which
+can be expressed as: \[\hat{\beta}_i = \hat{\gamma}_{1}\,\text{female}_i
++ \hat{\gamma}_{2}\,\text{male}_i
++ \hat{\gamma}_{3}\,\text{weight}_i
++ \hat{\gamma}_{4}\,\text{height}_i + \sigma^2\] and giving a exact
+value of \(\hat{\beta}\), BRM can model uncertainty from each
+coefficient \(\gamma\), since \(\beta\) from each individuals may affect
+by variables in different level. We provide priors and sample
+likelihoods for each variables, BRM will apply bayesian rule to each
+variables and output simulation results of coefficients specifically for
+each individual:
+
+\[\hat{\beta}_i = \hat{\gamma}_{1,i}\,\text{female}_i
++ \hat{\gamma}_{2,i}\,\text{male}_i
++ \hat{\gamma}_{3,i}\,\text{weight}_i
++ \hat{\gamma}_{4,i}\,\text{height}_i + \sigma^2_i.\]
+
+Since we have simulation results of \(\hat{\beta}\), we can offer a
+probability for the courts.
+
+\subsection{How BRM works}\label{how-brm-works}
+
+We use \(brm\) package in R to do this.
+
+The principle theorem behind BRM is Bayes' Rule:
+\[p(\theta \mid \text{data}) = \frac{p(\text{data} \mid \theta) \, p(\theta)}{p(\text{data})}.\]
+
+The \(\theta\) in the equation is the coefficients of \(\gamma_j\). For
+most real models, we can't compute this posterior
+\(p(\theta \mid \text{data})\) analytically. Markov Chain Monte Carlo
+(MCMC) helps us draw samples from it, which we can then summarize. BRM
+uses Hamiltonian Monte Carlo (One of MCMC), which is better than
+standard MCMC (like Metropolis-Hastings) since it is faster and cost
+less.
+
+After setting priors for \(\gamma_j\), we need specify a family for
+\(\beta\) as the the likelihood of the observed data. In our sample, it
+is better to use the most common normal distribution likelihood, it is
+normal and can express \(\beta\) values good without restrict samples'
+shape.
+
+Also for the MCMC simulation method, we set \(4\) chains, each chains
+\(2000\) draws with \(500\) burn-in draws. Since MCMC is a random walk
+method through parameter space. One chain is a single run of the MCMC
+algorithm that generates a sequence of samples, so we need more chains
+to check the convergence and ensure that all chains convergent to same
+mode.
+
+For \(500\) burn-in draws, since MCMC starts from an initial value which
+often far from the true posterior region, so the chains need some steps
+to walk to the correct trace. As Figure 1 showed, it is an example of
+the MCMC process of `sexfemale' when using \(4\) chains, \(50\) draws
+with 30 warm-ups. Clearly that if we keep the first \(30\) draws, the
+results will be affected.
+
+\subsection{Model Selection}\label{model-selection}
+
+\section{Key Variables}\label{key-variables-1}
+
+\section{Priors}\label{priors}
+
+\subsection{Testing Model}\label{testing-model}
 
 \section{Calculate V\_d:}\label{calculate-v_d}
 
@@ -244,5 +343,23 @@ related? hows the result? how new model fit?
 
 \#Limitation our model limit data collected reason - cannot reflect the
 real world model reason other reason: variables
+
+\#N
+
+\#Reference Stan Development Team. (n.d.). Prior choice recommendations.
+GitHub.
+\url{https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations}
+
+=======
+\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater\textgreater{}
+bb3d1a6f16b0f748d3d6a2b63e99aaba40d20726 空腹低 长期饮酒高CTP2E1活性高
+性别肝脏大小 药物抑制酒精代谢 测两次血预测beta
+如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
+\url{https://www.sciencedirect.com/science/article/pii/S0379073810000770?via\%3Dihub}
+
+P.Y. Kwo, V.A. Ramchandani, S. O'Connor, D. Amann, L.G. Carr, K.
+Sandrasegaran, K.K. Kopecky, T.K. Li Gender differences in alcohol
+metabolism: relationship to liver volume and effect of adjusting for
+body mass Gastroenterology, 115 (1998), pp.~1552-1557
 
 \end{document}

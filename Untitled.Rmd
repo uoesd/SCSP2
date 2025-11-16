@@ -30,12 +30,12 @@ header-includes:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-	echo = FALSE,
 	fig.height = 4,
 	fig.width = 6,
 	message = FALSE,
 	warning = FALSE,
-	dpi = 150
+	dpi = 150,
+	include = FALSE
 )
 library(knitr)
 library(kableExtra)
@@ -50,7 +50,7 @@ source("Group13code.R")
 
 # Executive Summary
 
-In the UK it is a criminal offence to drive a motor vehicle with a blood or breath alcohol concentration above the prescribed limit. When a person is arrested for driving under the influence of alcohol it is not usually possible to perform an accurate test of the level of alcohol in the blood or breath immediately. Breath tests can be used as an initial screening tool at the scene, but these are not sufficiently accurate for prosecution. Instead, people are taken to a police station or hospital, where the test can be carried out using proper laboratory protocols. As the body clears alcohol from the blood through time this means that if the individual was over the limit, the measured blood alcohol concentration(BAC) will be lower at the time of measurement than it was when the person was driving a motor vehicle. To deal with this situation, If the BAC after time $t$ (hours) is measured as $C_t$ (g/kg), the BAC at time $0$ is estimated as $C_0 = C_t - βt$, where $\beta$ ($g/kg/h$) is BAC elimination rate. 
+In the UK it is a criminal offence to drive a motor vehicle with a blood or breath alcohol concentration above the prescribed limit. When a person is arrested for driving under the influence of alcohol it is not usually possible to perform an accurate test of the level of alcohol in the blood or breath immediately. Breath tests can be used as an initial screening tool at the scene, but these are not sufficiently accurate for prosecution. Instead, people are taken to a police station or hospital, where the test can be carried out using proper laboratory protocols. As the body clears alcohol from the blood through time this means that if the individual was over the limit, the measured blood alcohol concentration (BAC) will be lower at the time of measurement than it was when the person was driving a motor vehicle. To deal with this situation, If the BAC after time $t$ (hours) is measured as $C_t$ (g/kg), the BAC at time $0$ is estimated as $C_0 = C_t - βt$, where $\beta$ ($g/kg/h$) is BAC elimination rate. 
 
 The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scientists currently $2.5\%$ percentile of $\beta$ distribution constructing from samples as the estimated $\beta$ value for every individuals. This method is obviously not rigorous enough for the courts, since:
 
@@ -60,10 +60,11 @@ The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scien
 
 In this report, we will introduce a Bayesian regression model with considering the heterogeneity between individuals, the model gives a posterior distribution of $\beta$ by using both samples and prior knowledge. Then we randomly simulate $4000$ $\beta$ values from posterior distribution and find out the probability of the person's BAC over limit while driving. 
 
-In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet etc. As we don't have corresponding data, in our regression model of $\beta$ is mainly dominate by gender, but we still find some useful variables:
+In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet, etc. As we don't have corresponding data, in our regression model of $\beta$ is mainly dominate by gender, but we still find some useful variables:
+
 -Gender: Female's BAC elimination rate is larger than male on average, it is explained by liver weight represents a greater fraction of lean body mass in the female gender[2].
--
--
+
+-Drinking time after BAC peak: If the person keep drinking after BAC reaches peak, the measured $\beta$ will be smaller since $\beta$ is measured start at BAC peak time till the end.
 
 When it is too late to use a blood or breath test and the only information available is eyewitness testimony of the quantity of alcohol consumed. We have to use Widmark's equation:
 $$C_t = \frac{A}{Weight \times V_d} - \beta t$$
@@ -73,22 +74,68 @@ the same method again to estimate $V_d$ separately with $\beta$. But $V_d$ and $
 To make it easier, we write the method in a function so other expert witness can also get the results by easily plugging new person's data.
 
 
-# Motivations: Need improve? Why?
-# Disadvantage of current method
-1. beta is fixed for all individuals, we need to consider the heterogeneity in individuals.
-2. Deviated aim: Police Scotland aims at assessing the probabilities that a person is over the limit, while the parameter beta only concentrates on the range between 2.5% and 97.5%.
+# Data Description
+
+It is very important to normalized all variables like weight and height. Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse. Also when we normalized numerical variables, we can use $N(0,1)$ to be the priors of coefficients.
+
+Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ value have heavy tail. After simulation we can take exponential of the results.
+
+Since $\beta$ is a constant rate, measured when the BAC curve reaches peak and starts to decrease, so variables like AAC and Maximum BAC will not be used, since they are correlated with the value of BAC, not BAC elimination rate.
+
+From the dataset, most data comes from age smaller than $30$ ($85/100$), so even though age is sufficient variable for $\beta$ the model can't really recognize it. Research shows that age doesn't really matter unless the subject has age-related liver disease, but because 
+of moral and ethical, we don't find much research of alcohol test on elderly person with liver disease.
 
 
-# New method: build a linear regression model for beta
-Check if age, weight and height have linear relationships with beta.
-Or have any patterns?
+# Bayesian regression model (BRM)
 
-# Model selection: 
-use drop(), look into AIC and R^2
+## Reason for BRM
+
+Comparing with fitting linear regression model for $\beta_i$, which can be expressed as:
+$$\hat{\beta}_i = \hat{\gamma}_{1}\,\text{female}_i
++ \hat{\gamma}_{2}\,\text{male}_i
++ \hat{\gamma}_{3}\,\text{weight}_i
++ \hat{\gamma}_{4}\,\text{height}_i + \sigma^2$$
+and giving a exact value of $\hat{\beta}$, BRM can model uncertainty from each coefficient $\gamma$, since $\beta$ from each individuals may affect by variables in different level. We provide priors and sample likelihoods for each variables, BRM will apply bayesian rule to each variables and output simulation results of coefficients specifically for each individual:
+
+$$\hat{\beta}_i = \hat{\gamma}_{1,i}\,\text{female}_i
++ \hat{\gamma}_{2,i}\,\text{male}_i
++ \hat{\gamma}_{3,i}\,\text{weight}_i
++ \hat{\gamma}_{4,i}\,\text{height}_i + \sigma^2_i.$$
+
+Since we have simulation results of $\hat{\beta}$, we can offer a probability for the courts.
 
 
-# Hypothesis test(70yr female example-better use 2.5th quantile?): 
-H0: C0 < limit, H1: C0 > limit 
+## How BRM works
+
+We use $brm$ package in R to do this.
+
+The principle theorem behind BRM is Bayes' Rule:
+$$p(\theta \mid \text{data}) = \frac{p(\text{data} \mid \theta) \, p(\theta)}{p(\text{data})}.$$
+
+The $\theta$ in the equation is the coefficients of $\gamma_j$. For most real models, we can't compute this posterior $p(\theta \mid \text{data})$ analytically. Markov Chain Monte Carlo (MCMC) helps us draw samples from it, which we can then summarize. BRM uses Hamiltonian Monte Carlo (One of MCMC), which is better than standard MCMC (like Metropolis-Hastings) since it is faster and cost less.
+
+After setting priors for $\gamma_j$, we need specify a family for $\beta$ as the the likelihood of the observed data. In our sample, it is better to use the most common normal distribution likelihood, it is normal and can express $\beta$ values good without restrict samples' shape.
+
+Also for the MCMC simulation method, we set $4$ chains, each chains $2000$ draws with $500$ burn-in draws. Since MCMC is a random walk method through parameter space. One chain is a single run of the MCMC algorithm that generates a sequence of samples, so we need more chains to check the convergence and ensure that all chains convergent to same mode. 
+
+For $500$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As Figure 1 showed, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $50$ draws with 30 warm-ups. Clearly that if we keep the first $30$ draws, the results will be affected. 
+
+```{r Figure 1, eval=FALSE, fig.cap="Figure 1: MCMC Simulations Traceplot.", message=FALSE, include=FALSE}
+F1
+```
+
+## Model Selection
+
+### Key Variables
+
+### Priors
+
+
+## Testing Model
+
+
+
+
 
 
 # Calculate V_d:
@@ -158,7 +205,7 @@ explain all variables we used
 explain needed references
 
 ##Testing
-whether formula reasonable?
+whether formula reasonable? 
 whether beta60 relate to Vt? 
 how related? 
 hows the result? 
@@ -177,18 +224,7 @@ other reason: variables
 
 #N
 
-Before fitting a Bayesian regression model, appropriate priors need to be specified for all regression coefficients and residual standard deviation. We use weak information priors, allowing the observed data to dominate inference process.The chosen priors are summarised below:
 
-```{r}
-priors_table <- tribble(~Parameter, ~Prior,
-                        "Regression coefficients (bi)", "Normal(0, 1)",
-                        "Residual SD (σ)", "Student-t(3, 0, 5)")
-
-kable(priors_table,
-      caption = "Table 1: weak information priors used in the Bayesian regression model")
-```
-
-Regression coefficients were assigned Normal(0,1) priors, following the Stan Development Team’s “Prior Choice Recommendations”. For the residual standard deviation we used a half-Student-t prior with 3 degrees of freedom and a scale of 5, again following the Stan development team's recommendations.
 
 #Reference
 Stan Development Team. (n.d.). Prior choice recommendations. GitHub. https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
