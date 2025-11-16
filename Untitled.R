@@ -49,14 +49,6 @@ data <- data %>%
 data$beta <- abs(data$beta) 
 data$beta <- log(data$beta) 
 
-
-F1 <- ggplot(data, aes(x = beta)) +
-  geom_density() +
-  labs(title = "Density Plot", x = "x", y = "Density")
-ggplot(data, aes(x = Vd)) + geom_histogram(bins = 30) + ggtitle("Histogram of raw Vd (naive calc)")
-ggplot(data, aes(x = Vd, y = beta)) + geom_point() + geom_smooth(method = "loess") +
-  labs(title = "beta vs log(Vd)")
-
 cov_xy <- cov(data$Vd, data$beta)
 cor_xy <- cor(data$Vd, data$beta)
 cor.test(data$Vd, data$beta)
@@ -104,16 +96,7 @@ ggplot(data, aes(y = beta)) + geom_boxplot() + ggtitle("Boxplot of beta")
 ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
 ggplot(data, aes(x = weight, y = beta)) + geom_point() + geom_smooth(method = "loess") + ggtitle("beta vs weight")
 
-f_beta <- bf(beta ~ 0 + sex  + weight_s + height_s)
-f_beta1 <- bf(beta ~ 0+ sex+ weight_s + height_s + drinkingtime_s + BACpeaktime_s)
-
-emp_mean <- mean(data$beta, na.rm = TRUE)
-emp_sd   <- sd(data$beta, na.rm = TRUE)
-chains <- 4
-iter <- 4000
-warmup <- 1000
-control <- list(adapt_delta = 0.98, max_treedepth = 15)
-seed <- 2025
+f_beta <- bf(beta ~ 0+ sex+ weight_s + height_s + drinkingtime_s + BACpeaktime_s)
 
 # Student-t intercept prior (robust)
 prior_A <- c(set_prior("normal(0, 0.01)", class = "b"),
@@ -137,21 +120,21 @@ fit_A <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior_A,
-             chains = chains, iter = iter, warmup = warmup, control = control, seed = seed)
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15), seed = 1)
 
 message("Fitting Model B (student-t likelihood + student-t prior)...")
 fit_B <- brm(formula = f_beta,
              data = data,
              family = student(),
              prior = prior_B,
-             chains = chains, iter = iter, warmup = warmup, control = control, seed = seed)
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15), seed = 1)
 
 message("Fitting Model C (gaussian likelihood + normal intercept prior - sensitivity)...")
-fit_C <- brm(formula = f_beta1,
+fit_C <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior_C,
-             chains = chains, iter = iter, warmup = warmup, control = control, seed = seed)
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15), seed = 1)
 
 
 
@@ -166,8 +149,7 @@ yrep_A <- posterior_predict(fit_A, draws = 500)
 ppc_dens_overlay(data$beta, yrep_A[1:500, ]) + ggtitle("PPC density - Model A")
 yrep_B <- posterior_predict(fit_B, draws = 500)
 ppc_dens_overlay(data$beta, yrep_B[1:500, ]) + ggtitle("PPC density - Model B")
-yrep_C <- posterior_predict(fit_C, draws = 500)
-ppc_dens_overlay(data$beta, yrep_C[1:500, ]) + ggtitle("PPC density - Model C")
+
 
 loo_A <- loo(fit_A, moment_match = TRUE)
 loo_B <- loo(fit_B, moment_match = TRUE)
@@ -299,6 +281,10 @@ summary(lm(Vd~ 0 + T_Vd:sex, data))
 f_beta <- bf(beta ~ 0 + sex + age_s + weight_s + height_s)
 f_Vd<- bf(Vd ~ 0 + T_Vd:sex)
 
+ggplot(data, aes(x = Vd)) + geom_histogram(bins = 30) + ggtitle("Histogram of raw Vd (naive calc)")
+ggplot(data, aes(x = Vd, y = beta)) + geom_point() + geom_smooth(method = "loess") +
+  labs(title = "beta vs log(Vd)")
+
 
 
 priors_joint <- c(
@@ -420,27 +406,16 @@ MSE_betaA
 
 
 
-priors_table <- tribble(~Parameter, ~Prior,
-                        "Regression coefficients (bi)", "Normal(0, 1)",
-                        "Residual SD (σ)", "Student-t(3, 0, 5)")
 
-```{r}
-kable(priors_table,
-      caption = "Table 1: weak information priors used in the Bayesian regression model")
-```
 F1 <- ggplot(data, aes(x = beta)) +
   geom_density() +
-  labs(title = "Density Plot", x = "x", y = "Density")
-ggplot(data, aes(x = Vd)) + geom_histogram(bins = 30) + ggtitle("Histogram of raw Vd (naive calc)")
-ggplot(data, aes(x = Vd, y = beta)) + geom_point() + geom_smooth(method = "loess") +
-  labs(title = "beta vs log(Vd)")
-
+  labs(title = "Density Plot", x = "log(Beta)", y = "Density")
 
 fit_d <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior_C,
-             chains = 4, iter = 50, warmup = 30, control = control, seed = seed)
+             chains = 4, iter = 100, warmup = 30, control = control, seed = seed)
 
 all <- as_draws_df(fit_d, inc_warmup = TRUE)
 
@@ -453,3 +428,5 @@ F2 <- ggplot(all, aes(x = .iteration,
        color = "Chain") +
   theme_bw()
 
+yrep_C <- posterior_predict(fit_C, draws = 500)
+F3 <- ppc_dens_overlay(data$beta, yrep_C[1:500, ]) + ggtitle("PPC density - Model C")

@@ -78,7 +78,11 @@ To make it easier, we write the method in a function so other expert witness can
 
 It is very important to normalized all variables like weight and height. Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse. Also when we normalized numerical variables, we can use $N(0,1)$ to be the priors of coefficients.
 
-Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail. After simulation we can take exponential of the results.
+Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail. After simulation we can take exponential of the results. As shown in figure, $\beta$ forms a good normal distribution shape after log-transferring.
+
+```{r Figure 1, eval=FALSE, fig.cap="Figure 1: $\log(\beta)$ distribution.", message=FALSE, include=FALSE}
+F1
+```
 
 Since $\beta$ is a constant rate, measured when the BAC curve reaches peak and starts to decrease, so variables like AAC and Maximum BAC will not be used, since they are correlated with the value of BAC, not BAC elimination rate.
 
@@ -114,14 +118,14 @@ $$p(\theta \mid \text{data}) = \frac{p(\text{data} \mid \theta) \, p(\theta)}{p(
 
 The $\theta$ in the equation is the coefficients of $\gamma_j$. For most real models, we can't compute this posterior $p(\theta \mid \text{data})$ analytically. Markov Chain Monte Carlo (MCMC) helps us draw samples from it, which we can then summarize. BRM uses Hamiltonian Monte Carlo (One of MCMC), which is better than standard MCMC (like Metropolis-Hastings) since it is faster and cost less.
 
-After setting priors for $\gamma_j$, we need specify a family for $\beta$ as the the likelihood of the observed data. In our sample, it is better to use the most common normal distribution likelihood, it is normal and can express $\beta$ values good without restrict samples' shape.
+After setting priors for $\gamma_j$, we need specify a family for $\beta$ as the the likelihood of the observed data. In our sample, we have already taken $\log(\beta)$, so it is better to use the most common normal distribution likelihood, it is normal and can express $\beta$ values good without restrict samples' shape.
 
 Also for the MCMC simulation method, we set $4$ chains, each chains $2000$ draws with $500$ burn-in draws. Since MCMC is a random walk method through parameter space. One chain is a single run of the MCMC algorithm that generates a sequence of samples, so we need more chains to check the convergence and ensure that all chains convergent to same mode. 
 
-For $500$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As Figure 1 showed, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $50$ draws with 30 warm-ups. Clearly that if we keep the first $30$ draws, the results will be affected. 
+For $500$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As Figure 1 showed, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $100$ draws. Clearly that if we keep the first $50$ draws, the results will be affected. 
 
-```{r Figure 1, eval=FALSE, fig.cap="Figure 1: MCMC Simulations Traceplot.", message=FALSE, include=FALSE}
-F1
+```{r Figure 2, echo=FALSE, fig.cap="Figure 2: MCMC Simulations Traceplot.", message=FALSE}
+F2
 ```
 
 ## Model Selection
@@ -129,7 +133,16 @@ F1
 ### Key Variables
 
 ### Priors
+Before fitting a Bayesian regression model, appropriate priors need to be specified for all regression coefficients and residual standard deviation. We use weak information priors, allowing the observed data to dominate inference process.The chosen priors are summarised below:
+Regression coefficients were assigned Normal(0,1) priors, following the Stan Development Team’s “Prior Choice Recommendations”. For the residual standard deviation we used a half-Student-t prior with 3 degrees of freedom and a scale of 5, again following the Stan development team's recommendations.
 
+```{r}
+priors_table <- tribble(~Parameter, ~Prior,
+                        "Regression coefficients (bi)", "Normal(0, 1)",
+                        "Residual SD (σ)", "Student-t(3, 0, 5)")
+kable(priors_table,
+      caption = "Table 1: weak information priors used in the Bayesian regression model")
+```
 
 ## Testing Model
 
