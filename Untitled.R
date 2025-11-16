@@ -86,9 +86,9 @@ prior_C <- c(set_prior("normal(0, 1)", class = "b"),
              set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
              set_prior("exponential(1)", class = "sigma"))
 
-prior_d <- c(set_prior("normal(0, 0.01)", class = "b"),
-             set_prior("normal(0, 2)", class = "b", coef = "sexmale"),
-             set_prior("normal(0, 2)", class = "b", coef = "sexfemale"),
+prior_d <- c(set_prior("normal(0, 0.5)", class = "b"),
+             set_prior("normal(0, 5)", class = "b", coef = "sexmale"),
+             set_prior("normal(0, 5)", class = "b", coef = "sexfemale"),
              set_prior("exponential(1)", class = "sigma"))
 
 message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
@@ -317,7 +317,7 @@ F3 <- ppc_dens_overlay(exp(data$beta), yrep_C[1:2000, ]) + ggtitle("PPC density"
 
 
 
-pp_draws <- exp(posterior_predict(fit_C, ndraws = 2000))
+pp_draws <- exp(posterior_predict(fit_C, ndraws = 10000))
 
 n_draws <- nrow(pp_draws)
 n_obs <- ncol(pp_draws)         
@@ -392,4 +392,7 @@ mcmc_trace(as.array(fit_C), pars = c("b_sexmale", "b_weight_s"))
 
 
 pp_check(fit_C, ndraws = 500)
-
+ggplot(data, aes(x = exp(data$beta), y = colMeans(pp_draws), colour = sex)) +
+  geom_point() +
+  labs(title = "Observed vs Predicted", x = "Observed", y = "Predicted") + 
+  theme(aspect.ratio = 1)

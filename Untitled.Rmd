@@ -154,7 +154,7 @@ If future studies include different populations, larger sample sizes, or externa
 
 ### Fitting result
 
-After $4000$ iterations in $4$ chains, Figure 3 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since we all chains have converged and warm-up numbers is enough, Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero.
+After $4000$ iterations in $4$ chains, Figure 3 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since we all chains have converged and warm-up numbers is enough. Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero.
 
 ```{r Figure 3, echo=TRUE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
 mcmc_plot(fit_C, type = "dens_overlay")
