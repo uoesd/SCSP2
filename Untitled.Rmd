@@ -168,14 +168,6 @@ pp_check(fit_C, type = "loo_pit_qq")
 
 ```
 
-=======
-\begin{center}
-\begin{tabular}{ c c c }
- cell1 & cell2 & cell3 \\ 
- cell4 & cell5 & cell6 \\  
- cell7 & cell8 & cell9    
-\end{tabular}
-\end{center}
 
 # New method: build a linear regression model for beta
 Check if age, weight and height have linear relationships with beta.

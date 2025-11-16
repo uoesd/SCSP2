@@ -416,4 +416,5 @@ cat("Number of obs with abs error <= ", tol, ": ", n_within_tol, "/", n_obs,
 mcmc_trace(as.array(fit_C), pars = c("b_sexmale", "b_weight_s"))
 
 
-pp_check(fit_C, type = "loo_pit_qq")
+pp_check(fit_C, ndraws = 500)
+
