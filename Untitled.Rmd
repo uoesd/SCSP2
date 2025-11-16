@@ -77,19 +77,23 @@ To make it easier, we write the method in a function so other expert witness can
 
 # Data Description
 
-It is very important to normalized all variables like weight and height. Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse. The other important reason is centering the covariates can reduce autocorrelation 
+It is very important to normalized all numerical variables. Centering the covariates can reduce autocorrelation $\rho_k$ of lag $k$ which is defined as:
 
-$$\rho_k = \frac{Cov(\beta^i, \beta^{i+k})}{\sigma^2},$$
+$$\rho_k = \frac{Cov(\theta^i, \theta^{i+k})}{\theta^2},$$
+$\rho_k$ measures how similar the sample at position $i$ is to the sample at position $i+k$. As the random walk process, $\theta_i$ is similar to $\theta_{i+1}$, less similar to $\theta_{i+2}$, independent with $\theta_{i+k}$ for large $k$. So if $\rho_k$ is large means the chains hardly move, can't converge.
 
-then the Effective Sample Size (ESS): 
+As a more clear expression, we will introduce Effective Sample Size (ESS): 
 
 $$ n_{\text{eff}} = \frac{n}{1 + 2 \sum_{k=1}^{\infty}\rho_k}$$ 
 
-is lager, which means the MCMC method converge faster (for example if we set $4$ chains with each chains $4000$ iterations, $1000$ burn-in, the $n_{\text{eff}} = 10000$ means the number of independent samples is $10000$ out of $16000$). Larger $n_{\text{eff}}$ in same number of iterations means smaller variance of estimated exoectation since:
+$n_{\text{eff}}$ is larger means the MCMC method converge faster (for example if we set $4$ chains with each chains $2000$ iterations, $500$ burn-in, the $n_{\text{eff}} = 4000$ means the number of independent samples is $4000$ out of $6000$). Larger $n_{\text{eff}}$ in same number of iterations means smaller variance of estimated exoectation since:
 
 $$\mathrm{V}(\hat{E}(\beta)) \approx \frac{\sigma^2}{n_{\text{eff}}}.$$
+We get these information from the course notes of 'Bayesian Theorem' in The University of Edinburgh (So no references can be shown). 
 
-Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail, all outliers (if have) can be scaled. As shown in figure, $\beta$ forms a good normal distribution shape after log-transferring. After simulation we can take exponential of the results.
+Also Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse.
+ 
+Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail, all outliers (if have) can be scaled. As shown in figure 1, $\beta$ forms a good normal distribution shape after log-transferring. After simulation we can take exponential of the results.
 
 ```{r Figure 1, echo=FALSE, fig.cap="Figure 1: log(beta) distribution.", message=FALSE}
 F1
@@ -135,7 +139,7 @@ After setting priors for $\gamma_j$, we need specify a family for $\beta$ as the
 
 Also for the MCMC simulation method, we set $4$ chains, each chains $2000$ draws with $500$ burn-in draws. Since MCMC is a random walk method through parameter space. One chain is a single run of the MCMC algorithm that generates a sequence of samples, so we need more chains to check the convergence and ensure that all chains convergent to same mode. 
 
-For $500$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As Figure 1 showed, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $100$ draws. Clearly that if we keep the first $50$ draws, the results will be affected. 
+For $500$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As figure 2 shows, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $100$ draws. Clearly that if we keep the first $50$ draws, the results will be affected. 
 
 ```{r Figure 2, echo=FALSE, fig.cap="Figure 2: MCMC Simulations Traceplot.", message=FALSE}
 F2
@@ -171,7 +175,7 @@ Jones, A. W. (2010). Evidence-based survey of the elimination rates of ethanol f
 
 ### Fitting result
 
-After $2000$ iterations in $4$ chains, Figure 3 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since we all chains have converged and warm-up length is enough. Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero. Also $\sigma$ value is estimated  under log-transformed $\beta$.
+After $2000$ iterations in $4$ chains, figure 3 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since we all chains have converged and warm-up length is enough. Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero. Also $\sigma$ value is estimated  under log-transformed $\beta$.
 
 ```{r Figure 3, echo=FALSE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
 F3
@@ -182,14 +186,17 @@ Figure 4 shows the trace plots for all variable coefficients, it can be seen tha
 ```{r Figure 4, echo=FALSE, fig.cap="Figure 4: Traceplot of all coefficients and variance sigma.", message=FALSE}
 F4
 ```
-Table $1$ gives the estimate exact value of 
-```{r, echo=FALSE, fig.cap="", message=FALSE}
-T1
-```
-### PPC Density
-Figure 3 is the Posterior Predictive Check (PPC) density plot comparing with true value of $\beta$ (Here we have taken exponential of both true value and predicted value). Notice that predicted posterior distribution matches $\beta$ sample distribution pretty well, which get the mean, spread, skew both right even at right tail.
 
-```{r Figure 5, echo=FALSE, fig.cap="Figure 5: PPC density of 500 predict results.", message=FALSE}
+Table $2$ gives the posterior summary. Rhat compares within-chain variance and between-chain variance, exactly $1$ means chains are well‐mixed.
+
+```{r, echo=FALSE, fig.cap="", message=FALSE}
+T2
+```
+
+### PPC Density
+Figure 5 is the Posterior Predictive Check (PPC) density plot comparing with true value of $\beta$ (Here we have taken exponential of both true value and predicted value). Notice that predicted posterior distribution matches $\beta$ sample distribution pretty well, which get the mean, spread, skew both right even at right tail.
+
+```{r Figure 5, echo=FALSE, fig.cap="Figure 5: PPC density of 500 predict results from posterior.", message=FALSE}
 F5
 ```
 

@@ -391,10 +391,10 @@ F4 <- mcmc_trace(fit_C,
 s <- summary(fit_C)
 tab_all <- rbind(as.data.frame(s$fixed),
                  as.data.frame(s$random$ID))
-T1 <- knitr::kable(
+T2 <- knitr::kable(
       tab_all,
       digits = 3,
-      caption = "Table: Posterior Summary of Fixed Effects from BRM")
+      caption = "Table 2: Posterior Summary from BRM")
 
 
 yrep_C <- exp(posterior_predict(fit_C, draws = 2000))
