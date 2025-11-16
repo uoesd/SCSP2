@@ -36,6 +36,9 @@ data <- data %>%
            1.29720*T_Vd),
          BMI = weight/(height/100)**2,
          BACpeaktime =  BACpeaktime/60 )                 
+data$beta <- abs(data$beta) 
+data$beta <- log(data$beta) 
+
 
 data <- data %>%
   mutate(
@@ -46,8 +49,8 @@ data <- data %>%
     drinkingtime_s = (drinkingtime - mean(drinkingtime, na.rm = TRUE)) / sd(drinkingtime, na.rm = TRUE),
     maxBAC_s = (maxBAC - mean(maxBAC, na.rm = TRUE)) / sd(maxBAC, na.rm = TRUE),
     BACpeaktime_s = (BACpeaktime - mean(BACpeaktime, na.rm = TRUE)) / sd(BACpeaktime, na.rm = TRUE))
-data$beta <- abs(data$beta) 
-data$beta <- log(data$beta) 
+
+
 
 cov_xy <- cov(data$Vd, data$beta)
 cor_xy <- cor(data$Vd, data$beta)
@@ -83,12 +86,16 @@ prior_C <- c(set_prior("normal(0, 1)", class = "b"),
              set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
              set_prior("exponential(1)", class = "sigma"))
 
+prior_d <- c(set_prior("normal(0, 0.01)", class = "b"),
+             set_prior("normal(0, 2)", class = "b", coef = "sexmale"),
+             set_prior("normal(0, 2)", class = "b", coef = "sexfemale"),
+             set_prior("exponential(1)", class = "sigma"))
 
 message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
 fit_A <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
-             prior = prior_A,
+             prior = prior_C,
              chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
 message("Fitting Model B (student-t likelihood + student-t prior)...")
@@ -102,7 +109,7 @@ message("Fitting Model C (gaussian likelihood + normal intercept prior - sensiti
 fit_C <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
-             prior = prior_C,
+             prior = prior_d,
              chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
 
@@ -156,7 +163,6 @@ quantile(C0_draws, probs = 0.025, na.rm = TRUE)
 
 summary(lm(Vd~ 0 + T_Vd:sex, data))
 
-f_beta <- bf(beta ~ 0 + sex + age_s + weight_s + height_s)
 f_Vd<- bf(Vd ~ 0 + T_Vd:sex)
 
 ggplot(data, aes(x = Vd)) + geom_histogram(bins = 30) + ggtitle("Histogram of raw Vd (naive calc)")
