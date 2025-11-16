@@ -133,21 +133,23 @@ F2
 ### Key Variables
 
 ### Priors
+
 Before fitting the Bayesian regression model, appropriate prior distributions need to be specified for all regression coefficients and the residual standard deviation. We use weakly informative priors so that the observed data dominate the inference process. The selected prior distributions are summarized as follows:
 
 ```{r}
 priors_table <- tribble(~Parameter, ~Prior,
-                        "Regression coefficients (bi)", "Normal(0, 1)",
-                        "Residual SD (σ)", "Exponential(1)")
+                        "Regression coefficient for male ", "Normal(0, 2)",
+                        "Regression coefficient for female", "Normal(0, 2)",
+                        "Regression coefficients (others)", "Normal(0, 0.5)",
+                        "Residual SD ", "Exponential(1)")
 
-kable(priors_table,
-      caption = "Table 1: weak information priors used in the Bayesian regression model")
+kable(priors_table, 
+      caption = "Table 1: Weakly informative priors used in the Bayesian regression model")
 ```
 
-All variables have been standardized, so a normal distribution (0,1) is an appropriate weakly informative prior.
-Future data considerations.
+All variables have been standardised, so choosing Normal(0,·) as the weak information prior is reasonable. Based on the review by Jones (2010), sex is considered one of the primary factors influencing alcohol elimination rates. Therefore, we set a relatively wide prior Normal(0, 2) for the sex coefficients, allowing their effects to vary across a broad and reasonable range without being overly constrained by the prior. For other standardized variables (such as weight and height), since their impact on β is considered relatively small, we used a more shrinkage weakly informative prior Normal(0, 0.5) to prevent unreasonably large effects. The residual standard deviation is given an exponential(1) prior, which is a commonly used positive weakly informative prior that can avoid unreasonably high noise.
 
-If future studies include different populations, larger sample sizes, or external biological knowledge (e.g., published estimates of sex differences in β), the priors can be adjusted—either narrowed (Normal(0,0.5)) when more information is available or widened (Normal(0,2)) when greater heterogeneity is expected. Prior-predictive checks should be used to verify suitability for any new dataset.
+If future research involves different populations, larger sample sizes, or additional biological information, the prior distributions can be adjusted accordingly to ensure they are applicable to any new dataset.
 
 
 ## Model Results
@@ -300,18 +302,14 @@ other reason: variables
 
 
 
-
-<<<<<<< HEAD
 #N
 
 
 
 #Reference
-Stan Development Team. (n.d.). Prior choice recommendations. GitHub. https://github.com/stan-dev/stan/wiki/Prior-Choice-Recommendations
 
 
 
-=======
 >>>>>>> 42864825696dc33449e0ad1b18dfd34828d0e5c2
 
 model1<-lm(beta~0+ sex + BMI + T_Vd, data)
@@ -328,6 +326,8 @@ summary(model1)
 测两次血预测beta
 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
 https://www.sciencedirect.com/science/article/pii/S0379073810000770?via%3Dihub
+
+Jones, A. W. (2010). Evidence-based survey of the elimination rates of ethanol from blood with applications in forensic casework. Forensic Science International, 200, 1–20. https://doi.org/10.1016/j.forsciint.2010.02.021
 
 P.Y. Kwo, V.A. Ramchandani, S. O’Connor, D. Amann, L.G. Carr, K. Sandrasegaran, K.K. Kopecky, T.K. Li
 Gender differences in alcohol metabolism: relationship to liver volume and effect of adjusting for body mass
