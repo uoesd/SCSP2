@@ -464,13 +464,13 @@ Tail\_ESS
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-sexfemale & -1.673 & 0.034 & -1.740 & -1.606 & 1 & 7510.861 &
-7203.492 \\
-sexmale & -1.730 & 0.025 & -1.778 & -1.682 & 1 & 8110.222 & 7894.889 \\
-weight\_s & -0.008 & 0.024 & -0.055 & 0.039 & 1 & 8026.871 & 8063.050 \\
-height\_s & -0.045 & 0.025 & -0.094 & 0.005 & 1 & 7081.093 & 7845.568 \\
-drinkingtime\_s & -0.042 & 0.016 & -0.074 & -0.009 & 1 & 10977.689 &
-7950.307 \\
+sexfemale & -1.673 & 0.034 & -1.739 & -1.606 & 1 & 8677.139 &
+8065.652 \\
+sexmale & -1.730 & 0.025 & -1.778 & -1.682 & 1 & 8090.728 & 8240.799 \\
+weight\_s & -0.008 & 0.024 & -0.054 & 0.038 & 1 & 9207.023 & 8348.131 \\
+height\_s & -0.045 & 0.025 & -0.094 & 0.004 & 1 & 8268.992 & 8280.094 \\
+drinkingtime\_s & -0.041 & 0.017 & -0.073 & -0.008 & 1 & 11655.316 &
+8532.767 \\
 \end{longtable}
 
 \subsubsection{PPC Density}\label{ppc-density}
@@ -585,13 +585,13 @@ Statistic & Value \\
 \bottomrule\noalign{}
 \endlastfoot
 Mean & 0.560 \\
-Median & 0.553 \\
-Mode & 0.536 \\
-2.5\% & 0.440 \\
+Median & 0.554 \\
+Mode & 0.538 \\
+2.5\% & 0.437 \\
 25\% & 0.510 \\
-75\% & 0.603 \\
-97.5\% & 0.719 \\
-P(C\_0 \textgreater{} 0.47) & 0.917 \\
+75\% & 0.604 \\
+97.5\% & 0.716 \\
+P(C\_0 \textgreater{} 0.47) & 0.913 \\
 \end{longtable}
 
 \section{\texorpdfstring{Widmark's Equation and
@@ -742,6 +742,11 @@ Priors for others are still weak informative priors. Setting for others
 are not changed (\(4\) chains, \(4000\) iterations, \(1000\) warm-up).
 
 \subsubsection{Results}\label{results}
+
+Table \(5\) belew is the results table, all Rhat and ESS are in good
+range. The expected estimated correlation \(-0.46\) in the model is also
+near the sample's \(V_d\)-\(\beta\) correlation \(-0.415\) (the
+log-transformation of \(\beta\) doesn't affect the correlation.)
 
 \begin{longtable}[]{@{}
   >{\raggedright\arraybackslash}p{(\linewidth - 12\tabcolsep) * \real{0.2597}}

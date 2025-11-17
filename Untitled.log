@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.16)  17 NOV 2025 05:11
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.16)  17 NOV 2025 19:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1230,7 +1230,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [20]
-ignored error: Infinite glue shrinkage found in box being split
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1247,7 +1246,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [22]
-Underfull \hbox (badness 10000) in paragraph at lines 841--843
+Underfull \hbox (badness 10000) in paragraph at lines 846--848
 
  []
 
@@ -1453,7 +1452,7 @@ Missing character: There is no 抽 (U+62BD) in font [lmroman10-regular]:mapping=
 Missing character: There is no 血 (U+8840) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 。 (U+3002) in font [lmroman10-regular]:mapping=tex-text;!
 
-Overfull \hbox (218.75897pt too wide) in paragraph at lines 859--863
+Overfull \hbox (218.75897pt too wide) in paragraph at lines 864--868
 []\TU/lmr/m/n/10.95 #Reference 空腹低 长期饮酒高CTP2E1活性高 性别肝脏大小 药物抑制酒精代谢 测两次血预测beta 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
  []
 
@@ -1475,10 +1474,10 @@ L3 programming layer <2025-11-06>
 Here is how much of TeX's memory you used:
  20768 strings out of 470195
  379720 string characters out of 5478363
- 953889 words of memory out of 5000000
+ 952889 words of memory out of 5000000
  49024 multiletter control sequences out of 15000+600000
  637252 words of font info for 122 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 90i,13n,114p,407b,513s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,13n,114p,407b,480s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on Untitled.pdf (23 pages).

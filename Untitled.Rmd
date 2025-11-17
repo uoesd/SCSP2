@@ -64,32 +64,31 @@ To make it easier, we write the method in a function so other expert witness can
 It is important to normalized all numerical variables. Centering the covariates can reduce autocorrelation $\rho_k$ of lag $k$ which is defined as:
 
 $$\rho_k = \frac{Cov(\theta^i, \theta^{i+k})}{\theta^2},$$
-$\rho_k$ measures how similar the sample at position $i$ is to the sample at position $i+k$. As the random walk process, $\theta_i$ is similar to $\theta_{i+1}$, less similar to $\theta_{i+2}$, independent with $\theta_{i+k}$ for large $k$. So if $\rho_k$ is large means the chains hardly move, can't converge.
 
-As a more clear expression, we will introduce Effective Sample Size (ESS): 
+$\rho_k$ measures how similar the sample at position $i$ is to the sample at position $i+k$. As a random walk process, $\theta_i$ should be similar to $\theta_{i+1}$, less similar to $\theta_{i+2}$, independent with $\theta_{i+k}$ for large $k$. So if $\rho_k$ is large means the chains hardly move, can't converge.
 
-$$ n_{\text{eff}} = \frac{n}{1 + 2 \sum_{k=1}^{\infty}\rho_k}$$ 
+To make it more clear, we will use Effective Sample Size (ESS) to explain: 
 
-$n_{\text{eff}}$ is larger means the MCMC method converge faster (for example if we set $4$ chains with each chains $2000$ iterations, $500$ burn-in, the $n_{\text{eff}} = 4000$ means the number of independent samples is $4000$ out of $8000$). Larger $n_{\text{eff}}$ in same number of iterations means smaller variance of estimated exoectation since:
+$$ n_{\text{eff}} = \frac{n}{1 + 2 \sum_{k=1}^{\infty}\rho_k}.$$ 
+
+'$n_{\text{eff}}$' is large means the MCMC method converge faster (for example if we set $4$ chains with each chains $2000$ iterations, $500$ burn-in, the $n_{\text{eff}} = 4000$ means the number of independent samples is $4000$ out of $8000$). Larger $n_{\text{eff}}$ in same number of iterations means smaller variance of estimated exoectation since:
 
 $$\mathrm{V}(\hat{E}(\beta)) \approx \frac{\sigma^2}{n_{\text{eff}}}.$$
 
-Also Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse.
+Also Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse, so normalization for variables is necessary.
  
 Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail, all outliers (if have) can be scaled. As shown in figure 1, $\beta$ forms a good normal distribution shape after log-transferring. After simulation we can take exponential of the results.
-
-'BAC Peak time' is converted to hours.
-
 
 ```{r echo=FALSE, fig.cap="log(beta) distribution.", message=FALSE, warning=FALSE}
 F1
 ```
 
+
 Since $\beta$ is a constant rate, measured when the BAC curve reaches peak and starts to decrease, so variables like AAC and Maximum BAC will not be used, since they are correlated with the value of BAC, not BAC elimination rate.
 
-From the dataset, most data comes from age smaller than $30$ ($85/100$), so even though age is sufficient variable for $\beta$ the model can't really recognize it. Research shows that age doesn't really matter unless the subject has age-related liver disease, but because 
-of moral and ethical, we don't find much research of alcohol test on elderly person with liver disease.
+From the dataset, most data comes from age smaller than $30$ ($85/100$), so even though age is sufficient variable for $\beta$ the model can't really recognize it. Research shows that age doesn't really matter unless the subject has age-related liver disease, but because of moral and ethical, we don't find much research of alcohol test on elderly person with liver disease.
 
+'BAC Peak time' is converted to hours.
 
 # Bayesian regression model (BRM)
 
@@ -123,6 +122,7 @@ Since we have log-transformed $\beta$ data points, we will take exponential of $
 We use $brm$ package in R to do this.
 
 The principle theorem behind BRM is Bayes' Rule:
+
 $$p(\theta \mid \text{data}) = \frac{p(\text{data} \mid \theta) \, p(\theta)}{p(\text{data})}.$$
 
 The $\theta$ in the equation is the coefficients of $\gamma_j$. For most real models, we can't compute this posterior $p(\theta \mid \text{data})$ analytically. Markov Chain Monte Carlo (MCMC) helps us draw samples from it, which we can then summarize. BRM uses Hamiltonian Monte Carlo (One of MCMC), which is better than standard MCMC (like Metropolis-Hastings) since it is faster and cost less.
@@ -145,10 +145,11 @@ F2
 
 - Drinking time after BAC peak: If the person keep drinking after BAC reaches peak, the measured $\beta$ will be smaller since $\beta$ is measured starting at BAC peak time till the end, there will be fluctuations on the BAC plots.
 
-```{r Figure , echo=FALSE, fig.cap="", message=FALSE}
+```{r Figure, echo=FALSE, fig.cap="Box plot of beta respect to gender.", message=FALSE, warning=FALSE}
 
 ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
 ```
+
 ### Priors
 
 Before fitting the Bayesian regression model, appropriate priors need to be specified for all regression coefficients and the residual standard deviation. We use weakly informative priors, which have small effects on the posterior. The selected priors are summarized as follows:
@@ -163,6 +164,7 @@ If future research involves different populations, larger sample sizes, or addit
 
 reference：
 Jones, A. W. (2010). Evidence-based survey of the elimination rates of ethanol from blood with applications in forensic casework. Forensic Science International, 200, 1–20. https://doi.org/10.1016/j.forsciint.2010.02.021
+
 ## Model Results
 
 ### Fitting result
@@ -171,7 +173,7 @@ After $4000$ iterations in $4$ chains, Table $2$ gives the posterior summary. Rh
 
 Figure 3 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since we all chains have converged and warm-up length is enough. Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero. Also $\sigma$ value is estimated  under log-transformed $\beta$.
 
-```{r echo=FALSE, fig.cap="PPC density of 500 predict results.", message=FALSE, warning=FALSE}
+```{r echo=FALSE, fig.cap="Posterioe density of 4 chains for all coefficients.", message=FALSE, warning=FALSE}
 F3
 ```
 
@@ -207,12 +209,15 @@ $$
 = \frac{1}{S} \sum_{s=1}^{S} 
 \mathbf{1}\!\left( \tilde{y}_{i,-i}^{(s)} \le y_i \right)
 $$
+
 where $S$ is the number of posterior draws. 
+
 We will use it to check if our posterior is under or over dispersion, the good model's PIT plot should be flat over $Uniform(0,1)$. For our model, the PIT histogram (Figure 4) is flat everywhere except probability near 0.55 and 0.8, which are acceptable by the randomness of MCMC method. A U-shape (points over dot line at two tails) in PIT plots means overestimates variance, it doesn't appear in our plot gives evidence of our choices on variables and likelihood family.
 
 ```{r echo=FALSE, fig.cap="Probability Integral Transform (PIT) histogram.", message=FALSE, warning=FALSE}
 F6
 ```
+
 ### Coverage rate and Errors
 
 Table 3 shows the coverage rate of $95\%$ and $50\%$ predicted intervals, which means $98$ and $52$ individuals' real $\beta$ value is inside the intervals. The MAE and RMSE are both relatively small.
@@ -289,16 +294,9 @@ $$
 Now subbing the $\rho$ expression in the $C_t$ equation, and comparing with our equation, $V_d$ is actually calculated by:
 $$V_d = \frac{\text{TBW}}{\text{weight}} \times \frac{1}{F_{\text{water}}} \times \frac{1}{F} = \eta \times \frac{\text{TBW}}{\text{weight}}$$
 and we need to estimate $\eta$ value since TBW is a value that can be determined in our dataset. we will use:
+
 $$\hat{V_d}_{i,j} = \hat{\eta}_{1,i} ( \frac{\text{TBW}}{\text{weight}}_\text{male})_j + \hat{\eta}_{2.i} ( \frac{\text{TBW}}{\text{weight}}_\text{female})_j + \varepsilon_{i}$$
 to estimate $\hat{V_d}$ where $i$ is the $i_{th}$ iterations (we will again use BRM, but as a joint model with $\beta$ to deal with the correlation, we will explain it in next part.), $j$ is the $j_{th}$ individuals, $\eta$ is the coefficients that need to be predicted.
-
-## Joint BRM for $\beta$ and $V_d$
-
-$V_d$ is calculated by true value $\beta$ (with our log-transformed). We will not log-transformed $V_d$ since the density of $V_d$ can't be improved by taking log.
-
-```{r echo=FALSE, fig.cap="Density plot of V_d", message=FALSE, warning=FALSE}
-F8
-```
 
 ## Correlations between $\beta$ and $V_d$
 
@@ -308,6 +306,16 @@ To show that the original method is not good because of the correlation can't be
 F9
 ```
 
+
+## Joint BRM for $\beta$ and $V_d$
+
+$V_d$ is calculated by true value $\beta$ (with our log-transformed). We will not log-transformed $V_d$ since the density of $V_d$ can't be improved by taking log.
+
+```{r echo=FALSE, fig.cap="Density plot of V_d", message=FALSE, warning=FALSE}
+F8
+```
+
+
 ## Fitting model and Results
 
 The mathematical expression of the joint model can be expressed as:
@@ -316,10 +324,10 @@ $$
 \hat{\beta}_{i,j} = \hat{\gamma}_{1,i}\,\text{female}_j
 + \hat{\gamma}_{2,i}\,\text{male}_j
 + \hat{\gamma}_{3,i}\,\text{weight}_j
-+ \hat{\gamma}_{4,i}\,\text{height}_j + \sigma^2_{i,\beta}.
++ \hat{\gamma}_{4,i}\,\text{height}_j + \varepsilon^2_{\beta,i}.
 $$
 and
-$$\hat{V_d}_{i,j} = \hat{\eta}_{1,i} ( \frac{\text{TBW}}{\text{weight}}_\text{male})_j + \hat{\eta}_{2.i} ( \frac{\text{TBW}}{\text{weight}}_\text{female})_j + \varepsilon_{i,V_d}$$
+$$\hat{V_d}_{i,j} = \hat{\eta}_{1,i} ( \frac{\text{TBW}}{\text{weight}}_\text{male})_j + \hat{\eta}_{2.i} ( \frac{\text{TBW}}{\text{weight}}_\text{female})_j + \varepsilon_{V_d,i}$$
 
 where 
 $$
@@ -355,11 +363,18 @@ The fraction of the alcohol dose that reaches the systemic circulation $F$ is ty
 
 The mean value of two priors is actually near to the linear regression results of single $V_d$ model ($1.41$ for male and $1.3$ for female).
 
-Priors for others are still weak informative priors. Setting for others are not changed ($4$ chains, $4000$ iterations, $1000$ warm-up).
+Priors for others are still weak informative priors. Settings for others are not changed ($4$ chains, $4000$ iterations, $1000$ warm-up).
 
 ### Results
+
+Table $5$ belew is the results table, all Rhat and ESS are in good range. The expected estimated correlation $-0.46$ in the model is also near the sample's $V_d$-$\beta$ correlation $-0.415$ (the log-transformation of $\beta$ doesn't affect the correlation.)
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T5
+```
+
+```{r echo=FALSE, fig.cap="Joint posterior distribution", message=FALSE, warning=FALSE}  
+F10
 ```
 
 

@@ -180,31 +180,7 @@ fit_joint <- brm(
   save_pars = save_pars(all = TRUE)
 )
 print(summary(fit_joint))
-
-beta_post <- exp(posterior_epred(fit_joint, resp = "beta", ndraws = 10000))
-Vd_post   <- posterior_epred(fit_joint, resp = "Vd",   ndraws = 10000)
-
-# --- 2. Reduce each posterior draw to a single value (preserve covariance) ---
-beta_sample <- rowMeans(beta_post)   # 1 beta per posterior draw
-Vd_sample   <- rowMeans(Vd_post)     # 1 Vd  per posterior draw
-
-# --- 3. Combine into joint posterior dataframe ---
-df_joint <- tibble(
-  beta = beta_sample,
-  Vd   = Vd_sample
-)
-
-
-ggplot(df_joint, aes(x = Vd, y = beta)) +
-  geom_bin2d(bins = 40) +
-  scale_fill_gradient(low = "white", high = "black") +
-  coord_fixed() +
-  theme_minimal(base_size = 14) +
-  labs(
-    x = "Posterior Vd",
-    y = "Posterior β",
-    caption = "Joint posterior distribution.")
-
+plot(fit_joint)
 
 
 
@@ -229,13 +205,6 @@ abline(0,1, col = "red")
 
 post <- as_draws_df(fit_joint)
 
-#pp_new_beta  <- posterior_epred(fit_joint, newdata = new, resp = "beta", draws = 4000, re_formula = NULL)
-#pp_new_Vd <- posterior_epred(fit_joint, newdata = new, resp = "Vd", draws = 4000, re_formula = NULL)
-# Note: epred returns expected mean (no residual). If you want individual draws including residual noise:
-#pp_new_beta_ind  <- posterior_predict(fit_joint, newdata = new, resp = "beta", draws = 4000)
-#pp_new_Vd_ind <- posterior_predict(fit_joint, newdata = new, resp = "Vd", draws = 4000)
-#beta_draws  <- as.vector(pp_new_beta_ind)
-#Vd_draws <- as.vector(pp_new_Vd_ind)
 
 pp_Vd <- posterior_predict(fit_joint, resp = "Vd", ndraws = 4000)
 pp_Vd1 <- posterior_epred(fit_joint, resp = "Vd", ndraws = 4000)
@@ -520,6 +489,31 @@ T5 <- knitr::kable(
   digits = 4,
   caption = "Joint model results"
 )
+
+###################################################################################
+
+beta_post <- exp(posterior_predict(fit_joint, resp = "beta", ndraws = 10000))
+Vd_post   <- posterior_predict(fit_joint, resp = "Vd",   ndraws = 10000)
+
+# --- 2. Reduce each posterior draw to a single value (preserve covariance) ---
+beta_sample <- rowMeans(beta_post)   # 1 beta per posterior draw
+Vd_sample   <- rowMeans(Vd_post)     # 1 Vd  per posterior draw
+
+# --- 3. Combine into joint posterior dataframe ---
+df_joint <- tibble(
+  beta = beta_sample,
+  Vd   = Vd_sample
+)
+
+
+F10 <- ggplot(df_joint, aes(x = Vd, y = beta)) +
+  geom_bin2d(bins = 40) +
+  scale_fill_gradient(low = "white", high = "black") +
+  coord_fixed() +
+  theme_minimal(base_size = 14) +
+  labs(
+    x = "Posterior V_d",
+    y = "Posterior Beta")
 
 
 
