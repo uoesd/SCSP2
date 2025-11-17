@@ -56,13 +56,16 @@ data <- data %>%
     BACpeaktime_s = (BACpeaktime - mean(BACpeaktime, na.rm = TRUE)) / sd(BACpeaktime, na.rm = TRUE))
 
 
+# Task 1
+###################################################################################
+
 f_beta <- bf(beta ~ 0+ sex + weight_s + height_s + drinkingtime_s)
 prior <- c(set_prior("normal(0, 0.5)", class = "b"),
            set_prior("normal(0, 2)", class = "b", coef = "sexmale"),
            set_prior("normal(0, 2)", class = "b", coef = "sexfemale"),
            set_prior("exponential(1)", class = "sigma"))
 
-fit_C <- brm(formula = f_beta,
+fit_single <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior,
@@ -71,9 +74,9 @@ fit_C <- brm(formula = f_beta,
 # Task 2
 ###################################################################################
 
-f_beta1 <- bf(beta ~ 0+ sex + weight_s + height_s)
+f_beta_example <- bf(beta ~ 0+ sex + weight_s + height_s)
 
-fit_example <- brm(formula = f_beta1,
+fit_example <- brm(formula = f_beta_example,
              data = data,
              family = gaussian(),
              prior = prior,
@@ -98,15 +101,11 @@ new <- tibble(
   )
 
 beta_draws <- posterior_predict(fit_example, newdata = new, draws = 12000)
+
 Ct <- 0.15   
 t <- 2      
 C0_draws <- Ct + exp(beta_draws) * t
 P_over <- mean(C0_draws > 0.47)        
-quantile(C0_draws, prob = c(0.025,0.25, 0.5, 0.975))
-P_over
-# empirical 2.5th percentile of beta distribution:
-emp_beta_2.5 <- quantile(data$beta, probs = 0.025, na.rm = TRUE)
-quantile(C0_draws, probs = 0.025, na.rm = TRUE)
 
 
 # Task 3
@@ -140,7 +139,7 @@ fit_joint <- brm(
 # Single model test
 ###################################################################################
 
-pp_draws <- exp(posterior_predict(fit_C, ndraws = 12000))
+pp_draws <- exp(posterior_predict(fit_single, ndraws = 12000))
 
 n_draws <- nrow(pp_draws)
 n_obs <- ncol(pp_draws)         
@@ -169,7 +168,7 @@ pp_summary <- tibble(
     PIT = sapply(1:n_obs, function(j) mean(pp_draws[, j] <= beta_obs[j]))
   )
 
-# 3) Coverage counts
+# Coverage rate
 covered_95 <- sum(pp_summary$beta_obs >= pp_summary$PI95_low & pp_summary$beta_obs <= pp_summary$PI95_high, na.rm = TRUE)
 covered_50 <- sum(pp_summary$beta_obs >= pp_summary$PI50_low & pp_summary$beta_obs <= pp_summary$PI50_high, na.rm = TRUE)
 
@@ -194,7 +193,7 @@ beta_mean <- colMeans(pp_beta)
 beta_mean <-exp(beta_mean)
 pp_C0 = (data$AAC)/(data$weight * pp_Vd)
 C0_mean <- colMeans(pp_C0)
-beta_A <- posterior_predict(fit_C, ndraws = 12000)
+beta_A <- posterior_predict(fit_single, ndraws = 12000)
 beta_Amean <- colMeans(pp_beta)
 beta_Amean <- exp(beta_Amean)
 
@@ -238,18 +237,18 @@ T1 <- knitr::kable(priors_table,
 
 ###################################################################################
 
-F3 <- mcmc_plot(fit_C, type = "dens_overlay")
+F3 <- mcmc_plot(fit_single, type = "dens_overlay")
 
 ###################################################################################
 
-F4 <- mcmc_trace(fit_C, 
+F4 <- mcmc_trace(fit_single, 
                  pars = c("b_sexfemale", "b_sexmale",
                           "b_weight_s", "b_height_s",
                           "b_drinkingtime_s", "sigma"))
 
 ###################################################################################
 
-s <- summary(fit_C)
+s <- summary(fit_single)
 tab_all <- rbind(as.data.frame(s$fixed),
                  as.data.frame(s$random$ID))
 T2 <- knitr::kable(
@@ -259,12 +258,12 @@ T2 <- knitr::kable(
 
 ###################################################################################
 
-yrep_C <- exp(posterior_predict(fit_C, draws = 2000))
+yrep_C <- exp(posterior_predict(fit_single, draws = 2000))
 F5 <- ppc_dens_overlay(exp(data$beta), yrep_C[1:2000, ]) + ggtitle("PPC density")
 
 ###################################################################################
 
-F6 <- pp_check(fit_C, type = "loo_pit_qq")
+F6 <- pp_check(fit_single, type = "loo_pit_qq")
 
 ###################################################################################
 
@@ -296,8 +295,8 @@ F7 <- ggplot(df_C0, aes(x = C0)) +
 
 ###################################################################################
 
-loo_C <- loo(fit_C, moment_match = TRUE)
-kfc_C <- kfold(fit_C, K = 10)
+loo_C <- loo(fit_single, moment_match = TRUE)
+kfc_C <- kfold(fit_single, K = 10)
 # Extract LOO
 
 loo_vals <- loo_C$estimates
@@ -552,7 +551,7 @@ prior_C <- c(set_prior("normal(0, 1)", class = "b"),
 
 #loo_A <- loo(fit_A, moment_match = TRUE)
 #loo_B <- loo(fit_B, moment_match = TRUE)
-#loo_C <- loo(fit_C, moment_match = TRUE)
+#loo_C <- loo(fit_single, moment_match = TRUE)
 #print(loo_compare(loo_A, loo_B, loo_C))
 
 message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
