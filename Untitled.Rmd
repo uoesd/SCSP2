@@ -30,6 +30,16 @@ header-includes:
 - \captionsetup[table]{labelfont=bf}
 - \usepackage{titlesec}              
 - \newcommand{\sectionbreak}{\clearpage}
+- |
+  \renewcommand{\citeproc}[2]{%
+    \hyperref[#1]{\textcolor{blue}{#2}}%
+  }
+- |
+  \let\oldbibitem\bibitem
+  \renewcommand{\bibitem}[2][]{%
+    \oldbibitem[#1]{#2}%
+    \phantomsection\label{#2}%
+  } 
 ---
 
 ```{r message=FALSE, warning=FALSE, code=readLines("code.R"), include=FALSE}
