@@ -1,6 +1,6 @@
 ---
 title: 'Report Title: Example Report'
-author: "Group 3  \nDepartment / Course\n"
+author: "Group 13  \nDepartment / Course\n"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   pdf_document:
@@ -25,26 +25,13 @@ header-includes:
 - \usepackage{caption}
 - \captionsetup[figure]{labelfont=bf,textfont=it}
 - \captionsetup[table]{labelfont=bf}
+- \usepackage{titlesec}              
+- \newcommand{\sectionbreak}{\clearpage}
 ---
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-	fig.height = 4,
-	fig.width = 6,
-	message = FALSE,
-	warning = FALSE,
-	dpi = 150,
-	include = FALSE
-)
-library(knitr)
-library(kableExtra)
-
-```
-
-```{r eval=FALSE, message=FALSE, warning=FALSE, code=readLines("Group13code.R"), include=FALSE}
+```{r message=FALSE, warning=FALSE, code=readLines("code.R"), include=FALSE}
 # Do not change this code chunk
-source("Group13code.R")
+source("code.R")
 ```
 
 
@@ -60,24 +47,21 @@ The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scien
 
 In this report, we will introduce a Bayesian regression model with considering the heterogeneity between individuals, the model gives a posterior distribution of $\beta$ by using both samples and prior knowledge. Then we randomly simulate $4000$ $\beta$ values from posterior distribution and find out the probability of the person's BAC over limit while driving. 
 
-In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet, etc. As we don't have corresponding data, in our regression model of $\beta$ is mainly dominate by gender, but we still find some useful variables:
-
-- Gender: Female's BAC elimination rate is larger than male on average, it is explained by   liver weight represents a greater fraction of lean body mass in the female gender [2].
-
-- Drinking time after BAC peak: If the person keep drinking after BAC reaches peak, the      measured $\beta$ will be smaller since $\beta$ is measured start at BAC peak time till     the end.
+In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet, etc. As we don't have corresponding data, in our regression model of $\beta$ is mainly dominate by gender, but we still find some useful variables like 'gender' and 'drinking time'
 
 When it is too late to use a blood or breath test and the only information available is eyewitness testimony of the quantity of alcohol consumed. We have to use Widmark's equation:
 $$C_t = \frac{A}{Weight \times V_d} - \beta t$$
 
-where $A$ is Amount of Alcohol Consumed (g), $V_d$ is the volume of distribution that need to be found. Forensic scientists use
-the same method again to estimate $V_d$ separately with $\beta$. But $V_d$ and $\beta$ are not independent, so we build a joint Bayesian regression model, which can simulate them together to solve with the correlation. Then again after simulation, each $C_t$ is calculated by each pair of $\beta$ and $V_d$, so expert witness can still find a probability of $C_t$ exceeding the limit.
+where $A$ is Amount of Alcohol Consumed (g), $V_d$ is the volume of distribution that need to be found.
 
-To make it easier, we write the method in a function so other expert witness can also get the results by easily plugging new person's data.
+Forensic scientists use the same method again to estimate $V_d$ separately with $\beta$. But $V_d$ and $\beta$ are not independent, so we build a joint Bayesian regression model, which can simulate them together to solve with the correlation. Then again after simulation, each $C_t$ is calculated by each pair of $\beta$ and $V_d$, so expert witness can still find a probability of $C_t$ exceeding the limit.
+
+To make it easier, we write the method in a function so other expert witness can also get the results like Table $4$ by easily plugging new person's data.
 
 
 # Data Description
 
-It is very important to normalized all numerical variables. Centering the covariates can reduce autocorrelation $\rho_k$ of lag $k$ which is defined as:
+It is important to normalized all numerical variables. Centering the covariates can reduce autocorrelation $\rho_k$ of lag $k$ which is defined as:
 
 $$\rho_k = \frac{Cov(\theta^i, \theta^{i+k})}{\theta^2},$$
 $\rho_k$ measures how similar the sample at position $i$ is to the sample at position $i+k$. As the random walk process, $\theta_i$ is similar to $\theta_{i+1}$, less similar to $\theta_{i+2}$, independent with $\theta_{i+k}$ for large $k$. So if $\rho_k$ is large means the chains hardly move, can't converge.
@@ -86,16 +70,18 @@ As a more clear expression, we will introduce Effective Sample Size (ESS):
 
 $$ n_{\text{eff}} = \frac{n}{1 + 2 \sum_{k=1}^{\infty}\rho_k}$$ 
 
-$n_{\text{eff}}$ is larger means the MCMC method converge faster (for example if we set $4$ chains with each chains $2000$ iterations, $500$ burn-in, the $n_{\text{eff}} = 4000$ means the number of independent samples is $4000$ out of $6000$). Larger $n_{\text{eff}}$ in same number of iterations means smaller variance of estimated exoectation since:
+$n_{\text{eff}}$ is larger means the MCMC method converge faster (for example if we set $4$ chains with each chains $2000$ iterations, $500$ burn-in, the $n_{\text{eff}} = 4000$ means the number of independent samples is $4000$ out of $8000$). Larger $n_{\text{eff}}$ in same number of iterations means smaller variance of estimated exoectation since:
 
 $$\mathrm{V}(\hat{E}(\beta)) \approx \frac{\sigma^2}{n_{\text{eff}}}.$$
-We get these information from the course notes of 'Bayesian Theorem' in The University of Edinburgh (So no references can be shown). 
 
 Also Since $\beta$ is a small value, the coefficients of large value variables are pretty small, near 0, which will make $\beta$ estimation worse.
  
 Then we prefer to $\beta$ to $\log(\beta)$ since the original $\beta$ distribution has heavy tail, all outliers (if have) can be scaled. As shown in figure 1, $\beta$ forms a good normal distribution shape after log-transferring. After simulation we can take exponential of the results.
 
-```{r Figure 1, echo=FALSE, fig.cap="Figure 1: log(beta) distribution.", message=FALSE}
+'BAC Peak time' is converted to hours.
+
+
+```{r echo=FALSE, fig.cap="log(beta) distribution.", message=FALSE, warning=FALSE}
 F1
 ```
 
@@ -137,11 +123,11 @@ The $\theta$ in the equation is the coefficients of $\gamma_j$. For most real mo
 
 After setting priors for $\gamma_j$, we need specify a family for $\beta$ as the the likelihood of the observed data. In our sample, we have already taken $\log(\beta)$, so it is better to use the most common normal distribution likelihood, it is normal and can express $\beta$ values good without restrict samples' shape.
 
-Also for the MCMC simulation method, we set $4$ chains, each chains $2000$ draws with $500$ burn-in draws. Since MCMC is a random walk method through parameter space. One chain is a single run of the MCMC algorithm that generates a sequence of samples, so we need more chains to check the convergence and ensure that all chains convergent to same mode. 
+Also for the MCMC simulation method, we set $4$ chains, each chains $4000$ draws with $1000$ burn-in draws. Since MCMC is a random walk method through parameter space. One chain is a single run of the MCMC algorithm that generates a sequence of samples, so we need more chains to check the convergence and ensure that all chains convergent to same mode. 
 
-For $500$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As figure 2 shows, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $100$ draws. Clearly that if we keep the first $50$ draws, the results will be affected. 
+For $1000$ burn-in draws, since MCMC starts from an initial value which often far from the true posterior region, so the chains need some steps to walk to the correct trace. As figure 2 shows, it is an example of the MCMC process of 'sexfemale' when using $4$ chains, $100$ draws. Clearly that if we keep the first $25$ draws, the results will be affected. 
 
-```{r Figure 2, echo=FALSE, fig.cap="Figure 2: MCMC Simulations Traceplot.", message=FALSE}
+```{r echo=FALSE, fig.cap="MCMC Simulations Traceplot.", message=FALSE, warning=FALSE}
 F2
 ```
 
@@ -149,19 +135,20 @@ F2
 
 ### Key Variables
 
+- Gender: Female's BAC elimination rate is larger than male on average, it is explained by liver weight represents a greater fraction of lean body mass in the female gender [2].
+
+- Drinking time after BAC peak: If the person keep drinking after BAC reaches peak, the measured $\beta$ will be smaller since $\beta$ is measured starting at BAC peak time till the end, there will be fluctuations on the BAC plots.
+
+```{r Figure , echo=FALSE, fig.cap="", message=FALSE}
+
+ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
+```
 ### Priors
 
 Before fitting the Bayesian regression model, appropriate priors need to be specified for all regression coefficients and the residual standard deviation. We use weakly informative priors, which have small effects on the posterior. The selected priors are summarized as follows:
 
-```{r}
-priors_table <- tribble(~Parameter, ~Prior,
-                        "Regression coefficient for male ", "Normal(0, 2)",
-                        "Regression coefficient for female", "Normal(0, 2)",
-                        "Regression coefficients (others)", "Normal(0, 0.5)",
-                        "Residual SD ", "Exponential(1)")
-
-kable(priors_table, 
-      caption = "Table 1: Weakly informative priors used in the Bayesian regression model")
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+T1
 ```
 
 All variables have been standardized and we do not expect log β to have a linear relationship with the variables, so zero-mean normal priors are appropriate. Based on the review by Jones (2010), sex is considered one of the main factors influencing alcohol elimination rates. Therefore, we set relatively wide priors Normal(0, 2) for the sex coefficients, allowing their effects to vary within a reasonable range. For other standardized variables (such as weight and height), since their impacts on β are considered relatively small, we used more shrinkage weakly informative priors Normal(0, 0.5) to prevent unreasonably large effects. The residual standard deviation is given an Exponential(1) prior, which is a commonly used positive weakly informative prior that can avoid unreasonably high noise.
@@ -174,33 +161,35 @@ Jones, A. W. (2010). Evidence-based survey of the elimination rates of ethanol f
 
 ### Fitting result
 
-After $2000$ iterations in $4$ chains, figure 3 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since we all chains have converged and warm-up length is enough. Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero. Also $\sigma$ value is estimated  under log-transformed $\beta$.
+After $4000$ iterations in $4$ chains, Table $2$ gives the posterior summary. Rhat compares within-chain variance and between-chain variance, all less than $1.01$ means chains are well‐mixed.
 
-```{r Figure 3, echo=FALSE, fig.cap="Figure 3: PPC density of 500 predict results.", message=FALSE}
+Figure 3 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since we all chains have converged and warm-up length is enough. Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero. Also $\sigma$ value is estimated  under log-transformed $\beta$.
+
+```{r echo=FALSE, fig.cap="PPC density of 500 predict results.", message=FALSE, warning=FALSE}
 F3
 ```
 
 Figure 4 shows the trace plots for all variable coefficients, it can be seen that all $4$ chains mix well and all values are picking after convergent.
 
-```{r Figure 4, echo=FALSE, fig.cap="Figure 4: Traceplot of all coefficients and variance sigma.", message=FALSE}
+```{r echo=FALSE, fig.cap="Traceplot of all coefficients and variance sigma.", message=FALSE, warning=FALSE}
 F4
 ```
 
-Table $2$ gives the posterior summary. Rhat compares within-chain variance and between-chain variance, exactly $1$ means chains are well‐mixed.
 
-```{r, echo=FALSE, fig.cap="", message=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 T2
 ```
 
 ### PPC Density
 Figure 5 is the Posterior Predictive Check (PPC) density plot comparing with true value of $\beta$ (Here we have taken exponential of both true value and predicted value). Notice that predicted posterior distribution matches $\beta$ sample distribution pretty well, which get the mean, spread, skew both right even at right tail.
 
-```{r Figure 5, echo=FALSE, fig.cap="Figure 5: PPC density of 500 predict results from posterior.", message=FALSE}
+```{r echo=FALSE, fig.cap="PPC density of 2000 predict results from posterior.", message=FALSE, warning=FALSE}
 F5
 ```
 
 
 ## Model Testing
+We take  $12000$ number of draws from the posterior distribution.
 ### LOO-PIT QQ plot
 The Leave-One-Out Probability Integral Transform Quantile-Quantile plot (LOO-PIT QQ plot) can check if the predictions calibrated correctly and if the predictive distributions biased, which is defined as:
 $$ \mathrm{LOO\text{-}PIT}_i = P(\tilde{y}_i \le y_i |y_{-i}) .$$
@@ -212,44 +201,93 @@ $$
 = \frac{1}{S} \sum_{s=1}^{S} 
 \mathbf{1}\!\left( \tilde{y}_{i,-i}^{(s)} \le y_i \right)
 $$
-where $S$ is the number of posterior draws (we set it 10000 here). 
+where $S$ is the number of posterior draws. 
 We will use it to check if our posterior is under or over dispersion, the good model's PIT plot should be flat over $Uniform(0,1)$. For our model, the PIT histogram (Figure 4) is flat everywhere except probability near 0.55 and 0.8, which are acceptable by the randomness of MCMC method. A U-shape (points over dot line at two tails) in PIT plots means overestimates variance, it doesn't appear in our plot gives evidence of our choices on variables and likelihood family.
 
-```{r Figure 6, echo=FALSE, fig.cap="Figure 6: Probability Integral Transform (PIT) histogram.", message=FALSE}
+```{r echo=FALSE, fig.cap="Probability Integral Transform (PIT) histogram.", message=FALSE, warning=FALSE}
 F6
+```
+### Coverage rate and Errors
+
+Table 3 shows the coverage rate of $95\%$ and $50\%$ predicted intervals, which means $98$ and $52$ individuals' real $\beta$ value is inside the intervals. The MAE and RMSE are both relatively small.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+T3
+```
+
+# Example
+
+Now we will apply our model on an individual example: A $70$ year old female (weight: $70$kg, height: $160$cm) is arrested after being stopped by the police while driving. She provides a blood sample to the police $2$ hours after her arrest which gives a reading of Ct = $0.15$g/kg. The legal limit is x = $0.47$g/kg. 
+
+Since there is no 'drinking time' data here, we will use a simplified model with only 'sex', 'height', 'weight' variables. We have standardized height and weight by using sample's mean and variance. 
+
+As figure 7 shows, this is the posterior density of $C_0$ calculated by presicted posterior density of $\hat{\beta}$ the dot line is the legal limit $C_0 = 0.47$, it can be seen that most density is larger than $0.47$, so obviously the 70 year old female is over the drink driving limit.
+
+```{r echo=FALSE, fig.cap="Posterior Predictive Distribution of C_0, message=FALSE, warning=FALSE, with limit C_0 = 0.47 (dot line).", message=FALSE}
+F7
+```
+
+To make the result clear, it is better to give Table 4 to the courts and illustrate:
+
+\begin{center}
+There is $91.4\%$ probability that the 70 year old female is over the drink driving limit, with both mean, median and mode value over the limit.
+\end{center}
+
+The results also show that the original method is not reasonable since $2.5\%$ percentile is over-conservative even in this case.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+T4
 ```
 
 
-# New method: build a linear regression model for beta
-Check if age, weight and height have linear relationships with beta.
-Or have any patterns?
+# Widmark's Equation and $V_d$
+
+When it is too late to use a blood or breath test and the only information available is eyewitness testimony of the quantity of alcohol consumed. We have to use Widmark's equation:
+$$C_t = \frac{A}{Weight \times V_d} - \beta t.$$
+Since there are many versions of Widmark's equation, it can also write as:
+$$C_t = \frac{(F \times A) \times F_{\text{water}}}{Weight \times \rho} - \beta t.$$
+where $F$ is the fraction of the dose that reaches the systemic circulation, $F_{\text{water}}$ is know as the water content of the blood sample, $\rho$ (L/kg) is Widmark rho-factor which can be calculated by Total body water (TBW).
+
+We assume that all different part betweem two equations are included in $V_d$. The unit of $C_t$ is g/kg in our dataset, the unit of the first term is g/L, but it is not a problem since the density of water is $1$, we just ignore the $1$.
+
+## $V_d$ and TBW
+
+All information in this part are from 'Total body water is the preferred method to use in forensic
+blood-alcohol calculations rather than ethanol’s volume of distribution'[5].
+
+TBW is calculated by:
+
+$$
+\mathrm{TBW}_{\text{Men}}(\mathrm{L}) 
+= 2.447 - (0.09516 \times \text{age}) 
+    + (0.1074 \times \text{height}) 
+    + (0.3362 \times \text{weight})
+$$
+
+$$
+\mathrm{TBW}_{\text{Women}}(\mathrm{L}) 
+= -2.097 
+    + (0.1069 \times \text{height}) 
+    + (0.2466 \times \text{weight}).
+$$
+
+To calculate BAC using total body water (TBW) requires knowledge of the water content of the blood sample ($F_{\text{water}}$). Blood water content is easy to determine by desiccation and the mean reported values for men and women are $0.825\%$ w/v and $0.838\%$ w/v respectively. The small sex difference is mainly attributed to lower haematocrit in female blood samples.
+
+Now the required $V_d$ is actually calculated by:
+$$V_d = \frac{\text{TBW}}{\text{weight}} \times \frac{1}{F_{\text{water}}} \times \frac{1}{F} = \gamma \times \text{TBW}$$
+So TBW is a value that can be determined in our dataset, we will use:
+$$\hat{V_d}_{i,j} = \hat{\gamma}_i (\text{sex}:\text{TBW})_j + \sigma^2_i$$
+to estimate $\hat{V_d}$ where $i$ is the $i_{th}$ iterations (we will again use BRM, but as a joint model with $\beta$ to deal with the correlation, we will explain it next part.), $j$ is the $j_{th}$ individuals.
+
+## Joint BRM for $\beta$ and $V_d$
 
 
-
-
-
-# Calculate V_d:
-in the Widmark's equation assumption, beta and V_d are independent, so we need to check whether Cov(V_d, beta) = 0
 
 
 # Further research:
 casual effect: biased data selection, 
 (e.g. inner correlations between sex and height)
-
-
-## REPORT
-# Exclusive summary
-background
-Goal - 1, 2, 3
-main data + elimination rate explanation
-method - model we used
-result
-
-
-
-
-# Overview of Datasets
-## Data collection
 
 
 ## Variable Description 
@@ -270,7 +308,7 @@ The variables identified for the analysis are demographic and physiological char
 Page, Participant number, FigureOnPage, Sample Type... clearly inrevelant,
 
 Maximum BAC/BrAC,BAC peak time 也可推断为无关factor 与police预测受测者驾驶中酒精浓度的目标不同
-
+ 
 
 
  
@@ -287,42 +325,6 @@ why 2.5 quantiles?
 ## Advantage of current method
 simpler model with only one parameter(beta), easier to calculate, suitable for no dataset situations
 
-## New model motivation
-Current model disadvantage:
-1. beta is fixed for all individuals, we need to consider the heterogeneity in individuals.
-2. Deviated aim: Police Scotland aims at assessing the probabilities that a person is over the limit, while the parameter beta only concentrates on the range between 2.5% and 97.5%.
-
-
-
-
-# Bayesian model
-intro
-New model (Bayesian) 
-## Model Selection and Evaluation
-- why Bayesian?
-Any advantage, any improvement? More accurate? ...
-##explanation
-###why prior setted?
-## how result reflect?
-
-
-
-## Model fitting example
-How our new model works on the 70 year-old madam?
-
-
-# Testing another assumption(condition):
-## variable explanation
-explain all variables we used
-explain needed references
-
-##Testing
-whether formula reasonable? 
-whether beta60 relate to Vt? 
-how related? 
-hows the result? 
-how new model fit?
-
 
 #Limitation
 our model limit
@@ -333,17 +335,9 @@ other reason: variables
 
 
 
-#N
-
 
 
 #Reference
-
-
-
-
-
-
 空腹低 长期饮酒高CTP2E1活性高 性别肝脏大小 药物抑制酒精代谢
 测两次血预测beta
 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
