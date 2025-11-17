@@ -64,8 +64,6 @@ To make it easier, we write the method in a function so other expert witness can
 
 # Data Description
 
-$\beta$ true values are converted to positive to convenient calculation. 
-
 It is important to normalized all numerical variables. Centering the covariates can reduce autocorrelation $\rho_k$ of lag $k$ which is defined as:
 
 $$\rho_k = \frac{Cov(\theta^i, \theta^{i+k})}{\theta^2},$$
@@ -146,7 +144,9 @@ F2
 
 ### Key Variables
 
-- Gender: Female's BAC elimination rate is larger than male on average, it is explained by liver weight represents a greater fraction of lean body mass in the female gender [2].
+- Female Gender: Female's BAC elimination rate is larger than male on average, it is explained by liver weight represents a greater fraction of lean body mass in the female gender [2].
+
+- Male Gender: The amount of observed male data is acceptable larger than that of female.
 
 - Drinking time after BAC peak: If the person keep drinking after BAC reaches peak, the measured $\beta$ will be smaller since $\beta$ is measured starting at BAC peak time till the end, there will be fluctuations on the BAC plots.
 
@@ -154,6 +154,14 @@ F2
 
 ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
 ```
+
+- Weight: Basically a person's blood alcohol concentration is a function of the total amount of alcohol in the person's system divided by total body water. Larger weight implies higher amount body water
+
+- Height: A measurement of body size other than individual's weight
+
+- Beta60: Improved from the original fixed $\beta$, it demonstrates elimination rate of a person's blood alcohol concentration.
+
+
 
 ### Priors
 
@@ -376,14 +384,15 @@ Table $5$ belew is the results table, all Rhat and ESS are in good range. The ex
 T5
 ```
 
-Figure $10$ shows the joint posterior distribution of $\beta$ and $V_d$. It is a good multivariate gaussian (2d).
-
 ```{r echo=FALSE, fig.cap="Joint posterior distribution", message=FALSE, warning=FALSE}  
 F10
 ```
 
 
-### Testing
+# Further research:
+casual effect: biased data selection, 
+(e.g. inner correlations between sex and height)
+
 
 Table $6$ is the LOO and Kfold results, the p values ($11.0479$ and $10.691$) means the validation results are good since we have $10$ parameters.
 
