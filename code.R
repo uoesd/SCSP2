@@ -10,6 +10,7 @@ library(loo)
 library(posterior)
 library(knitr)
 library(kableExtra)
+library(stringr)
 
 data <- read_excel("SCS_BAC_and_BrAC_split_TOP.xlsx")
 
@@ -155,25 +156,16 @@ quantile(C0_draws, probs = 0.025, na.rm = TRUE)
 
 ##########3
 
-
-summary(lm(Vd~ 0 + T_Vd:sex, data))
-
 f_beta <- bf(beta ~ 0+ sex + weight_s + height_s + drinkingtime_s)
 f_Vd<- bf(Vd ~ 0 + T_Vd:sex)
-
-ggplot(data, aes(x = Vd)) + geom_histogram(bins = 30) + ggtitle("Histogram of raw Vd (naive calc)")
-ggplot(data, aes(x = Vd, y = beta)) + geom_point() + geom_smooth(method = "loess") +
-  labs(title = "beta vs log(Vd)")
-
-
 
 priors_joint <- c(
   set_prior("normal(0, 0.5)", class = "b", resp = "beta"),
   set_prior("normal(0, 2)", class = "b", coef = "sexmale", resp = "beta"),
   set_prior("normal(0, 2)", class = "b", coef = "sexfemale", resp = "beta"),
   set_prior("exponential(1)", class = "sigma", resp = "beta"),
-  set_prior("normal(1/0.838, 0.2)", class = "b", resp = "Vd", coef = "T_Vd:sexfemale"),
-  set_prior("normal(1/0.825, 0.2)", class = "b", resp = "Vd", coef = "T_Vd:sexmale"),
+  set_prior("normal(1.49, 2)", class = "b", resp = "Vd", coef = "T_Vd:sexfemale"),
+  set_prior("normal(1.51, 2)", class = "b", resp = "Vd", coef = "T_Vd:sexmale"),
   set_prior("exponential(1)", class = "sigma", resp = "Vd")
 )
 
@@ -188,6 +180,36 @@ fit_joint <- brm(
   save_pars = save_pars(all = TRUE)
 )
 print(summary(fit_joint))
+
+beta_post <- exp(posterior_epred(fit_joint, resp = "beta", ndraws = 10000))
+Vd_post   <- posterior_epred(fit_joint, resp = "Vd",   ndraws = 10000)
+
+# --- 2. Reduce each posterior draw to a single value (preserve covariance) ---
+beta_sample <- rowMeans(beta_post)   # 1 beta per posterior draw
+Vd_sample   <- rowMeans(Vd_post)     # 1 Vd  per posterior draw
+
+# --- 3. Combine into joint posterior dataframe ---
+df_joint <- tibble(
+  beta = beta_sample,
+  Vd   = Vd_sample
+)
+
+
+ggplot(df_joint, aes(x = Vd, y = beta)) +
+  geom_bin2d(bins = 40) +
+  scale_fill_gradient(low = "white", high = "black") +
+  coord_fixed() +
+  theme_minimal(base_size = 14) +
+  labs(
+    x = "Posterior Vd",
+    y = "Posterior β",
+    caption = "Joint posterior distribution.")
+
+
+
+
+
+
 
 pp_check(fit_joint, resp = "beta", type = "dens_overlay", ndraws = 200)
 pp_check(fit_joint, resp = "Vd", type = "dens_overlay", ndraws = 200)
@@ -441,10 +463,79 @@ T4 <- knitr::kable(C0_summary,
 
 ###################################################################################
 
+F8 <- ggplot(data, aes(x = log(Vd))) +
+  geom_density() +
+  labs(title = "Density Plot", x = "V_d", y = "Density")
+
+###################################################################################
+
+
+cor_val <- cor(data$beta, data$Vd, use = "complete.obs")
+cor_test <- cor.test(data$beta, data$Vd)
+
+F9 <- ggplot(data, aes(x = Vd, y = exp(beta))) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "loess", color = "blue", se = TRUE) +
+  annotate("text",
+           x = Inf, y = Inf, hjust = 1.1, vjust = 1.5,
+           label = paste0("r = ", round(cor_val, 3)),
+           size = 5) +
+  labs(title = "Correlation Between β and Vd",
+       x = "Vd",
+       y = "Beta") +
+  theme_minimal(base_size = 14)
+
+###################################################################################
+
+s <- summary(fit_joint)
+
+# 1. Fixed effects
+fixed_tab <- as.data.frame(s$fixed)
+fixed_tab$Parameter <- rownames(fixed_tab)
+fixed_tab$Group <- ifelse(grepl("^beta_", fixed_tab$Parameter), "Beta", "Vd")
+fixed_tab <- fixed_tab[, c("Parameter","Estimate","Est.Error","Rhat","Bulk_ESS","Tail_ESS","Group")]
+
+# 2. Sigma parameters
+sigma_tab <- as.data.frame(s$spec_pars)
+sigma_tab$Parameter <- rownames(sigma_tab)
+sigma_tab$Group <- ifelse(grepl("beta", sigma_tab$Parameter), 
+                          "Beta", "Vd")
+sigma_tab <- sigma_tab[, c("Parameter","Estimate","Est.Error","Rhat","Bulk_ESS","Tail_ESS","Group")]
+
+# 3. Correlation parameter
+rescor_tab <- as.data.frame(s$rescor)
+rescor_tab$Parameter <- rownames(rescor_tab)
+rescor_tab$Group <- "Correlation"
+rescor_tab <- rescor_tab[, c("Parameter","Estimate","Est.Error","Rhat","Bulk_ESS","Tail_ESS","Group")]
+
+# 4. Combine
+tab_joint <- dplyr::bind_rows(fixed_tab, sigma_tab, rescor_tab)
+
+# 5. Remove rownames (fix empty first column)
+tab_joint <- tibble::as_tibble(tab_joint)
+
+# 6. Final table
+T5 <- knitr::kable(
+  tab_joint,
+  digits = 4,
+  caption = "Joint model results"
+)
+
+
+
+###################################################################################
 
 F1000 <- ggplot(data, aes(x = exp(data$beta), y = colMeans(pp_draws), colour = sex)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
   labs(title = "Observed vs Predicted", x = "Observed", y = "Predicted") + 
   theme(aspect.ratio = 1)
+
+
+
+
+text <- readLines("Group13.Rmd")
+words <- unlist(strsplit(text, "\\s+"))
+words <- words[words != ""]
+length(words)
 

@@ -100,14 +100,20 @@ Comparing with fitting linear regression model for $\beta_i$, which can be expre
 $$\hat{\beta}_{i,j} = \hat{\gamma}_{1}\,\text{female}_j
 + \hat{\gamma}_{2}\,\text{male}_j
 + \hat{\gamma}_{3}\,\text{weight}_j
-+ \hat{\gamma}_{4}\,\text{height}_j + \sigma^2_i$$
++ \hat{\gamma}_{4}\,\text{height}_j + \varepsilon_i$$
 
 and giving a exact value of $\hat{\beta_i}$ for $i_{th}$ estimation of $\hat{\beta}$ under $\sigma^2_i$ for $j_{th}$ individuals, BRM can model uncertainty from each coefficient $\hat{\gamma}$. We provide priors and sample likelihoods for each variables' coefficients, BRM will apply bayesian rule to each and output simulation results of each coefficients, not only for $\hat{\beta}$. $\hat{\beta}$s are calculated from simulation results of $\hat{\gamma_j}$, which is:
 
 $$\hat{\beta}_{i,j} = \hat{\gamma}_{1,i}\,\text{female}_j
 + \hat{\gamma}_{2,i}\,\text{male}_j
 + \hat{\gamma}_{3,i}\,\text{weight}_j
-+ \hat{\gamma}_{4,i}\,\text{height}_j + \sigma^2_i.$$
++ \hat{\gamma}_{4,i}\,\text{height}_j + \varepsilon_i$$
+
+where
+
+$$
+\varepsilon_{\beta,i} \sim \mathcal{N}(0,\, \sigma_\beta^2).
+$$
 
 Since we have log-transformed $\beta$ data points, we will take exponential of $\hat{\beta_{i,j}}$ to get actual value.
 
@@ -246,12 +252,19 @@ T4
 When it is too late to use a blood or breath test and the only information available is eyewitness testimony of the quantity of alcohol consumed. We have to use Widmark's equation:
 $$C_t = \frac{A}{Weight \times V_d} - \beta t.$$
 Since there are many versions of Widmark's equation, it can also write as:
-$$C_t = \frac{(F \times A) \times F_{\text{water}}}{Weight \times \rho} - \beta t.$$
-where $F$ is the fraction of the dose that reaches the systemic circulation, $F_{\text{water}}$ is know as the water content of the blood sample, $\rho$ (L/kg) is Widmark rho-factor which can be calculated by Total body water (TBW).
+$$C_t = \frac{F \times A}{Weight \times \rho} - \beta t $$
+where 
 
-We assume that all different part betweem two equations are included in $V_d$. The unit of $C_t$ is g/kg in our dataset, the unit of the first term is g/L, but it is not a problem since the density of water is $1$, we just ignore the $1$.
+$$
+\rho = \frac{TBW}{\textit{weight} \times F_{\mathrm{water}}}
+$$
+is known as Widmark's rho factor.
 
-## $V_d$ and TBW
+$F$ is the fraction of the dose that reaches the systemic circulation, $F_{\text{water}}$ is know as the water content of the blood sample, TBW is Total Body Water.
+
+We assume that all different part between two equations are included in $V_d$. The unit of $C_t$ is g/kg in our dataset, the unit of the first term is g/L, but it is not a problem since the density of water is $1$, we just ignore the $1$.
+
+## $V_d$, TBW and $\rho$
 
 All information in this part are from 'Total body water is the preferred method to use in forensic
 blood-alcohol calculations rather than ethanol’s volume of distribution'[5].
@@ -272,17 +285,82 @@ $$
     + (0.2466 \times \text{weight}).
 $$
 
-To calculate BAC using total body water (TBW) requires knowledge of the water content of the blood sample ($F_{\text{water}}$). Blood water content is easy to determine by desiccation and the mean reported values for men and women are $0.825\%$ w/v and $0.838\%$ w/v respectively. The small sex difference is mainly attributed to lower haematocrit in female blood samples.
 
-Now the required $V_d$ is actually calculated by:
-$$V_d = \frac{\text{TBW}}{\text{weight}} \times \frac{1}{F_{\text{water}}} \times \frac{1}{F} = \gamma \times \text{TBW}$$
-So TBW is a value that can be determined in our dataset, we will use:
-$$\hat{V_d}_{i,j} = \hat{\gamma}_i (\text{sex}:\text{TBW})_j + \sigma^2_i$$
-to estimate $\hat{V_d}$ where $i$ is the $i_{th}$ iterations (we will again use BRM, but as a joint model with $\beta$ to deal with the correlation, we will explain it next part.), $j$ is the $j_{th}$ individuals.
+Now subbing the $\rho$ expression in the $C_t$ equation, and comparing with our equation, $V_d$ is actually calculated by:
+$$V_d = \frac{\text{TBW}}{\text{weight}} \times \frac{1}{F_{\text{water}}} \times \frac{1}{F} = \eta \times \frac{\text{TBW}}{\text{weight}}$$
+and we need to estimate $\eta$ value since TBW is a value that can be determined in our dataset. we will use:
+$$\hat{V_d}_{i,j} = \hat{\eta}_{1,i} ( \frac{\text{TBW}}{\text{weight}}_\text{male})_j + \hat{\eta}_{2.i} ( \frac{\text{TBW}}{\text{weight}}_\text{female})_j + \varepsilon_{i}$$
+to estimate $\hat{V_d}$ where $i$ is the $i_{th}$ iterations (we will again use BRM, but as a joint model with $\beta$ to deal with the correlation, we will explain it in next part.), $j$ is the $j_{th}$ individuals, $\eta$ is the coefficients that need to be predicted.
 
 ## Joint BRM for $\beta$ and $V_d$
 
+$V_d$ is calculated by true value $\beta$ (with our log-transformed). We will not log-transformed $V_d$ since the density of $V_d$ can't be improved by taking log.
 
+```{r echo=FALSE, fig.cap="Density plot of V_d", message=FALSE, warning=FALSE}
+F8
+```
+
+## Correlations between $\beta$ and $V_d$
+
+To show that the original method is not good because of the correlation can't be ignored, figure 9 gives the correlations between true $\beta$ and $V_d$ is $-0.415$, which is relatively big.
+
+```{r echo=FALSE, fig.cap="Correlation plot betweem V_d and Beta", message=FALSE, warning=FALSE}
+F9
+```
+
+## Fitting model and Results
+
+The mathematical expression of the joint model can be expressed as:
+
+$$
+\hat{\beta}_{i,j} = \hat{\gamma}_{1,i}\,\text{female}_j
++ \hat{\gamma}_{2,i}\,\text{male}_j
++ \hat{\gamma}_{3,i}\,\text{weight}_j
++ \hat{\gamma}_{4,i}\,\text{height}_j + \sigma^2_{i,\beta}.
+$$
+and
+$$\hat{V_d}_{i,j} = \hat{\eta}_{1,i} ( \frac{\text{TBW}}{\text{weight}}_\text{male})_j + \hat{\eta}_{2.i} ( \frac{\text{TBW}}{\text{weight}}_\text{female})_j + \varepsilon_{i,V_d}$$
+
+where 
+$$
+\begin{pmatrix}
+\varepsilon_{\beta,i} \\
+\varepsilon_{V_d,i}
+\end{pmatrix}
+\sim
+\mathcal{N}\!\left(
+\begin{pmatrix} 0 \\ 0 \end{pmatrix},
+\begin{pmatrix}
+\sigma_\beta^2 
+& 
+\rho \, \sigma_\beta \sigma_{V_d}
+\\[6pt]
+\rho \, \sigma_\beta \sigma_{V_d}
+& 
+\sigma_{V_d}^2 
+\end{pmatrix}
+\right).
+$$
+
+### Model Selection (priors)
+
+The prior for $\beta$'s variables' coefficients is unchanged. And the prior for $\eta$ is easy to calculated since $\eta = \frac{1}{F_{\text{water}}} \times \frac{1}{F}$.
+
+The Blood water content $F_{\text{water}}$ is easy to determine by desiccation and the mean reported values for men and women are $0.825\%$ w/v and $0.838\%$ w/v respectively. The small sex difference is mainly attributed to lower haematocrit in female blood samples[].
+
+The fraction of the alcohol dose that reaches the systemic circulation $F$ is typically $0.7$−$0.9$. So:
+
+* Prior for $\frac{\text{TBW}}{\text{weight}}_\text{male}$ is $Normal(\frac{1}{0.825} \times \frac{1}{0.8}, 2)  = Normal(1.51, 2)$
+* Prior for $\frac{\text{TBW}}{\text{weight}}_\text{male}$ is $Normal(\frac{1}{0.848} \times \frac{1}{0.8}, 2)  = Normal(1.49, 2)$
+
+The mean value of two priors is actually near to the linear regression results of single $V_d$ model ($1.41$ for male and $1.3$ for female).
+
+Priors for others are still weak informative priors. Setting for others are not changed ($4$ chains, $4000$ iterations, $1000$ warm-up).
+
+### Results
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+T5
+```
 
 
 # Further research:
@@ -308,23 +386,6 @@ The variables identified for the analysis are demographic and physiological char
 Page, Participant number, FigureOnPage, Sample Type... clearly inrevelant,
 
 Maximum BAC/BrAC,BAC peak time 也可推断为无关factor 与police预测受测者驾驶中酒精浓度的目标不同
- 
-
-
- 
-
-## Prelimary analysis 
-- initial formula: explain beta60 +  - motivation to improve?
-
-variable correlations? Why?
-hypothesis needed? 
-why 2.5 quantiles?
-
-
-# Model selection regarding key variable 'beta60'
-## Advantage of current method
-simpler model with only one parameter(beta), easier to calculate, suitable for no dataset situations
-
 
 #Limitation
 our model limit
