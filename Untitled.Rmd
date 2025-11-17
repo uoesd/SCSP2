@@ -64,6 +64,8 @@ To make it easier, we write the method in a function so other expert witness can
 
 # Data Description
 
+$\beta$ true values are converted to positive to convenient calculation. 
+
 It is important to normalized all numerical variables. Centering the covariates can reduce autocorrelation $\rho_k$ of lag $k$ which is defined as:
 
 $$\rho_k = \frac{Cov(\theta^i, \theta^{i+k})}{\theta^2},$$
@@ -374,15 +376,14 @@ Table $5$ belew is the results table, all Rhat and ESS are in good range. The ex
 T5
 ```
 
+Figure $10$ shows the joint posterior distribution of $\beta$ and $V_d$. It is a good multivariate gaussian (2d).
+
 ```{r echo=FALSE, fig.cap="Joint posterior distribution", message=FALSE, warning=FALSE}  
 F10
 ```
 
 
-# Further research:
-casual effect: biased data selection, 
-(e.g. inner correlations between sex and height)
-
+### Testing
 
 ## Variable Description 
 - how many observations do we have?

@@ -39,9 +39,9 @@ data <- data %>%
            1.29720*T_Vd),
          BMI = weight/(height/100)**2,
          BACpeaktime =  BACpeaktime/60 )                 
+
 data$beta <- abs(data$beta) 
 data$beta <- log(data$beta) 
-
 
 data <- data %>%
   mutate(
@@ -53,32 +53,8 @@ data <- data %>%
     maxBAC_s = (maxBAC - mean(maxBAC, na.rm = TRUE)) / sd(maxBAC, na.rm = TRUE),
     BACpeaktime_s = (BACpeaktime - mean(BACpeaktime, na.rm = TRUE)) / sd(BACpeaktime, na.rm = TRUE))
 
-cov_xy <- cov(data$Vd, data$beta)
-cor_xy <- cor(data$Vd, data$beta)
-cor.test(data$Vd, data$beta)
-
-model <- lm(beta~ 0+ sex+ weight_s + height_s + drinkingtime_s, data)
-summary(model)
-
 
 f_beta <- bf(beta ~ 0+ sex + weight_s + height_s + drinkingtime_s)
-
-# Student-t intercept prior (robust)
-prior_A <- c(set_prior("normal(0, 0.01)", class = "b"),
-             set_prior("student_t(3, 0.15, 0.02", class = "b", coef = "sexmale"),
-             set_prior("student_t(3, 0.18, 0.02", class = "b", coef = "sexfemale"),
-             set_prior("exponential(1)", class = "sigma"))
-
-# Student-t likelihood prior includes nu
-prior_B <- c(prior_A, set_prior("constant(8)", class = "nu"))
-
-
-# Normal intercept prior (sensitivity)
-prior_C <- c(set_prior("normal(0, 1)", class = "b"),
-             set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
-             set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
-             set_prior("exponential(1)", class = "sigma"))
-
 prior <- c(set_prior("normal(0, 0.5)", class = "b"),
            set_prior("normal(0, 2)", class = "b", coef = "sexmale"),
            set_prior("normal(0, 2)", class = "b", coef = "sexfemale"),
@@ -104,12 +80,6 @@ fit_C <- brm(formula = f_beta,
              family = gaussian(),
              prior = prior,
              chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
-
-
-#loo_A <- loo(fit_A, moment_match = TRUE)
-#loo_B <- loo(fit_B, moment_match = TRUE)
-#loo_C <- loo(fit_C, moment_match = TRUE)
-#print(loo_compare(loo_A, loo_B, loo_C))
 
 
 #########2
@@ -153,7 +123,6 @@ quantile(C0_draws, probs = 0.025, na.rm = TRUE)
 
 
 
-
 ##########3
 
 f_beta <- bf(beta ~ 0+ sex + weight_s + height_s + drinkingtime_s)
@@ -179,89 +148,59 @@ fit_joint <- brm(
   seed = 2025,
   save_pars = save_pars(all = TRUE)
 )
-print(summary(fit_joint))
-plot(fit_joint)
-
-
-
-
-
 
 pp_check(fit_joint, resp = "beta", type = "dens_overlay", ndraws = 200)
 pp_check(fit_joint, resp = "Vd", type = "dens_overlay", ndraws = 200)
 loo_joint <- loo(fit_joint, moment_match = TRUE)
-print(loo_joint)
+loo_joint
+kfc <- kfold(fit_joint, K = 10)
+kfc
+# view pareto k
+loo::pareto_k_values(loo_joint)
 
-epred_beta  <- posterior_epred(fit_joint, resp = "beta",  ndraws = 1000)  # 200 x N matrix
-epred_Vd    <- posterior_epred(fit_joint, resp = "Vd",    ndraws = 1000)
-
-pred_mean_beta <- colMeans(epred_beta)
-pred_mean_Vd   <- colMeans(epred_Vd)
-plot(pred_mean_Vd, data$Vd, xlab = "Predicted mean Vd", ylab = "Observed Vd")
-abline(0,1, col = "red")
-
-plot(exp(pred_mean_beta), exp(data$beta), xlab = "Predicted mean beta", ylab = "Observed beta")
-abline(0,1, col = "red")
+# view pareto k
+loo::pareto_k_values(loo_joint)
 
 post <- as_draws_df(fit_joint)
-
-
-pp_Vd <- posterior_predict(fit_joint, resp = "Vd", ndraws = 4000)
-pp_Vd1 <- posterior_epred(fit_joint, resp = "Vd", ndraws = 4000)
-
 Vd_obs <- data$Vd
 
-
+plot(pp_Vdmean, data$Vd, xlab = "Predicted mean Vd", ylab = "Observed Vd")
+abline(0,1, col = "red")
 
 Vd_low  <- apply(pp_Vd, 2, quantile, 0.025)
 Vd_high <- apply(pp_Vd, 2, quantile, 0.975)
 mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
-
-
-Vd_low  <- apply(pp_Vd1, 2, quantile, 0.25)
-Vd_high <- apply(pp_Vd1, 2, quantile, 0.75)
+Vd_low  <- apply(pp_Vd, 2, quantile, 0.25)
+Vd_high <- apply(pp_Vd, 2, quantile, 0.75)
 mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
-data <- data %>% mutate(TV = ifelse(
-                         sex == "Male",
-                         1.40864*T_Vd,   # Male formula
-                         1.29720*T_Vd))            
 
 
 Vd_mean <- colMeans(pp_Vd)
 plot(Vd_mean, data$Vd, pch=19)
 abline(0,1,col="red")
-plot(data$TV, data$Vd, pch=19)
-abline(0,1,col="red")
+
 PIT_Vd <- sapply(1:ncol(pp_Vd), function(i) mean(pp_Vd[,i] <= Vd_obs[i]))
 hist(PIT_Vd, breaks=20)
 
 
-pp_beta <- posterior_predict(fit_joint, resp = "beta", ndraws = 4000)
-beta_obs <- data$beta
-beta_low  <- apply(pp_beta, 2, quantile, 0.025)
-beta_high <- apply(pp_beta, 2, quantile, 0.975)
-mean(beta_obs >= beta_low & beta_obs <= beta_high)
-
+pp_beta <- posterior_predict(fit_joint, resp = "beta", ndraws = 10000)
+pp_Vd <- posterior_predict(fit_joint, resp = "Vd", ndraws = 10000)
+Vd_mean <- colMeans(pp_Vd)
 beta_mean <- colMeans(pp_beta)
-plot(beta_mean, beta_obs, pch=19)
-abline(0,1,col="red")
-PIT_beta <- sapply(1:ncol(pp_beta), function(i) mean(pp_beta[,i] <= beta_obs[i]))
-hist(PIT_beta, breaks=20)
-
+beta_mean <-exp(beta_mean) 
+beta_A <- posterior_predict(fit_C, ndraws = 10000)
+beta_A <- exp(beta_A) 
 MSE_Vd <- mean(abs(Vd_mean - data$Vd) , na.rm = TRUE )
 MSE_Vd
-MSE_TV <- mean(abs(data$TV - data$Vd) , na.rm = TRUE )
-MSE_TV
-
-beta_A <- posterior_predict(fit_C, ndraws = 4000)
-
-MSE_beta<- mean(abs(beta_mean - data$beta) , na.rm = TRUE )
+MSE_beta<- mean(abs(beta_mean - exp(data$beta)) , na.rm = TRUE )
 MSE_beta
-MSE_betaA <- mean(abs(beta_A - data$beta) , na.rm = TRUE )
+MSE_betaA <- mean(abs(beta_A - exp(data$beta)) , na.rm = TRUE )
 MSE_betaA
-#prior noninformative or theoratical for coefficie
-
-###################
+pp_C0 = (data$AAC)/(data$weight * pp_Vd)
+C0_mean <- colMeans(pp_C0)
+MSE_C0<- mean(abs(C0_mean - data$Co) , na.rm = TRUE )
+MSE_C0
+#############################
 
 pp_draws <- exp(posterior_predict(fit_C, ndraws = 12000))
 
@@ -524,9 +463,28 @@ F1000 <- ggplot(data, aes(x = exp(data$beta), y = colMeans(pp_draws), colour = s
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
   labs(title = "Observed vs Predicted", x = "Observed", y = "Predicted") + 
   theme(aspect.ratio = 1)
+###################################################################################
+
+# Student-t intercept prior (robust)
+prior_A <- c(set_prior("normal(0, 0.01)", class = "b"),
+             set_prior("student_t(3, 0.15, 0.02", class = "b", coef = "sexmale"),
+             set_prior("student_t(3, 0.18, 0.02", class = "b", coef = "sexfemale"),
+             set_prior("exponential(1)", class = "sigma"))
+
+# Student-t likelihood prior includes nu
+prior_B <- c(prior_A, set_prior("constant(8)", class = "nu"))
 
 
+# Normal intercept prior (sensitivity)
+prior_C <- c(set_prior("normal(0, 1)", class = "b"),
+             set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
+             set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
+             set_prior("exponential(1)", class = "sigma"))
 
+#loo_A <- loo(fit_A, moment_match = TRUE)
+#loo_B <- loo(fit_B, moment_match = TRUE)
+#loo_C <- loo(fit_C, moment_match = TRUE)
+#print(loo_compare(loo_A, loo_B, loo_C))
 
 text <- readLines("Group13.Rmd")
 words <- unlist(strsplit(text, "\\s+"))
