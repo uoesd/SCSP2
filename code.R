@@ -455,6 +455,64 @@ F10 <- ggplot(df_joint, aes(x = Vd, y = beta)) +
     y = "Posterior Beta")
 
 
+###################################################################################
+
+
+# Extract LOO
+loo_vals <- loo_joint$estimates
+
+# Extract K-fold
+k_vals <- kfc$estimates
+
+# Build row-wise table
+table_cv <- tibble(
+  Method      = c("LOO", "K-fold"),
+  elpd        = c(loo_vals["elpd_loo", "Estimate"],
+                  k_vals["elpd_kfold", "Estimate"]),
+  elpd_SE     = c(loo_vals["elpd_loo", "SE"],
+                  k_vals["elpd_kfold", "SE"]),
+  p           = c(loo_vals["p_loo", "Estimate"],
+                  k_vals["p_kfold", "Estimate"]),
+  p_SE        = c(loo_vals["p_loo", "SE"],
+                  k_vals["p_kfold", "SE"]),
+  IC          = c(loo_vals["looic", "Estimate"],
+                  k_vals["kfoldic", "Estimate"]),
+  IC_SE       = c(loo_vals["looic", "SE"],
+                  k_vals["kfoldic", "SE"])
+)
+
+T6 <- knitr::kable(
+  table_cv,
+  digits = 3,
+  caption = "Cross-validation Comparison (LOO vs 10-fold)"
+) %>%
+  kable_styling(full_width = FALSE)
+
+
+###################################################################################
+
+# Create table of MSE metrics
+table_mse <- tibble(
+    ' ' = c(
+    "MSE_Vd",
+    "MSE_beta (joint model)",
+    "MSE_beta (single model)",
+    "MSE_C0"
+  ),
+  Estimate = c(
+    MSE_Vd,
+    MSE_beta,
+    MSE_betaA,
+    MSE_C0
+  )
+)
+
+T7 <- knitr::kable(
+  table_mse,
+  digits = 4,
+  caption = "Prediction Error (MSE)"
+) %>%
+  kable_styling(full_width = FALSE)
 
 ###################################################################################
 
