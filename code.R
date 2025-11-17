@@ -11,8 +11,10 @@ library(posterior)
 library(knitr)
 library(kableExtra)
 library(stringr)
-
 data <- read_excel("SCS_BAC_and_BrAC_split_TOP.xlsx")
+
+# Data description
+###################################################################################
 
 data <- data %>%
   rename(
@@ -60,29 +62,14 @@ prior <- c(set_prior("normal(0, 0.5)", class = "b"),
            set_prior("normal(0, 2)", class = "b", coef = "sexfemale"),
            set_prior("exponential(1)", class = "sigma"))
 
-message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
-#fit_A <- brm(formula = f_beta,
-#             data = data,
-#             family = gaussian(),
-#             prior = prior_C,
-#             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
-
-message("Fitting Model B (student-t likelihood + student-t prior)...")
-#fit_B <- brm(formula = f_beta,
-#             data = data,
-#             family = student(),
-#             prior = prior_B,
-#             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
-
-message("Fitting Model C (gaussian likelihood + normal intercept prior - sensitivity)...")
 fit_C <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
              prior = prior,
              chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
-
-#########2
+# Task 2
+###################################################################################
 
 f_beta1 <- bf(beta ~ 0+ sex + weight_s + height_s)
 
@@ -122,8 +109,8 @@ emp_beta_2.5 <- quantile(data$beta, probs = 0.025, na.rm = TRUE)
 quantile(C0_draws, probs = 0.025, na.rm = TRUE)
 
 
-
-##########3
+# Task 3
+###################################################################################
 
 f_beta <- bf(beta ~ 0+ sex + weight_s + height_s + drinkingtime_s)
 f_Vd<- bf(Vd ~ 0 + T_Vd:sex)
@@ -149,58 +136,9 @@ fit_joint <- brm(
   save_pars = save_pars(all = TRUE)
 )
 
-pp_check(fit_joint, resp = "beta", type = "dens_overlay", ndraws = 200)
-pp_check(fit_joint, resp = "Vd", type = "dens_overlay", ndraws = 200)
-loo_joint <- loo(fit_joint, moment_match = TRUE)
-loo_joint
-kfc <- kfold(fit_joint, K = 10)
-kfc
-# view pareto k
-loo::pareto_k_values(loo_joint)
 
-# view pareto k
-loo::pareto_k_values(loo_joint)
-
-post <- as_draws_df(fit_joint)
-Vd_obs <- data$Vd
-
-plot(pp_Vdmean, data$Vd, xlab = "Predicted mean Vd", ylab = "Observed Vd")
-abline(0,1, col = "red")
-
-Vd_low  <- apply(pp_Vd, 2, quantile, 0.025)
-Vd_high <- apply(pp_Vd, 2, quantile, 0.975)
-mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
-Vd_low  <- apply(pp_Vd, 2, quantile, 0.25)
-Vd_high <- apply(pp_Vd, 2, quantile, 0.75)
-mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
-
-
-Vd_mean <- colMeans(pp_Vd)
-plot(Vd_mean, data$Vd, pch=19)
-abline(0,1,col="red")
-
-PIT_Vd <- sapply(1:ncol(pp_Vd), function(i) mean(pp_Vd[,i] <= Vd_obs[i]))
-hist(PIT_Vd, breaks=20)
-
-
-pp_beta <- posterior_predict(fit_joint, resp = "beta", ndraws = 10000)
-pp_Vd <- posterior_predict(fit_joint, resp = "Vd", ndraws = 10000)
-Vd_mean <- colMeans(pp_Vd)
-beta_mean <- colMeans(pp_beta)
-beta_mean <-exp(beta_mean) 
-beta_A <- posterior_predict(fit_C, ndraws = 10000)
-beta_A <- exp(beta_A) 
-MSE_Vd <- mean(abs(Vd_mean - data$Vd) , na.rm = TRUE )
-MSE_Vd
-MSE_beta<- mean(abs(beta_mean - exp(data$beta)) , na.rm = TRUE )
-MSE_beta
-MSE_betaA <- mean(abs(beta_A - exp(data$beta)) , na.rm = TRUE )
-MSE_betaA
-pp_C0 = (data$AAC)/(data$weight * pp_Vd)
-C0_mean <- colMeans(pp_C0)
-MSE_C0<- mean(abs(C0_mean - data$Co) , na.rm = TRUE )
-MSE_C0
-#############################
+# Single model test
+###################################################################################
 
 pp_draws <- exp(posterior_predict(fit_C, ndraws = 12000))
 
@@ -242,11 +180,23 @@ prop_50 <- covered_50 / n_obs
 MAE <- mean(pp_summary$abs_err_mean, na.rm = TRUE)
 RMSE <- sqrt(mean(pp_summary$sq_err_mean, na.rm = TRUE))
 
-# 5) Bayesian R^2 (using brms helper)
-r2_draws <- as.numeric(bayes_R2(fit_C))  # ensures numeric vector
-r2_median <- median(r2_draws)
-r2_CI <- quantile(r2_draws, c(0.025, 0.975))
 
+# Joint model test
+###################################################################################
+
+pp_check(fit_joint, resp = "beta", type = "dens_overlay", ndraws = 200)
+pp_check(fit_joint, resp = "Vd", type = "dens_overlay", ndraws = 200)
+
+pp_beta <- posterior_predict(fit_joint, resp = "beta", ndraws = 12000)
+pp_Vd <- posterior_predict(fit_joint, resp = "Vd", ndraws = 12000)
+Vd_mean <- colMeans(pp_Vd)
+beta_mean <- colMeans(pp_beta)
+beta_mean <-exp(beta_mean)
+pp_C0 = (data$AAC)/(data$weight * pp_Vd)
+C0_mean <- colMeans(pp_C0)
+beta_A <- posterior_predict(fit_C, ndraws = 12000)
+beta_Amean <- colMeans(pp_beta)
+beta_Amean <- exp(beta_Amean)
 
 
 #Plot area
@@ -346,6 +296,43 @@ F7 <- ggplot(df_C0, aes(x = C0)) +
 
 ###################################################################################
 
+loo_C <- loo(fit_C, moment_match = TRUE)
+kfc_C <- kfold(fit_C, K = 10)
+# Extract LOO
+
+loo_vals <- loo_C$estimates
+
+# Extract K-fold
+k_vals <- kfc_C$estimates
+
+# Build row-wise table
+table_cv_single <- tibble(
+  Method      = c("LOO", "K-fold"),
+  elpd        = c(loo_vals["elpd_loo", "Estimate"],
+                  k_vals["elpd_kfold", "Estimate"]),
+  elpd_SE     = c(loo_vals["elpd_loo", "SE"],
+                  k_vals["elpd_kfold", "SE"]),
+  p           = c(loo_vals["p_loo", "Estimate"],
+                  k_vals["p_kfold", "Estimate"]),
+  p_SE        = c(loo_vals["p_loo", "SE"],
+                  k_vals["p_kfold", "SE"]),
+  IC          = c(loo_vals["looic", "Estimate"],
+                  k_vals["kfoldic", "Estimate"]),
+  IC_SE       = c(loo_vals["looic", "SE"],
+                  k_vals["kfoldic", "SE"])
+)
+
+T4 <- knitr::kable(
+  table_cv_single,
+  digits = 3,
+  caption = "Cross-validation Comparison (LOO vs 10-fold)"
+) %>%
+  kable_styling(full_width = FALSE)
+
+
+###################################################################################
+
+
 C0_mean <- mean(C0_draws)
 C0_median <- median(C0_draws)
 d <- density(C0_draws)
@@ -365,7 +352,7 @@ C0_summary <- tibble(
     P_over
   )
 )
-T4 <- knitr::kable(C0_summary,
+T5 <- knitr::kable(C0_summary,
                    digits = 3,
                    caption = "Example results")
 
@@ -423,7 +410,7 @@ tab_joint <- dplyr::bind_rows(fixed_tab, sigma_tab, rescor_tab)
 tab_joint <- tibble::as_tibble(tab_joint)
 
 # 6. Final table
-T5 <- knitr::kable(
+T6 <- knitr::kable(
   tab_joint,
   digits = 4,
   caption = "Joint model results"
@@ -457,6 +444,8 @@ F10 <- ggplot(df_joint, aes(x = Vd, y = beta)) +
 
 ###################################################################################
 
+loo_joint <- loo(fit_joint, moment_match = TRUE)
+kfc <- kfold(fit_joint, K = 10)
 
 # Extract LOO
 loo_vals <- loo_joint$estimates
@@ -481,7 +470,7 @@ table_cv <- tibble(
                   k_vals["kfoldic", "SE"])
 )
 
-T6 <- knitr::kable(
+T7 <- knitr::kable(
   table_cv,
   digits = 3,
   caption = "Cross-validation Comparison (LOO vs 10-fold)"
@@ -490,6 +479,22 @@ T6 <- knitr::kable(
 
 
 ###################################################################################
+MSE_Vd <- mean(abs(Vd_mean - data$Vd) , na.rm = TRUE )
+MSE_Vd
+MSE_beta<- mean(abs(beta_mean - exp(data$beta)) , na.rm = TRUE )
+MSE_beta
+MSE_betaA <- mean(abs(beta_Amean - exp(data$beta)) , na.rm = TRUE )
+MSE_betaA
+pp_C0 = (data$AAC)/(data$weight * pp_Vd)
+C0_mean <- colMeans(pp_C0)
+MSE_C0<- mean(abs(C0_mean - data$Co) , na.rm = TRUE )
+MSE_C0
+Vd_low  <- apply(pp_Vd, 2, quantile, 0.025)
+Vd_high <- apply(pp_Vd, 2, quantile, 0.975)
+mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
+Vd_low  <- apply(pp_Vd, 2, quantile, 0.25)
+Vd_high <- apply(pp_Vd, 2, quantile, 0.75)
+mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
 
 # Create table of MSE metrics
 table_mse <- tibble(
@@ -507,7 +512,7 @@ table_mse <- tibble(
   )
 )
 
-T7 <- knitr::kable(
+T8 <- knitr::kable(
   table_mse,
   digits = 4,
   caption = "Prediction Error (MSE)"
@@ -521,6 +526,12 @@ F1000 <- ggplot(data, aes(x = exp(data$beta), y = colMeans(pp_draws), colour = s
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
   labs(title = "Observed vs Predicted", x = "Observed", y = "Predicted") + 
   theme(aspect.ratio = 1)
+
+
+plot(Vd_mean, data$Vd, pch=19)
+abline(0,1,col="red")
+
+# Model Comparison
 ###################################################################################
 
 # Student-t intercept prior (robust)
@@ -543,6 +554,20 @@ prior_C <- c(set_prior("normal(0, 1)", class = "b"),
 #loo_B <- loo(fit_B, moment_match = TRUE)
 #loo_C <- loo(fit_C, moment_match = TRUE)
 #print(loo_compare(loo_A, loo_B, loo_C))
+
+message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
+#fit_A <- brm(formula = f_beta,
+#             data = data,
+#             family = gaussian(),
+#             prior = prior_C,
+#             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
+
+message("Fitting Model B (student-t likelihood + student-t prior)...")
+#fit_B <- brm(formula = f_beta,
+#             data = data,
+#             family = student(),
+#             prior = prior_B,
+#             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
 text <- readLines("Group13.Rmd")
 words <- unlist(strsplit(text, "\\s+"))

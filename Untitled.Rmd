@@ -105,7 +105,7 @@ From the dataset, most data comes from age smaller than $30$ ($85/100$), so even
 
 # Bayesian regression model (BRM)
 
-## Reason for BRM
+## Reasons for BRM
 
 Comparing with fitting linear regression model for $\beta_i$, which can be expressed as:
 
@@ -248,6 +248,16 @@ Table 3 shows the coverage rate of $95\%$ and $50\%$ predicted intervals, which 
 T3
 ```
 
+### Cross-Validation
+
+We do two kinds of Cross-Validation: LOO and Kfold. The two methods show similar results means the model is stable and the $p$ value is near the number of variables ($5$) shows the model is not over-fitting.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+T4
+```
+
+
+
 # Example
 
 Now we will apply our model on an individual example: A $70$ year old female (weight: $70$kg, height: $160$cm) is arrested after being stopped by the police while driving. She provides a blood sample to the police $2$ hours after her arrest which gives a reading of Ct = $0.15$g/kg. The legal limit is x = $0.47$g/kg. 
@@ -267,10 +277,6 @@ There is $91.4\%$ probability that the 70 year old female is over the drink driv
 \end{center}
 
 The results also show that the original method is not reasonable since $2.5\%$ percentile is over-conservative even in this case.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-T4
-```
 
 
 # Widmark's Equation and $V_d$
@@ -398,11 +404,7 @@ T5
 F10
 ```
 
-
-# Further research:
-casual effect: biased data selection, 
-(e.g. inner correlations between sex and height)
-
+## Testing 
 
 Table $6$ is the LOO and Kfold results, the p values ($11.0479$ and $10.691$) means the validation results are good since we have $10$ parameters.
 
