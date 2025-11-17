@@ -9,6 +9,9 @@ output:
     toc: true
     number_sections: true
     toc_depth: 3
+csl: ieee.csl
+bibliography: references.bib
+link-citations: true   
 fontsize: 11pt
 geometry: margin=1in
 header-includes:
