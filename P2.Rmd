@@ -1,6 +1,6 @@
 ---
 title: 'Forensic Modelling of Blood Alcohol Evidence'
-author: "Group 13  \nDu Shi, Kunning Zhang, Yixuan Yin\n"
+author: "Group 13  \nDu Shi, Kunning Zhang, Yixuan Yin\n \nTotal words: 3668\n"
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   pdf_document:

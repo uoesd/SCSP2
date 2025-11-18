@@ -633,8 +633,11 @@ F12 <- ggplot(data) +
 
 
 
-text <- readLines("Group13.Rmd")
+text <- readLines("P2.Rmd")
 words <- unlist(strsplit(text, "\\s+"))
 words <- words[words != ""]
 length(words)
 
+pandoc <- rmarkdown::pandoc_exec()
+cmd <- sprintf('"%s" P2.Rmd --from=markdown --to=plain | wc -w', pandoc)
+system(cmd)
