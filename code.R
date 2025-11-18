@@ -129,7 +129,7 @@ fit_joint <- brm(
   formula = f_beta + f_Vd + set_rescor(TRUE),
   data = data,
   prior = priors_joint,
-  chains = 4, iter = 4000, warmup = 1500,
+  chains = 4, iter = 4000, warmup = 1000,
   control = list(adapt_delta = 0.98, max_treedepth = 15),
   seed = 2025,
   save_pars = save_pars(all = TRUE)
@@ -210,7 +210,7 @@ F1 <- ggplot(data, aes(x = beta)) +
 fit_d <- brm(formula = f_beta,
              data = data,
              family = gaussian(),
-             prior = prior_C,
+             prior = prior,
              chains = 4, iter = 100, warmup = 30, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
 all <- as_draws_df(fit_d, inc_warmup = TRUE)
@@ -374,8 +374,7 @@ F9 <- ggplot(data, aes(x = Vd, y = exp(beta))) +
            x = Inf, y = Inf, hjust = 1.1, vjust = 1.5,
            label = paste0("r = ", round(cor_val, 3)),
            size = 5) +
-  labs(title = "Correlation Between β and Vd",
-       x = "Vd",
+  labs(x = "Vd",
        y = "Beta") +
   theme_minimal(base_size = 14)
 
@@ -478,43 +477,65 @@ T7 <- knitr::kable(
 
 
 ###################################################################################
+
 MSE_Vd <- mean(abs(Vd_mean - data$Vd) , na.rm = TRUE )
-MSE_Vd
 MSE_beta<- mean(abs(beta_mean - exp(data$beta)) , na.rm = TRUE )
-MSE_beta
 MSE_betaA <- mean(abs(beta_Amean - exp(data$beta)) , na.rm = TRUE )
-MSE_betaA
 pp_C0 = (data$AAC)/(data$weight * pp_Vd)
 C0_mean <- colMeans(pp_C0)
 MSE_C0<- mean(abs(C0_mean - data$Co) , na.rm = TRUE )
-MSE_C0
-Vd_low  <- apply(pp_Vd, 2, quantile, 0.025)
-Vd_high <- apply(pp_Vd, 2, quantile, 0.975)
-mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
-Vd_low  <- apply(pp_Vd, 2, quantile, 0.25)
-Vd_high <- apply(pp_Vd, 2, quantile, 0.75)
-mean(data$Vd >= Vd_low & data$Vd <= Vd_high)
+# ------ Vd COVERAGE ------
+# 95%
+Vd_low_95  <- apply(pp_Vd, 2, quantile, 0.025)
+Vd_high_95 <- apply(pp_Vd, 2, quantile, 0.975)
+Vd_cov_95  <- mean(data$Vd >= Vd_low_95 & data$Vd <= Vd_high_95)
 
+# 50%
+Vd_low_50  <- apply(pp_Vd, 2, quantile, 0.25)
+Vd_high_50 <- apply(pp_Vd, 2, quantile, 0.75)
+Vd_cov_50  <- mean(data$Vd >= Vd_low_50 & data$Vd <= Vd_high_50)
+
+# ------ C0 COVERAGE ------
+# C0 predictive matrix: (AAC)/(weight * Vd_draw)
+pp_C0 <- (data$AAC) / (data$weight * pp_Vd)
+
+# 95%
+C0_low_95  <- apply(pp_C0, 2, quantile, 0.025)
+C0_high_95 <- apply(pp_C0, 2, quantile, 0.975)
+C0_cov_95  <- mean(data$Co >= C0_low_95 & data$Co <= C0_high_95)
+
+# 50%
+C0_low_50  <- apply(pp_C0, 2, quantile, 0.25)
+C0_high_50 <- apply(pp_C0, 2, quantile, 0.75)
+C0_cov_50  <- mean(data$Co >= C0_low_50 & data$Co <= C0_high_50)
 # Create table of MSE metrics
 table_mse <- tibble(
-    ' ' = c(
+  Metric = c(
     "MSE_Vd",
     "MSE_beta (joint model)",
-    "MSE_beta (single model)",
-    "MSE_C0"
+    "MSE_beta (model C)",
+    "MSE_C0",
+    "Vd Coverage (95%)",
+    "Vd Coverage (50%)",
+    "C0 Coverage (95%)",
+    "C0 Coverage (50%)"
   ),
   Estimate = c(
     MSE_Vd,
     MSE_beta,
     MSE_betaA,
-    MSE_C0
+    MSE_C0,
+    Vd_cov_95,
+    Vd_cov_50,
+    C0_cov_95,
+    C0_cov_50
   )
 )
 
 T8 <- knitr::kable(
   table_mse,
   digits = 4,
-  caption = "Prediction Error (MSE)"
+  caption = "Prediction Error and Coverage Rate"
 ) %>%
   kable_styling(full_width = FALSE)
 
@@ -534,34 +555,34 @@ abline(0,1,col="red")
 ###################################################################################
 
 # Student-t intercept prior (robust)
-prior_A <- c(set_prior("normal(0, 0.01)", class = "b"),
-             set_prior("student_t(3, 0.15, 0.02", class = "b", coef = "sexmale"),
-             set_prior("student_t(3, 0.18, 0.02", class = "b", coef = "sexfemale"),
-             set_prior("exponential(1)", class = "sigma"))
+#prior_A <- c(set_prior("normal(0, 0.01)", class = "b"),
+#             set_prior("student_t(3, 0.15, 0.02", class = "b", coef = "sexmale"),
+#             set_prior("student_t(3, 0.18, 0.02", class = "b", coef = "sexfemale"),
+#             set_prior("exponential(1)", class = "sigma"))
 
 # Student-t likelihood prior includes nu
-prior_B <- c(prior_A, set_prior("constant(8)", class = "nu"))
+#prior_B <- c(prior_A, set_prior("constant(8)", class = "nu"))
 
 
 # Normal intercept prior (sensitivity)
-prior_C <- c(set_prior("normal(0, 1)", class = "b"),
-             set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
-             set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
-             set_prior("exponential(1)", class = "sigma"))
+#prior_C <- c(set_prior("normal(0, 1)", class = "b"),
+#             set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
+#             set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
+#             set_prior("exponential(1)", class = "sigma"))
 
 #loo_A <- loo(fit_A, moment_match = TRUE)
 #loo_B <- loo(fit_B, moment_match = TRUE)
 #loo_C <- loo(fit_single, moment_match = TRUE)
 #print(loo_compare(loo_A, loo_B, loo_C))
 
-message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
+#message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
 #fit_A <- brm(formula = f_beta,
 #             data = data,
 #             family = gaussian(),
 #             prior = prior_C,
 #             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
-message("Fitting Model B (student-t likelihood + student-t prior)...")
+#message("Fitting Model B (student-t likelihood + student-t prior)...")
 #fit_B <- brm(formula = f_beta,
 #             data = data,
 #             family = student(),

@@ -69,7 +69,7 @@ where $A$ is Amount of Alcohol Consumed (g), $V_d$ is the volume of distribution
 
 Forensic scientists use the same method again to estimate $V_d$ separately with $\beta$. But $V_d$ and $\beta$ are not independent, so we build a joint Bayesian regression model, which can simulate them together to solve with the correlation. Then again after simulation, each $C_t$ is calculated by each pair of $\beta$ and $V_d$, so expert witness can still find a probability of $C_t$ exceeding the limit.
 
-To make it easier, we write the method in a function so other expert witness can also get the results like Table $4$ by easily plugging new person's data.
+To make it easier, we write the method in a function so other expert witness can also get the results like Table $5$ by easily plugging new person's data.
 
 
 # Data Description
@@ -218,8 +218,11 @@ F5
 
 
 ## Model Testing
+
 We take  $12000$ number of draws from the posterior distribution.
+
 ### LOO-PIT QQ plot
+
 The Leave-One-Out Probability Integral Transform Quantile-Quantile plot (LOO-PIT QQ plot) can check if the predictions calibrated correctly and if the predictive distributions biased, which is defined as:
 $$ \mathrm{LOO\text{-}PIT}_i = P(\tilde{y}_i \le y_i |y_{-i}) .$$
 
@@ -250,7 +253,7 @@ T3
 
 ### Cross-Validation
 
-We do two kinds of Cross-Validation: LOO and Kfold. The two methods show similar results means the model is stable and the $p$ value is near the number of variables ($5$) shows the model is not over-fitting.
+We do two kinds of Cross-Validation: LOO and Kfold (table $4$). The two methods show similar results means the model is stable and the $p$ value is near the number of variables ($5$) shows the model is not over-fitting.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T4
@@ -270,7 +273,7 @@ As figure 7 shows, this is the posterior density of $C_0$ calculated by presicte
 F7
 ```
 
-To make the result clear, it is better to give Table 4 to the courts and illustrate:
+To make the result clear, it is better to give Table 5 to the courts and illustrate:
 
 \begin{center}
 There is $91.4\%$ probability that the 70 year old female is over the drink driving limit, with both mean, median and mode value over the limit.
@@ -278,6 +281,9 @@ There is $91.4\%$ probability that the 70 year old female is over the drink driv
 
 The results also show that the original method is not reasonable since $2.5\%$ percentile is over-conservative even in this case.
 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+T5
+```
 
 # Widmark's Equation and $V_d$
 
@@ -394,10 +400,10 @@ Priors for others are still weak informative priors. Settings for others are not
 
 ### Results
 
-Table $5$ belew is the results table, all Rhat and ESS are in good range. The expected estimated correlation $-0.46$ in the model is also near the sample's $V_d$-$\beta$ correlation $-0.415$ (the log-transformation of $\beta$ doesn't affect the correlation.)
+Table $6$ belew is the results table, all Rhat and ESS are in good range. The expected estimated correlation $-0.46$ in the model is also near the sample's $V_d$-$\beta$ correlation $-0.415$ (the log-transformation of $\beta$ doesn't affect the correlation.)
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-T5
+T6
 ```
 
 ```{r echo=FALSE, fig.cap="Joint posterior distribution", message=FALSE, warning=FALSE}  
@@ -406,17 +412,17 @@ F10
 
 ## Testing 
 
-Table $6$ is the LOO and Kfold results, the p values ($11.0479$ and $10.691$) means the validation results are good since we have $10$ parameters.
-
-```{r echo=FALSE, message=FALSE, warning=FALSE}
-T6
-```
-
-
-Table $7$ shows the MSE of $\beta$, $V_d$ and calculated $C_0$ from joint posterior distribution comparing with true value, and also a MSE for single $\beta$ model to test if the results worse when take in $V_d$. The estimation result for $\beta$ is better than before (because of the correlation, $V_d$ explain some variation of $\beta$).
+Table $7$ is the LOO and Kfold results, the p values ($11.0479$ and $10.691$) means the validation results are good since we have $10$ parameters.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T7
+```
+
+
+Table $8$ shows the MSE of $\beta$, $V_d$ and calculated $C_0$ from joint posterior distribution comparing with true value, and also a MSE for single $\beta$ model to test if the results worse when take in $V_d$. The estimation result for $\beta$ is better than before (because of the correlation, $V_d$ explain some variation of $\beta$).
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+T8
 ```
 
 

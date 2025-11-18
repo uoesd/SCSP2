@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.16)  17 NOV 2025 19:06
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.16)  18 NOV 2025 00:19
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -419,30 +419,32 @@ Package graphics Info: Driver file: xetex.def on input line 106.
 \Gin@req@width=\dimen189
 )
 \pandoc@box=\box63
+\cslhangindent=\skip63
+\csllabelwidth=\skip64
 (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
 Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
-\f@nch@headwidth=\skip63
-\f@nch@offset@elh=\skip64
-\f@nch@offset@erh=\skip65
-\f@nch@offset@olh=\skip66
-\f@nch@offset@orh=\skip67
-\f@nch@offset@elf=\skip68
-\f@nch@offset@erf=\skip69
-\f@nch@offset@olf=\skip70
-\f@nch@offset@orf=\skip71
-\f@nch@height=\skip72
-\f@nch@footalignment=\skip73
-\f@nch@widthL=\skip74
-\f@nch@widthC=\skip75
-\f@nch@widthR=\skip76
+\f@nch@headwidth=\skip65
+\f@nch@offset@elh=\skip66
+\f@nch@offset@erh=\skip67
+\f@nch@offset@olh=\skip68
+\f@nch@offset@orh=\skip69
+\f@nch@offset@elf=\skip70
+\f@nch@offset@erf=\skip71
+\f@nch@offset@olf=\skip72
+\f@nch@offset@orf=\skip73
+\f@nch@height=\skip74
+\f@nch@footalignment=\skip75
+\f@nch@widthL=\skip76
+\f@nch@widthC=\skip77
+\f@nch@widthR=\skip78
 \@temptokenb=\toks26
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/setspace/setspace.sty
 Package: setspace 2022/12/04 v6.7b set line spacing
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/titling/titling.sty
 Package: titling 2009/09/04 v2.1d maketitle typesetting
-\thanksmarkwidth=\skip77
-\thanksmargin=\skip78
-\droptitle=\skip79
+\thanksmarkwidth=\skip79
+\thanksmargin=\skip80
+\droptitle=\skip81
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/caption/caption.sty
 Package: caption 2023/08/05 v3.6o Customizing captions (AR)
 (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/caption/caption3.sty
@@ -465,8 +467,8 @@ Package: ltcaption 2021/01/08 v1.4c longtable captions (AR)
 )) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/titlesec/titlesec.sty
 Package: titlesec 2025/01/04 v2.17 Sectioning titles
 \ttl@box=\box64
-\beforetitleunit=\skip80
-\aftertitleunit=\skip81
+\beforetitleunit=\skip82
+\aftertitleunit=\skip83
 \ttl@plus=\dimen198
 \ttl@minus=\dimen199
 \ttl@toksa=\toks27
@@ -475,9 +477,9 @@ Package: titlesec 2025/01/04 v2.17 Sectioning titles
 \titlewidthfirst=\dimen258
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/multirow/multirow.sty
 Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
-\multirow@colwidth=\skip82
+\multirow@colwidth=\skip84
 \multirow@cntb=\count326
-\multirow@dima=\skip83
+\multirow@dima=\skip85
 \bigstrutjot=\dimen259
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/wrapfig/wrapfig.sty
 \wrapoverhang=\dimen260
@@ -496,7 +498,7 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/colortbl/colortbl.sty
 Package: colortbl 2024/10/29 v1.0k Color table columns (DPC)
 \everycr=\toks31
-\minrowclearance=\skip84
+\minrowclearance=\skip86
 \rownum=\count329
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/pdflscape/pdflscape.sty
 Package: pdflscape 2025-06-23 v0.14 Display of landscape pages in PDF
@@ -537,7 +539,7 @@ Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
 \tabu@arstrutbox=\box70
 \tabu@hleads=\box71
 \tabu@vleads=\box72
-\tabu@cellskip=\skip85
+\tabu@cellskip=\skip87
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/threeparttable/threeparttable.sty
 Package: threeparttable 2003/06/13  v 3.0
 \@tempboxb=\box73
@@ -548,11 +550,11 @@ Package: environ 2014/05/04 v0.3 A new way to define environments
 (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/trimspaces/trimspaces.sty
 Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
 ))
-\TPTL@width=\skip86
+\TPTL@width=\skip88
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/generic/ulem/ulem.sty
 \UL@box=\box74
 \UL@hyphenbox=\box75
-\UL@skip=\skip87
+\UL@skip=\skip89
 \UL@hook=\toks34
 \UL@height=\dimen273
 \UL@pe=\count337
@@ -661,33 +663,40 @@ Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 284.
 )
-\Hy@SectionHShift=\skip88
+\Hy@SectionHShift=\skip90
 ) (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/bookmark/bkm-dvipdfm.def
 File: bkm-dvipdfm.def 2023-12-10 v1.31 bookmark driver for dvipdfm (HO)
 \BKM@id=\count352
-)) (./Untitled.aux)
+)) (./Untitled.aux
+
+LaTeX Warning: Label `tab:unnamed-chunk-1' multiply defined.
+
+
+LaTeX Warning: Label `tab:unnamed-chunk-1' multiply defined.
+
+)
 \openout1 = `Untitled.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 111.
-LaTeX Font Info:    ... okay on input line 111.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 153.
+LaTeX Font Info:    ... okay on input line 153.
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
 *geometry* verbose mode - [ preamble ] result:
@@ -723,19 +732,19 @@ LaTeX Font Info:    ... okay on input line 111.
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/lmr/m/n --> TU/lmr/m/n on input line 111.
+(Font)                  OT1/lmr/m/n --> TU/lmr/m/n on input line 153.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/lmr/m/it --> TU/lmr/m/it on input line 111.
+(Font)                  OT1/lmr/m/it --> TU/lmr/m/it on input line 153.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/lmr/bx/n --> TU/lmr/bx/n on input line 111.
+(Font)                  OT1/lmr/bx/n --> TU/lmr/bx/n on input line 153.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 111.
+(Font)                  OT1/lmss/m/n --> TU/lmss/m/n on input line 153.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/lmss/bx/n --> TU/lmss/bx/n on input line 111.
+(Font)                  OT1/lmss/bx/n --> TU/lmss/bx/n on input line 153.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 111.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/m/n on input line 153.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/lmtt/m/n --> TU/lmtt/bx/n on input line 111.
+(Font)                  OT1/lmtt/m/n --> TU/lmtt/bx/n on input line 153.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 0.9999967668407183.
@@ -763,7 +772,7 @@ Package fontspec Info:
 (fontspec)             <->s*[0.9999967668407183]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(0)/m/n' will be
-(Font)              scaled to size 10.95pt on input line 111.
+(Font)              scaled to size 10.95pt on input line 153.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 0.9999967668407183.
@@ -799,15 +808,15 @@ Package fontspec Info:
 (fontspec)             <->s*[0.9999967668407183]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
 
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 10.95pt on input line 111.
+(Font)              scaled to size 10.95pt on input line 153.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 111.
+(Font)              `operators' in the math version `normal' on input line 153.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input line 111.
+(Font)                  OT1/lmr/m/n --> TU/latinmodern-math.otf(1)/m/n on input line 153.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 111.
+(Font)              `operators' in the math version `bold' on input line 153.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on input line 111.
+(Font)                  OT1/lmr/bx/n --> TU/latinmodern-math.otf(1)/b/n on input line 153.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 0.9999967668407183.
@@ -873,13 +882,13 @@ Package fontspec Info:
 (fontspec)             <->s*[1.000096766517402]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
 
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `normal' on input line 111.
+(Font)              `symbols' in the math version `normal' on input line 153.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
-(Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on input line 111.
+(Font)                  OMS/lmsy/m/n --> TU/latinmodern-math.otf(2)/m/n on input line 153.
 LaTeX Font Info:    Encoding `OMS' has changed to `TU' for symbol font
-(Font)              `symbols' in the math version `bold' on input line 111.
+(Font)              `symbols' in the math version `bold' on input line 153.
 LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
-(Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on input line 111.
+(Font)                  OMS/lmsy/b/n --> TU/latinmodern-math.otf(2)/b/n on input line 153.
 
 Package fontspec Info: 
 (fontspec)             latinmodern-math scale = 0.9999967668407183.
@@ -939,47 +948,47 @@ Package fontspec Info:
 (fontspec)             <->s*[0.9998967671640342]"[latinmodern-math.otf]/OT:script=math;language=dflt;"
 
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `normal' on input line 111.
+(Font)              `largesymbols' in the math version `normal' on input line 153.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
-(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on input line 111.
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/m/n on input line 153.
 LaTeX Font Info:    Encoding `OMX' has changed to `TU' for symbol font
-(Font)              `largesymbols' in the math version `bold' on input line 111.
+(Font)              `largesymbols' in the math version `bold' on input line 153.
 LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
-(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on input line 111.
+(Font)                  OMX/lmex/m/n --> TU/latinmodern-math.otf(3)/b/n on input line 153.
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
 Package caption Info: threeparttable package is loaded.
 Package caption Info: wrapfig package is loaded.
 Package caption Info: End \AtBeginDocument code.
-Package hyperref Info: Link coloring OFF on input line 111.
+Package hyperref Info: Link coloring OFF on input line 153.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 12.0pt on input line 113.
+(Font)              scaled to size 12.0pt on input line 155.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 8.0pt on input line 113.
+(Font)              scaled to size 8.0pt on input line 155.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 6.0pt on input line 113.
-LaTeX Font Info:    Trying to load font information for OML+lmm on input line 113.
+(Font)              scaled to size 6.0pt on input line 155.
+LaTeX Font Info:    Trying to load font information for OML+lmm on input line 155.
 (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/lm/omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 12.0011pt on input line 113.
+(Font)              scaled to size 12.0011pt on input line 155.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 8.00073pt on input line 113.
+(Font)              scaled to size 8.00073pt on input line 155.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 6.00055pt on input line 113.
+(Font)              scaled to size 6.00055pt on input line 155.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 11.99872pt on input line 113.
+(Font)              scaled to size 11.99872pt on input line 155.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 7.99915pt on input line 113.
+(Font)              scaled to size 7.99915pt on input line 155.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 5.99936pt on input line 113.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 113.
+(Font)              scaled to size 5.99936pt on input line 155.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 155.
 (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 113.
+LaTeX Font Info:    Trying to load font information for U+msb on input line 155.
 (/Users/sd/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
@@ -1022,7 +1031,15 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[3
+[3]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[4
 
 ]
 
@@ -1032,7 +1049,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[4]
+[5]
 File: Untitled_files/figure-latex/unnamed-chunk-2-1.pdf Graphic file (type pdf)
 <use Untitled_files/figure-latex/unnamed-chunk-2-1.pdf>
 
@@ -1042,7 +1059,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[5
+[6
 
 ]
 
@@ -1052,7 +1069,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[6]
+[7]
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1060,28 +1077,11 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[7
+[8
 
 ]
 File: Untitled_files/figure-latex/unnamed-chunk-3-1.pdf Graphic file (type pdf)
 <use Untitled_files/figure-latex/unnamed-chunk-3-1.pdf>
-File: Untitled_files/figure-latex/Figure -1.pdf Graphic file (type pdf)
-<use Untitled_files/figure-latex/Figure -1.pdf>
-
-Underfull \hbox (badness 10000) in paragraph at lines 338--340
-[][]
- []
-
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[8]
-Missing character: There is no β (U+03B2) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no β (U+03B2) in font [lmroman10-regular]:mapping=tex-text;!
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1090,23 +1090,8 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [9]
-Missing character: There is no ： (U+FF1A) in font [lmroman10-regular]:mapping=tex-text;!
-File: Untitled_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
-<use Untitled_files/figure-latex/unnamed-chunk-5-1.pdf>
-File: Untitled_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (type pdf)
-<use Untitled_files/figure-latex/unnamed-chunk-6-1.pdf>
-
-Overfull \hbox (0.73541pt too wide) in paragraph at lines 442--443
- []\TU/lmr/m/n/10.95 Tail_ESS
- []
-
-
-Overfull \hbox (0.73541pt too wide) in paragraph at lines 461--462
- []\TU/lmr/m/n/10.95 Tail_ESS
- []
-
-File: Untitled_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (type pdf)
-<use Untitled_files/figure-latex/unnamed-chunk-8-1.pdf>
+File: Untitled_files/figure-latex/Figure-1.pdf Graphic file (type pdf)
+<use Untitled_files/figure-latex/Figure-1.pdf>
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1115,6 +1100,23 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [10]
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:mapping=tex-text;!
+Missing character: There is no β (U+03B2) in font [lmroman10-regular]:mapping=tex-text;!
+File: Untitled_files/figure-latex/unnamed-chunk-5-1.pdf Graphic file (type pdf)
+<use Untitled_files/figure-latex/unnamed-chunk-5-1.pdf>
+File: Untitled_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (type pdf)
+<use Untitled_files/figure-latex/unnamed-chunk-6-1.pdf>
+
+Overfull \hbox (1.31226pt too wide) in paragraph at lines 503--504
+ []\TU/lmr/m/n/10.95 Tail_ESS
+ []
+
+
+Overfull \hbox (1.31226pt too wide) in paragraph at lines 522--523
+ []\TU/lmr/m/n/10.95 Tail_ESS
+ []
+
+ignored error: Infinite glue shrinkage found in box being split
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1123,6 +1125,10 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [11]
+File: Untitled_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (type pdf)
+<use Untitled_files/figure-latex/unnamed-chunk-8-1.pdf>
+File: Untitled_files/figure-latex/unnamed-chunk-9-1.pdf Graphic file (type pdf)
+<use Untitled_files/figure-latex/unnamed-chunk-9-1.pdf>
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1139,13 +1145,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [13]
-File: Untitled_files/figure-latex/unnamed-chunk-9-1.pdf Graphic file (type pdf)
-<use Untitled_files/figure-latex/unnamed-chunk-9-1.pdf>
-
-Underfull \hbox (badness 10000) in paragraph at lines 514--516
-[][]
- []
-
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1162,8 +1161,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [15]
-File: Untitled_files/figure-latex/unnamed-chunk-11-1.pdf Graphic file (type pdf)
-<use Untitled_files/figure-latex/unnamed-chunk-11-1.pdf>
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1171,9 +1168,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[16
-
-]
+[16]
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1182,24 +1177,8 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [17]
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 14.4pt on input line 598.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 10.0pt on input line 598.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 598.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 14.4013pt on input line 598.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.00092pt on input line 598.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.00064pt on input line 598.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 14.39845pt on input line 598.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 9.99893pt on input line 598.
-LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.99925pt on input line 598.
+File: Untitled_files/figure-latex/unnamed-chunk-12-1.pdf Graphic file (type pdf)
+<use Untitled_files/figure-latex/unnamed-chunk-12-1.pdf>
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1210,10 +1189,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 [18
 
 ]
-File: Untitled_files/figure-latex/unnamed-chunk-13-1.pdf Graphic file (type pdf)
-<use Untitled_files/figure-latex/unnamed-chunk-13-1.pdf>
-File: Untitled_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pdf)
-<use Untitled_files/figure-latex/unnamed-chunk-14-1.pdf>
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1222,6 +1197,24 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [19]
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 14.4pt on input line 689.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 10.0pt on input line 689.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
+(Font)              scaled to size 7.0pt on input line 689.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 14.4013pt on input line 689.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 10.00092pt on input line 689.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
+(Font)              scaled to size 7.00064pt on input line 689.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 14.39845pt on input line 689.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 9.99893pt on input line 689.
+LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
+(Font)              scaled to size 6.99925pt on input line 689.
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1229,7 +1222,13 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[20]
+[20
+
+]
+File: Untitled_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pdf)
+<use Untitled_files/figure-latex/unnamed-chunk-14-1.pdf>
+File: Untitled_files/figure-latex/unnamed-chunk-15-1.pdf Graphic file (type pdf)
+<use Untitled_files/figure-latex/unnamed-chunk-15-1.pdf>
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1246,7 +1245,33 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [22]
-Underfull \hbox (badness 10000) in paragraph at lines 846--848
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[23]
+File: Untitled_files/figure-latex/unnamed-chunk-17-1.pdf Graphic file (type pdf)
+<use Untitled_files/figure-latex/unnamed-chunk-17-1.pdf>
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[24]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[25]
+Underfull \hbox (badness 10000) in paragraph at lines 981--983
 
  []
 
@@ -1275,31 +1300,6 @@ Missing character: There is no 目 (U+76EE) in font [lmroman10-regular]:mapping=
 Missing character: There is no 标 (U+6807) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 不 (U+4E0D) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 同 (U+540C) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 空 (U+7A7A) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 腹 (U+8179) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 低 (U+4F4E) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 长 (U+957F) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 期 (U+671F) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 饮 (U+996E) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 酒 (U+9152) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 高 (U+9AD8) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 活 (U+6D3B) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 性 (U+6027) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 高 (U+9AD8) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 性 (U+6027) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 别 (U+522B) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 肝 (U+809D) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 脏 (U+810F) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 大 (U+5927) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 小 (U+5C0F) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 药 (U+836F) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 物 (U+7269) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 抑 (U+6291) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 制 (U+5236) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 酒 (U+9152) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 精 (U+7CBE) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 代 (U+4EE3) in font [lmroman10-regular]:mapping=tex-text;!
-Missing character: There is no 谢 (U+8C22) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 测 (U+6D4B) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 两 (U+4E24) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 次 (U+6B21) in font [lmroman10-regular]:mapping=tex-text;!
@@ -1452,8 +1452,8 @@ Missing character: There is no 抽 (U+62BD) in font [lmroman10-regular]:mapping=
 Missing character: There is no 血 (U+8840) in font [lmroman10-regular]:mapping=tex-text;!
 Missing character: There is no 。 (U+3002) in font [lmroman10-regular]:mapping=tex-text;!
 
-Overfull \hbox (218.75897pt too wide) in paragraph at lines 864--868
-[]\TU/lmr/m/n/10.95 #Reference 空腹低 长期饮酒高CTP2E1活性高 性别肝脏大小 药物抑制酒精代谢 测两次血预测beta 如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
+Overfull \hbox (136.31638pt too wide) in paragraph at lines 999--1002
+[]\TU/lmr/m/n/10.95 #Reference #测两次血预测beta #如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，#每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决##于该人被逮捕的全国地点以及是否有医生或护士抽血。
  []
 
 
@@ -1463,21 +1463,24 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[23
+[26
 
 ] (./Untitled.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-11-06>
  ***********
+
+LaTeX Warning: There were multiply-defined labels.
+
  ) 
 Here is how much of TeX's memory you used:
- 20768 strings out of 470195
- 379720 string characters out of 5478363
- 952889 words of memory out of 5000000
- 49024 multiletter control sequences out of 15000+600000
+ 20813 strings out of 470195
+ 380676 string characters out of 5478363
+ 953831 words of memory out of 5000000
+ 49069 multiletter control sequences out of 15000+600000
  637252 words of font info for 122 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 90i,13n,114p,407b,480s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,13n,114p,407b,511s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on Untitled.pdf (23 pages).
+Output written on Untitled.pdf (26 pages).

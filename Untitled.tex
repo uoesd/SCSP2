@@ -63,6 +63,39 @@
 % Set default figure placement to htbp
 \def\fps@figure{htbp}
 \makeatother
+% definitions for citeproc citations
+\NewDocumentCommand\citeproctext{}{}
+\NewDocumentCommand\citeproc{mm}{%
+  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
+\makeatletter
+ % allow citations to break across lines
+ \let\@cite@ofmt\@firstofone
+ % avoid brackets around text for \cite:
+ \def\@biblabel#1{}
+ \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
+\makeatother
+\newlength{\cslhangindent}
+\setlength{\cslhangindent}{1.5em}
+\newlength{\csllabelwidth}
+\setlength{\csllabelwidth}{3em}
+\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
+ {\begin{list}{}{%
+  \setlength{\itemindent}{0pt}
+  \setlength{\leftmargin}{0pt}
+  \setlength{\parsep}{0pt}
+  % turn on hanging indent if param 1 is 1
+  \ifodd #1
+   \setlength{\leftmargin}{\cslhangindent}
+   \setlength{\itemindent}{-1\cslhangindent}
+  \fi
+  % set entry spacing
+  \setlength{\itemsep}{#2\baselineskip}}}
+ {\end{list}}
+\usepackage{calc}
+\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
@@ -81,6 +114,15 @@
 \captionsetup[table]{labelfont=bf}
 \usepackage{titlesec}
 \newcommand{\sectionbreak}{\clearpage}
+\renewcommand{\citeproc}[2]{%
+  \hyperref[#1]{\textcolor{blue}{#2}}%
+}
+
+\let\oldbibitem\bibitem
+\renewcommand{\bibitem}[2][]{%
+  \oldbibitem[#1]{#2}%
+  \phantomsection\label{#2}%
+} 
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
@@ -106,7 +148,7 @@
 \title{Report Title: Example Report}
 \author{Group 13\\
 Department / Course}
-\date{November 17, 2025}
+\date{November 18, 2025}
 
 \begin{document}
 \maketitle
@@ -183,7 +225,7 @@ simulation, each \(C_t\) is calculated by each pair of \(\beta\) and
 exceeding the limit.
 
 To make it easier, we write the method in a function so other expert
-witness can also get the results like Table \(4\) by easily plugging new
+witness can also get the results like Table \(5\) by easily plugging new
 person's data.
 
 \section{Data Description}\label{data-description}
@@ -192,19 +234,20 @@ It is important to normalized all numerical variables. Centering the
 covariates can reduce autocorrelation \(\rho_k\) of lag \(k\) which is
 defined as:
 
-\[\rho_k = \frac{Cov(\theta^i, \theta^{i+k})}{\theta^2},\] \(\rho_k\)
-measures how similar the sample at position \(i\) is to the sample at
-position \(i+k\). As the random walk process, \(\theta_i\) is similar to
-\(\theta_{i+1}\), less similar to \(\theta_{i+2}\), independent with
-\(\theta_{i+k}\) for large \(k\). So if \(\rho_k\) is large means the
-chains hardly move, can't converge.
+\[\rho_k = \frac{Cov(\theta^i, \theta^{i+k})}{\theta^2},\]
 
-As a more clear expression, we will introduce Effective Sample Size
-(ESS):
+\(\rho_k\) measures how similar the sample at position \(i\) is to the
+sample at position \(i+k\). As a random walk process, \(\theta_i\)
+should be similar to \(\theta_{i+1}\), less similar to \(\theta_{i+2}\),
+independent with \(\theta_{i+k}\) for large \(k\). So if \(\rho_k\) is
+large means the chains hardly move, can't converge.
 
-\[ n_{\text{eff}} = \frac{n}{1 + 2 \sum_{k=1}^{\infty}\rho_k}\]
+To make it more clear, we will use Effective Sample Size (ESS) to
+explain:
 
-\(n_{\text{eff}}\) is larger means the MCMC method converge faster (for
+\[ n_{\text{eff}} = \frac{n}{1 + 2 \sum_{k=1}^{\infty}\rho_k}.\]
+
+`\(n_{\text{eff}}\)' is large means the MCMC method converge faster (for
 example if we set \(4\) chains with each chains \(2000\) iterations,
 \(500\) burn-in, the \(n_{\text{eff}} = 4000\) means the number of
 independent samples is \(4000\) out of \(8000\)). Larger
@@ -215,15 +258,13 @@ of estimated exoectation since:
 
 Also Since \(\beta\) is a small value, the coefficients of large value
 variables are pretty small, near 0, which will make \(\beta\) estimation
-worse.
+worse, so normalization for variables is necessary.
 
 Then we prefer to \(\beta\) to \(\log(\beta)\) since the original
 \(\beta\) distribution has heavy tail, all outliers (if have) can be
 scaled. As shown in figure 1, \(\beta\) forms a good normal distribution
 shape after log-transferring. After simulation we can take exponential
 of the results.
-
-`BAC Peak time' is converted to hours.
 
 \begin{figure}
 \centering
@@ -243,10 +284,12 @@ really matter unless the subject has age-related liver disease, but
 because of moral and ethical, we don't find much research of alcohol
 test on elderly person with liver disease.
 
+`BAC Peak time' is converted to hours.
+
 \section{Bayesian regression model
 (BRM)}\label{bayesian-regression-model-brm}
 
-\subsection{Reason for BRM}\label{reason-for-brm}
+\subsection{Reasons for BRM}\label{reasons-for-brm}
 
 Comparing with fitting linear regression model for \(\beta_i\), which
 can be expressed as:
@@ -283,6 +326,7 @@ exponential of \(\hat{\beta_{i,j}}\) to get actual value.
 We use \(brm\) package in R to do this.
 
 The principle theorem behind BRM is Bayes' Rule:
+
 \[p(\theta \mid \text{data}) = \frac{p(\text{data} \mid \theta) \, p(\theta)}{p(\text{data})}.\]
 
 The \(\theta\) in the equation is the coefficients of \(\gamma_j\). For
@@ -325,9 +369,12 @@ be affected.
 
 \begin{itemize}
 \item
-  Gender: Female's BAC elimination rate is larger than male on average,
-  it is explained by liver weight represents a greater fraction of lean
-  body mass in the female gender {[}2{]}.
+  Female Gender: Female's BAC elimination rate is larger than male on
+  average, it is explained by liver weight represents a greater fraction
+  of lean body mass in the female gender {[}2{]}.
+\item
+  Male Gender: The amount of observed male data is acceptable larger
+  than that of female.
 \item
   Drinking time after BAC peak: If the person keep drinking after BAC
   reaches peak, the measured \(\beta\) will be smaller since \(\beta\)
@@ -335,8 +382,25 @@ be affected.
   fluctuations on the BAC plots.
 \end{itemize}
 
-\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/Figure -1.pdf}}
-\#\#\# Priors
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/Figure-1.pdf}}
+\caption{Box plot of beta respect to gender.}
+\end{figure}
+
+\begin{itemize}
+\item
+  Weight: Basically a person's blood alcohol concentration is a function
+  of the total amount of alcohol in the person's system divided by total
+  body water. Larger weight implies higher amount body water
+\item
+  Height: A measurement of body size other than individual's weight
+\item
+  Beta60: Improved from the original fixed \(\beta\), it demonstrates
+  elimination rate of a person's blood alcohol concentration.
+\end{itemize}
+
+\subsubsection{Priors}\label{priors}
 
 Before fitting the Bayesian regression model, appropriate priors need to
 be specified for all regression coefficients and the residual standard
@@ -362,11 +426,11 @@ Regression coefficients (others) & Normal(0, 0.5) \\
 Residual SD & Exponential(1) \\
 \end{longtable}
 
-All variables have been standardized and we do not expect log β to have
+All variables have been standardized and we do not expect log(β) to have
 a linear relationship with the variables, so zero-mean normal priors are
-appropriate. Based on the review by Jones (2010), sex is considered one
-of the main factors influencing alcohol elimination rates. Therefore, we
-set relatively wide priors Normal(0, 2) for the sex coefficients,
+appropriate. We consider gender to be one of the main factors
+influencing alcohol elimination rates \citeproc{ref-Jones2010}{{[}1{]}},
+so we set relatively wide priors Normal(0, 2) for the sex coefficients,
 allowing their effects to vary within a reasonable range. For other
 standardized variables (such as weight and height), since their impacts
 on β are considered relatively small, we used more shrinkage weakly
@@ -379,10 +443,7 @@ If future research involves different populations, larger sample sizes,
 or additional biological information, the prior distributions can be
 adjusted accordingly to ensure they are applicable to any new datasets.
 
-reference： Jones, A. W. (2010). Evidence-based survey of the
-elimination rates of ethanol from blood with applications in forensic
-casework. Forensic Science International, 200, 1--20.
-\url{https://doi.org/10.1016/j.forsciint.2010.02.021} \#\# Model Results
+\subsection{Model Results}\label{model-results}
 
 \subsubsection{Fitting result}\label{fitting-result}
 
@@ -401,7 +462,7 @@ near zero. Also \(\sigma\) value is estimated under log-transformed
 \begin{figure}
 \centering
 \pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-5-1.pdf}}
-\caption{PPC density of 500 predict results.}
+\caption{Posterioe density of 4 chains for all coefficients.}
 \end{figure}
 
 Figure 4 shows the trace plots for all variable coefficients, it can be
@@ -415,14 +476,14 @@ convergent.
 \end{figure}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1974}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1316}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0658}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1316}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1948}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1169}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1299}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1169}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1169}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0779}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1299}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1169}}@{}}
 \caption{Posterior Summary from BRM}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
@@ -464,13 +525,16 @@ Tail\_ESS
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-sexfemale & -1.673 & 0.034 & -1.739 & -1.606 & 1 & 8677.139 &
-8065.652 \\
-sexmale & -1.730 & 0.025 & -1.778 & -1.682 & 1 & 8090.728 & 8240.799 \\
-weight\_s & -0.008 & 0.024 & -0.054 & 0.038 & 1 & 9207.023 & 8348.131 \\
-height\_s & -0.045 & 0.025 & -0.094 & 0.004 & 1 & 8268.992 & 8280.094 \\
-drinkingtime\_s & -0.041 & 0.017 & -0.073 & -0.008 & 1 & 11655.316 &
-8532.767 \\
+sexfemale & -1.674 & 0.035 & -1.742 & -1.606 & 1.001 & 8484.958 &
+8099.220 \\
+sexmale & -1.730 & 0.025 & -1.778 & -1.682 & 1.000 & 9304.551 &
+8064.068 \\
+weight\_s & -0.008 & 0.024 & -0.054 & 0.038 & 1.001 & 8428.193 &
+8171.863 \\
+height\_s & -0.046 & 0.025 & -0.095 & 0.004 & 1.000 & 7760.105 &
+8165.085 \\
+drinkingtime\_s & -0.042 & 0.017 & -0.074 & -0.009 & 1.001 & 10726.154 &
+8882.403 \\
 \end{longtable}
 
 \subsubsection{PPC Density}\label{ppc-density}
@@ -490,10 +554,12 @@ get the mean, spread, skew both right even at right tail.
 \subsection{Model Testing}\label{model-testing}
 
 We take \(12000\) number of draws from the posterior distribution.
-\#\#\# LOO-PIT QQ plot The Leave-One-Out Probability Integral Transform
-Quantile-Quantile plot (LOO-PIT QQ plot) can check if the predictions
-calibrated correctly and if the predictive distributions biased, which
-is defined as:
+
+\subsubsection{LOO-PIT QQ plot}\label{loo-pit-qq-plot}
+
+The Leave-One-Out Probability Integral Transform Quantile-Quantile plot
+(LOO-PIT QQ plot) can check if the predictions calibrated correctly and
+if the predictive distributions biased, which is defined as:
 \[ \mathrm{LOO\text{-}PIT}_i = P(\tilde{y}_i \le y_i |y_{-i}) .\]
 
 Here we still use Monte Carlo method to simulate it, as:
@@ -502,17 +568,25 @@ Here we still use Monte Carlo method to simulate it, as:
 \mathrm{LOO\text{-}PIT}_i
 = \frac{1}{S} \sum_{s=1}^{S} 
 \mathbf{1}\!\left( \tilde{y}_{i,-i}^{(s)} \le y_i \right)
-\] where \(S\) is the number of posterior draws. We will use it to check
-if our posterior is under or over dispersion, the good model's PIT plot
-should be flat over \(Uniform(0,1)\). For our model, the PIT histogram
-(Figure 4) is flat everywhere except probability near 0.55 and 0.8,
-which are acceptable by the randomness of MCMC method. A U-shape (points
-over dot line at two tails) in PIT plots means overestimates variance,
-it doesn't appear in our plot gives evidence of our choices on variables
-and likelihood family.
+\]
 
+where \(S\) is the number of posterior draws.
+
+We will use it to check if our posterior is under or over dispersion,
+the good model's PIT plot should be flat over \(Uniform(0,1)\). For our
+model, the PIT histogram (Figure 4) is flat everywhere except
+probability near 0.55 and 0.8, which are acceptable by the randomness of
+MCMC method. A U-shape (points over dot line at two tails) in PIT plots
+means overestimates variance, it doesn't appear in our plot gives
+evidence of our choices on variables and likelihood family.
+
+\begin{figure}
+\centering
 \pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-9-1.pdf}}
-\#\#\# Coverage rate and Errors
+\caption{Probability Integral Transform (PIT) histogram.}
+\end{figure}
+
+\subsubsection{Coverage rate and Errors}\label{coverage-rate-and-errors}
 
 Table 3 shows the coverage rate of \(95\%\) and \(50\%\) predicted
 intervals, which means \(98\) and \(52\) individuals' real \(\beta\)
@@ -537,6 +611,23 @@ Mean Absolute Error & 0.023 \\
 Root Mean Square Error & 0.029 \\
 \end{longtable}
 
+\subsubsection{Cross-Validation}\label{cross-validation}
+
+We do two kinds of Cross-Validation: LOO and Kfold (table \(4\)). The
+two methods show similar results means the model is stable and the \(p\)
+value is near the number of variables (\(5\)) shows the model is not
+over-fitting.
+
+\begin{longtable}[t]{lrrrrrr}
+\caption{\label{tab:unnamed-chunk-1}Cross-validation Comparison (LOO vs 10-fold)}\\
+\toprule
+Method & elpd & elpd\_SE & p & p\_SE & IC & IC\_SE\\
+\midrule
+LOO & 38.625 & 6.317 & 5.669 & 0.866 & -77.25 & 12.635\\
+K-fold & 38.740 & 6.263 & 5.554 & 1.004 & -77.48 & 12.525\\
+\bottomrule
+\end{longtable}
+
 \section{Example}\label{example}
 
 Now we will apply our model on an individual example: A \(70\) year old
@@ -557,12 +648,12 @@ driving limit.
 
 \begin{figure}
 \centering
-\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-11-1.pdf}}
+\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-12-1.pdf}}
 \caption{Posterior Predictive Distribution of C\_0, message=FALSE,
 warning=FALSE, with limit C\_0 = 0.47 (dot line).}
 \end{figure}
 
-To make the result clear, it is better to give Table 4 to the courts and
+To make the result clear, it is better to give Table 5 to the courts and
 illustrate:
 
 \begin{center}
@@ -584,13 +675,13 @@ Statistic & Value \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Mean & 0.560 \\
-Median & 0.554 \\
-Mode & 0.538 \\
+Mean & 0.559 \\
+Median & 0.552 \\
+Mode & 0.544 \\
 2.5\% & 0.437 \\
-25\% & 0.510 \\
-75\% & 0.604 \\
-97.5\% & 0.716 \\
+25\% & 0.508 \\
+75\% & 0.601 \\
+97.5\% & 0.715 \\
 P(C\_0 \textgreater{} 0.47) & 0.913 \\
 \end{longtable}
 
@@ -645,24 +736,12 @@ comparing with our equation, \(V_d\) is actually calculated by:
 \[V_d = \frac{\text{TBW}}{\text{weight}} \times \frac{1}{F_{\text{water}}} \times \frac{1}{F} = \eta \times \frac{\text{TBW}}{\text{weight}}\]
 and we need to estimate \(\eta\) value since TBW is a value that can be
 determined in our dataset. we will use:
+
 \[\hat{V_d}_{i,j} = \hat{\eta}_{1,i} ( \frac{\text{TBW}}{\text{weight}}_\text{male})_j + \hat{\eta}_{2.i} ( \frac{\text{TBW}}{\text{weight}}_\text{female})_j + \varepsilon_{i}\]
 to estimate \(\hat{V_d}\) where \(i\) is the \(i_{th}\) iterations (we
 will again use BRM, but as a joint model with \(\beta\) to deal with the
 correlation, we will explain it in next part.), \(j\) is the \(j_{th}\)
 individuals, \(\eta\) is the coefficients that need to be predicted.
-
-\subsection{\texorpdfstring{Joint BRM for \(\beta\) and
-\(V_d\)}{Joint BRM for \textbackslash beta and V\_d}}\label{joint-brm-for-beta-and-v_d}
-
-\(V_d\) is calculated by true value \(\beta\) (with our
-log-transformed). We will not log-transformed \(V_d\) since the density
-of \(V_d\) can't be improved by taking log.
-
-\begin{figure}
-\centering
-\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-13-1.pdf}}
-\caption{Density plot of V\_d}
-\end{figure}
 
 \subsection{\texorpdfstring{Correlations between \(\beta\) and
 \(V_d\)}{Correlations between \textbackslash beta and V\_d}}\label{correlations-between-beta-and-v_d}
@@ -677,6 +756,19 @@ and \(V_d\) is \(-0.415\), which is relatively big.
 \caption{Correlation plot betweem V\_d and Beta}
 \end{figure}
 
+\subsection{\texorpdfstring{Joint BRM for \(\beta\) and
+\(V_d\)}{Joint BRM for \textbackslash beta and V\_d}}\label{joint-brm-for-beta-and-v_d}
+
+\(V_d\) is calculated by true value \(\beta\) (with our
+log-transformed). We will not log-transformed \(V_d\) since the density
+of \(V_d\) can't be improved by taking log.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-15-1.pdf}}
+\caption{Density plot of V\_d}
+\end{figure}
+
 \subsection{Fitting model and Results}\label{fitting-model-and-results}
 
 The mathematical expression of the joint model can be expressed as:
@@ -685,9 +777,9 @@ The mathematical expression of the joint model can be expressed as:
 \hat{\beta}_{i,j} = \hat{\gamma}_{1,i}\,\text{female}_j
 + \hat{\gamma}_{2,i}\,\text{male}_j
 + \hat{\gamma}_{3,i}\,\text{weight}_j
-+ \hat{\gamma}_{4,i}\,\text{height}_j + \sigma^2_{i,\beta}.
++ \hat{\gamma}_{4,i}\,\text{height}_j + \varepsilon^2_{\beta,i}.
 \] and
-\[\hat{V_d}_{i,j} = \hat{\eta}_{1,i} ( \frac{\text{TBW}}{\text{weight}}_\text{male})_j + \hat{\eta}_{2.i} ( \frac{\text{TBW}}{\text{weight}}_\text{female})_j + \varepsilon_{i,V_d}\]
+\[\hat{V_d}_{i,j} = \hat{\eta}_{1,i} ( \frac{\text{TBW}}{\text{weight}}_\text{male})_j + \hat{\eta}_{2.i} ( \frac{\text{TBW}}{\text{weight}}_\text{female})_j + \varepsilon_{V_d,i}\]
 
 where \[
 \begin{pmatrix}
@@ -738,12 +830,12 @@ The mean value of two priors is actually near to the linear regression
 results of single \(V_d\) model (\(1.41\) for male and \(1.3\) for
 female).
 
-Priors for others are still weak informative priors. Setting for others
+Priors for others are still weak informative priors. Settings for others
 are not changed (\(4\) chains, \(4000\) iterations, \(1000\) warm-up).
 
 \subsubsection{Results}\label{results}
 
-Table \(5\) belew is the results table, all Rhat and ESS are in good
+Table \(6\) belew is the results table, all Rhat and ESS are in good
 range. The expected estimated correlation \(-0.46\) in the model is also
 near the sample's \(V_d\)-\(\beta\) correlation \(-0.415\) (the
 log-transformation of \(\beta\) doesn't affect the correlation.)
@@ -795,32 +887,75 @@ Group
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-beta\_sexfemale & -1.6663 & 0.0330 & 1.0002 & 7569.217 & 7719.132 &
+beta\_sexfemale & -1.6666 & 0.0329 & 1.0003 & 8557.968 & 8235.323 &
 Beta \\
-beta\_sexmale & -1.7340 & 0.0239 & 1.0003 & 7828.005 & 7590.979 &
+beta\_sexmale & -1.7338 & 0.0238 & 1.0001 & 9338.400 & 7981.624 &
 Beta \\
-beta\_weight\_s & -0.0007 & 0.0210 & 1.0004 & 7825.627 & 7441.216 &
+beta\_weight\_s & -0.0011 & 0.0207 & 1.0001 & 9760.305 & 9063.246 &
 Beta \\
-beta\_height\_s & -0.0467 & 0.0220 & 1.0001 & 7393.980 & 6788.047 &
+beta\_height\_s & -0.0467 & 0.0222 & 1.0002 & 8576.352 & 8465.325 &
 Beta \\
-beta\_drinkingtime\_s & -0.0310 & 0.0149 & 1.0001 & 10080.999 & 6941.147
+beta\_drinkingtime\_s & -0.0310 & 0.0147 & 1.0004 & 13093.717 & 9322.180
 & Beta \\
-Vd\_T\_Vd:sexfemale & 1.2966 & 0.0358 & 1.0002 & 8797.854 & 7030.693 &
+Vd\_T\_Vd:sexfemale & 1.2965 & 0.0367 & 0.9999 & 12033.571 & 9305.396 &
 Vd \\
-Vd\_T\_Vd:sexmale & 1.4093 & 0.0300 & 1.0000 & 9356.247 & 7496.418 &
+Vd\_T\_Vd:sexmale & 1.4090 & 0.0303 & 1.0003 & 10370.123 & 8750.799 &
 Vd \\
-sigma\_beta & 0.1609 & 0.0117 & 1.0002 & 8337.962 & 7107.995 & Beta \\
-sigma\_Vd & 0.1140 & 0.0083 & 1.0003 & 10044.474 & 7045.928 & Vd \\
-rescor(beta,Vd) & -0.4623 & 0.0795 & 1.0004 & 8932.569 & 6864.751 &
+sigma\_beta & 0.1611 & 0.0120 & 1.0002 & 10005.001 & 9157.256 & Beta \\
+sigma\_Vd & 0.1139 & 0.0082 & 1.0009 & 10783.056 & 9166.474 & Vd \\
+rescor(beta,Vd) & -0.4635 & 0.0800 & 1.0001 & 9939.374 & 9178.082 &
 Correlation \\
 \end{longtable}
 
-\section{Further research:}\label{further-research}
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-17-1.pdf}}
+\caption{Joint posterior distribution}
+\end{figure}
 
-casual effect: biased data selection, (e.g.~inner correlations between
-sex and height)
+\subsection{Testing}\label{testing}
 
-\subsection{Variable Description}\label{variable-description}
+Table \(7\) is the LOO and Kfold results, the p values (\(11.0479\) and
+\(10.691\)) means the validation results are good since we have \(10\)
+parameters.
+
+\begin{longtable}[t]{lrrrrrr}
+\caption{\label{tab:unnamed-chunk-1}Cross-validation Comparison (LOO vs 10-fold)}\\
+\toprule
+Method & elpd & elpd\_SE & p & p\_SE & IC & IC\_SE\\
+\midrule
+LOO & 123.879 & 14.300 & 11.473 & 3.233 & -247.759 & 28.600\\
+K-fold & 123.702 & 13.483 & 11.650 & 2.588 & -247.404 & 26.966\\
+\bottomrule
+\end{longtable}
+
+Table \(8\) shows the MSE of \(\beta\), \(V_d\) and calculated \(C_0\)
+from joint posterior distribution comparing with true value, and also a
+MSE for single \(\beta\) model to test if the results worse when take in
+\(V_d\). The estimation result for \(\beta\) is better than before
+(because of the correlation, \(V_d\) explain some variation of
+\(\beta\)).
+
+\begin{longtable}[t]{lr}
+\caption{\label{tab:unnamed-chunk-1}Prediction Error and Coverage Rate}\\
+\toprule
+Metric & Estimate\\
+\midrule
+MSE\_Vd & 0.0865\\
+MSE\_beta (joint model) & 0.0233\\
+MSE\_beta (model C) & 0.0233\\
+MSE\_C0 & 0.1700\\
+Vd Coverage (95\%) & 0.9600\\
+\addlinespace
+Vd Coverage (50\%) & 0.5200\\
+C0 Coverage (95\%) & 1.0000\\
+C0 Coverage (50\%) & 0.7200\\
+\bottomrule
+\end{longtable}
+
+\section{Reference}\label{reference}
+
+\section{Variable Description}\label{variable-description}
 
 \begin{itemize}
 \tightlist
@@ -861,14 +996,24 @@ Maximum BAC/BrAC,BAC peak time 也可推断为无关factor
 \#Limitation our model limit data collected reason - cannot reflect the
 real world model reason other reason: variables
 
-\#Reference 空腹低 长期饮酒高CTP2E1活性高 性别肝脏大小 药物抑制酒精代谢
-测两次血预测beta
-如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决于该人被逮捕的全国地点以及是否有医生或护士抽血。
-\url{https://www.sciencedirect.com/science/article/pii/S0379073810000770?via\%3Dihub}
+\#Reference \#测两次血预测beta
+\#如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，\#每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决\#\#于该人被逮捕的全国地点以及是否有医生或护士抽血。
+\#\url{https://www.sciencedirect.com/science/article/pii/S0379073810000770?via\%3Dihub}
 
 P.Y. Kwo, V.A. Ramchandani, S. O'Connor, D. Amann, L.G. Carr, K.
 Sandrasegaran, K.K. Kopecky, T.K. Li Gender differences in alcohol
 metabolism: relationship to liver volume and effect of adjusting for
 body mass Gastroenterology, 115 (1998), pp.~1552-1557
+
+\phantomsection\label{refs}
+\begin{CSLReferences}{0}{0}
+\bibitem[\citeproctext]{ref-Jones2010}
+\CSLLeftMargin{{[}1{]} }%
+\CSLRightInline{A. W. Jones, {``Evidence-based survey of the elimination
+rates of ethanol from blood with applications in forensic casework,''}
+\emph{Forensic Science International}, vol. 200, pp. 1--20, 2010, doi:
+\href{https://doi.org/10.1016/j.forsciint.2010.02.021}{10.1016/j.forsciint.2010.02.021}.}
+
+\end{CSLReferences}
 
 \end{document}
