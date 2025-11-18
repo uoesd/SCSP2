@@ -210,10 +210,6 @@ simulation, each \(C_t\) is calculated by each pair of \(\beta\) and
 \(V_d\), so expert witness can still find a probability of \(C_t\)
 exceeding the limit.
 
-To make it easier, we write the method in a function so other expert
-witness can also get the results like Table \(5\) by easily plugging new
-person's data.
-
 \section{Data Description}\label{data-description}
 
 \(\beta\) true values are converted to positive to convenient
@@ -379,19 +375,24 @@ be affected.
 
 \subsubsection{Key Variables}\label{key-variables}
 
+We remove the intercept and use gender (male and female) to be the two
+baselines. Since \(\beta\) for male and female are in different range.
+
 \begin{itemize}
 \item
-  Female Gender: Female's BAC elimination rate is larger than male on
-  average, it is explained by liver weight represents a greater fraction
-  of lean body mass in the female gender {[}2{]}.
+  Gender: Female's BAC elimination rate is larger than male on average
+  (figure 3), it is explained by liver weight represents a greater
+  fraction of lean body mass in the female gender {[}2{]}.
 \item
-  Male Gender: The amount of observed male data is acceptable larger
-  than that of female.
+  Drinking time: If the person keep drinking after BAC reaches peak, the
+  measured \(\beta\) will be smaller since \(\beta\) is measured
+  starting at BAC peak time till the end, there will be fluctuations on
+  the BAC plots. We will use total drinking time as the indicator.
 \item
-  Drinking time after BAC peak: If the person keep drinking after BAC
-  reaches peak, the measured \(\beta\) will be smaller since \(\beta\)
-  is measured starting at BAC peak time till the end, there will be
-  fluctuations on the BAC plots.
+  Weight: Basically higher weight often leads lager size of liver and
+  larger amount of total body water.
+\item
+  Height: Height also affect the amount of total body water.
 \end{itemize}
 
 \begin{figure}
@@ -399,18 +400,6 @@ be affected.
 \pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/Figure-1.pdf}}
 \caption{Box plot of beta respect to gender.}
 \end{figure}
-
-\begin{itemize}
-\item
-  Weight: Basically a person's blood alcohol concentration is a function
-  of the total amount of alcohol in the person's system divided by total
-  body water. Larger weight implies higher amount body water
-\item
-  Height: A measurement of body size other than individual's weight
-\item
-  Beta60: Improved from the original fixed \(\beta\), it demonstrates
-  elimination rate of a person's blood alcohol concentration.
-\end{itemize}
 
 \subsubsection{Priors}\label{priors}
 
@@ -493,8 +482,8 @@ convergent.
   >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1316}}
   >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
   >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0789}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0658}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1316}}
   >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}@{}}
 \caption{Posterior Summary from BRM}\tabularnewline
 \toprule\noalign{}
@@ -537,16 +526,13 @@ Tail\_ESS
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-sexfemale & -1.673 & 0.035 & -1.741 & -1.603 & 1.000 & 7808.464 &
-7613.860 \\
-sexmale & -1.731 & 0.025 & -1.779 & -1.682 & 1.000 & 7963.743 &
-7335.938 \\
-weight\_s & -0.008 & 0.024 & -0.054 & 0.039 & 1.001 & 7729.459 &
-7577.398 \\
-height\_s & -0.045 & 0.025 & -0.094 & 0.004 & 1.000 & 7148.804 &
-7921.363 \\
-drinkingtime\_s & -0.042 & 0.017 & -0.074 & -0.009 & 1.000 & 9934.349 &
-8227.404 \\
+sexfemale & -1.673 & 0.034 & -1.740 & -1.606 & 1 & 8576.353 &
+8334.303 \\
+sexmale & -1.730 & 0.024 & -1.778 & -1.684 & 1 & 8742.778 & 8309.203 \\
+weight\_s & -0.008 & 0.024 & -0.054 & 0.038 & 1 & 8392.999 & 8129.812 \\
+height\_s & -0.045 & 0.025 & -0.094 & 0.003 & 1 & 7596.179 & 8023.806 \\
+drinkingtime\_s & -0.041 & 0.016 & -0.073 & -0.010 & 1 & 11330.326 &
+8349.984 \\
 \end{longtable}
 
 \subsubsection{PPC Density}\label{ppc-density}
@@ -635,8 +621,8 @@ over-fitting.
 \toprule
 Method & elpd & elpd\_SE & p & p\_SE & IC & IC\_SE\\
 \midrule
-LOO & 38.611 & 6.304 & 5.674 & 0.860 & -77.221 & 12.609\\
-K-fold & 38.256 & 6.393 & 6.029 & 1.124 & -76.512 & 12.787\\
+LOO & 38.672 & 6.321 & 5.636 & 0.857 & -77.344 & 12.643\\
+K-fold & 36.873 & 6.478 & 7.435 & 1.176 & -73.747 & 12.955\\
 \bottomrule
 \end{longtable}
 
@@ -687,14 +673,14 @@ Statistic & Value \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Mean & 0.560 \\
-Median & 0.554 \\
-Mode & 0.549 \\
-2.5\% & 0.440 \\
-25\% & 0.511 \\
-75\% & 0.602 \\
-97.5\% & 0.717 \\
-P(C\_0 \textgreater{} 0.47) & 0.919 \\
+Mean & 0.559 \\
+Median & 0.553 \\
+Mode & 0.538 \\
+2.5\% & 0.438 \\
+25\% & 0.509 \\
+75\% & 0.603 \\
+97.5\% & 0.713 \\
+P(C\_0 \textgreater{} 0.47) & 0.911 \\
 \end{longtable}
 
 \section{\texorpdfstring{Widmark's Equation and
@@ -953,7 +939,7 @@ parameters.
 Method & elpd & elpd\_SE & p & p\_SE & IC & IC\_SE\\
 \midrule
 LOO & 123.879 & 14.300 & 11.473 & 3.233 & -247.759 & 28.600\\
-K-fold & 123.115 & 13.653 & 12.238 & 2.769 & -246.229 & 27.307\\
+K-fold & 120.543 & 15.273 & 14.810 & 4.471 & -241.086 & 30.547\\
 \bottomrule
 \end{longtable}
 
@@ -969,15 +955,15 @@ MSE for single \(\beta\) model to test if the results worse when take in
 \toprule
 Metric & Estimate\\
 \midrule
-MSE\_Vd & 0.0864\\
+MSE\_Vd & 0.0865\\
 MSE\_beta (joint model) & 0.0232\\
 MSE\_beta (model C) & 0.0232\\
 MSE\_C0 & 0.1705\\
 Vd Coverage (95\%) & 0.9600\\
 \addlinespace
-Vd Coverage (50\%) & 0.5300\\
+Vd Coverage (50\%) & 0.5200\\
 C0 Coverage (95\%) & 1.0000\\
-C0 Coverage (50\%) & 0.7000\\
+C0 Coverage (50\%) & 0.7100\\
 \bottomrule
 \end{longtable}
 
@@ -1122,14 +1108,14 @@ Model & elpd\_diff & se\_diff \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-fit\_single & 0.000 & 0.000 \\
-fit\_A & -0.026 & 0.041 \\
-fit\_B & -0.641 & 2.677 \\
+fit\_A & 0.000 & 0.000 \\
+fit\_single & -0.033 & 0.033 \\
+fit\_B & -0.698 & 2.656 \\
 \end{longtable}
 
 Other than this, if we plot the mean posterior \(\beta\) value with true
 \(\beta\) value, the results will be more clear. Since the prior
-variance of coefficients is setted very small, the value of \(\beta\) is
+variance of coefficients is seted very small, the value of \(\beta\) is
 mainly predicted by gender, which you can find clearly two groups for
 prior B's model.
 

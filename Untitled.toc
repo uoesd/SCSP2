@@ -6,9 +6,9 @@
 \contentsline {subsection}{\numberline {3.3}How BRM works}{7}{subsection.3.3}%
 \contentsline {subsection}{\numberline {3.4}Model Selection}{9}{subsection.3.4}%
 \contentsline {subsubsection}{\numberline {3.4.1}Key Variables}{9}{subsubsection.3.4.1}%
-\contentsline {subsubsection}{\numberline {3.4.2}Priors}{10}{subsubsection.3.4.2}%
-\contentsline {subsection}{\numberline {3.5}Model Results}{10}{subsection.3.5}%
-\contentsline {subsubsection}{\numberline {3.5.1}Fitting result}{10}{subsubsection.3.5.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}Priors}{9}{subsubsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.5}Model Results}{11}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Fitting result}{11}{subsubsection.3.5.1}%
 \contentsline {subsubsection}{\numberline {3.5.2}PPC Density}{12}{subsubsection.3.5.2}%
 \contentsline {subsection}{\numberline {3.6}Model Testing}{13}{subsection.3.6}%
 \contentsline {subsubsection}{\numberline {3.6.1}LOO-PIT QQ plot}{13}{subsubsection.3.6.1}%

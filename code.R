@@ -12,7 +12,7 @@ library(knitr)
 library(kableExtra)
 library(stringr)
 data <- read_excel("SCS_BAC_and_BrAC_split_TOP.xlsx")
-
+set.seed(121212)
 # Data description
 ###################################################################################
 
@@ -259,22 +259,26 @@ F2 <- ggplot(all, aes(x = .iteration,
 
 ###################################################################################
 
-priors_table <- tribble(~Parameter, ~Prior,
+priors_table <- tribble(~'' , ~Prior,
                         "Regression coefficient for male ", "Normal(0, 2)",
                         "Regression coefficient for female", "Normal(0, 2)",
                         "Regression coefficients (others)", "Normal(0, 0.5)",
                         "Residual SD ", "Exponential(1)")
 
 T1 <- knitr::kable(priors_table, 
-                   caption = "Weakly informative priors used in the Bayesian regression model")
+                   caption = "Weakly informative priors")
 
 ###################################################################################
 
-F3 <- mcmc_plot(fit_single, type = "dens_overlay")
+F3 <- ggplot(data, aes(x = sex, y = beta)) + geom_boxplot() + ggtitle("beta by sex")
 
 ###################################################################################
 
-F4 <- mcmc_trace(fit_single, 
+F4 <- mcmc_plot(fit_single, type = "dens_overlay")
+
+###################################################################################
+
+F5 <- mcmc_trace(fit_single, 
                  pars = c("b_sexfemale", "b_sexmale",
                           "b_weight_s", "b_height_s",
                           "b_drinkingtime_s", "sigma"))
@@ -292,11 +296,11 @@ T2 <- knitr::kable(
 ###################################################################################
 
 yrep_C <- exp(posterior_predict(fit_single, draws = 2000))
-F5 <- ppc_dens_overlay(exp(data$beta), yrep_C[1:2000, ]) + ggtitle("PPC density")
+F6 <- ppc_dens_overlay(exp(data$beta), yrep_C[1:2000, ]) + ggtitle("PPC density")
 
 ###################################################################################
 
-F6 <- pp_check(fit_single, type = "loo_pit_qq")
+F7 <- pp_check(fit_single, type = "loo_pit_qq")
 
 ###################################################################################
 
@@ -318,7 +322,7 @@ T3 <- knitr::kable(model_check_table,
 
 df_C0 <- tibble(C0 = C0_draws)
 
-F7 <- ggplot(df_C0, aes(x = C0)) +
+F8 <- ggplot(df_C0, aes(x = C0)) +
   geom_density(fill = "grey", alpha = 0.4) +
   geom_vline(xintercept = 0.47, color = "black", linetype = "dashed") +
   labs(title = "Posterior Predictive Distribution of C_0",
@@ -386,16 +390,9 @@ C0_summary <- tibble(
 )
 T5 <- knitr::kable(C0_summary,
                    digits = 3,
-                   caption = "Example results")
+                   caption = "Example C_0 results")
 
 ###################################################################################
-
-F8 <- ggplot(data, aes(x = log(Vd))) +
-  geom_density() +
-  labs(title = "Density Plot", x = "V_d", y = "Density")
-
-###################################################################################
-
 
 cor_val <- cor(data$beta, data$Vd, use = "complete.obs")
 cor_test <- cor.test(data$beta, data$Vd)
@@ -410,6 +407,12 @@ F9 <- ggplot(data, aes(x = Vd, y = exp(beta))) +
   labs(x = "Vd",
        y = "Beta") +
   theme_minimal(base_size = 14)
+
+###################################################################################
+
+F10 <- ggplot(data, aes(x = log(Vd))) +
+  geom_density() +
+  labs(title = "Density Plot", x = "V_d", y = "Density")
 
 ###################################################################################
 
@@ -463,7 +466,7 @@ df_joint <- tibble(
 )
 
 
-F10 <- ggplot(df_joint, aes(x = Vd, y = beta)) +
+F11 <- ggplot(df_joint, aes(x = Vd, y = beta)) +
   geom_bin2d(bins = 40) +
   scale_fill_gradient(low = "white", high = "black") +
   coord_fixed() +
@@ -617,7 +620,7 @@ Cbeta_A1 <- colMeans(Cbeta_A)
 Cbeta_B1 <- colMeans(Cbeta_B)
 
 # --- 4. Plot mean posterior beta vs true beta ---
-F11 <- ggplot(data) +
+F12 <- ggplot(data) +
           geom_point(aes(x = exp(data$beta), y = Cbeta_B1, color = 'Prior B results')) +
           geom_point(aes(x = exp(data$beta), y = colMeans(pp_draws), color = 'Original prior results')) +
           geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
