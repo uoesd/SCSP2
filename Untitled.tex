@@ -178,24 +178,10 @@ situation, If the BAC after time \(t\) (hours) is measured as \(C_t\)
 The key point is how to find a precise \(\beta\) to estimate \(C_0\).
 Forensic scientists currently \(2.5\%\) percentile of \(\beta\)
 distribution constructing from samples as the estimated \(\beta\) value
-for every individuals. This method is obviously not rigorous enough for
-the courts, since:
+for every individuals. This method is obviously not rigorous for the
+courts.
 
-\begin{itemize}
-\tightlist
-\item
-  The courts will be forced to make decisions under estimated \(\beta\)
-  if we only give a single estimation of \(beta\), since the calculated
-  \(C_0\) is either over or under the legal limit.
-\item
-  Differences between individuals are ignored, for example age and sex,
-  which may affect \(\beta\).
-\item
-  \(\beta\) value at \(2.5\%\) is over conservative and most
-  uncertainties are hiding.
-\end{itemize}
-
-In this report, we will introduce a Bayesian regression model with
+In this report, we introduce a Bayesian regression model with
 considering the heterogeneity between individuals, the model gives a
 posterior distribution of \(\beta\) by using both samples and prior
 knowledge. Then we randomly simulate \(4000\) \(\beta\) values from
@@ -229,6 +215,9 @@ witness can also get the results like Table \(5\) by easily plugging new
 person's data.
 
 \section{Data Description}\label{data-description}
+
+\(\beta\) true values are converted to positive to convenient
+calculation.
 
 It is important to normalized all numerical variables. Centering the
 covariates can reduce autocorrelation \(\rho_k\) of lag \(k\) which is
@@ -286,10 +275,33 @@ test on elderly person with liver disease.
 
 `BAC Peak time' is converted to hours.
 
-\section{Bayesian regression model
-(BRM)}\label{bayesian-regression-model-brm}
+\section{Bayesian regression model}\label{bayesian-regression-model}
 
-\subsection{Reasons for BRM}\label{reasons-for-brm}
+\subsection{\texorpdfstring{Advantages and disadvantages of exists
+method for
+\(\beta\)}{Advantages and disadvantages of exists method for \textbackslash beta}}\label{advantages-and-disadvantages-of-exists-method-for-beta}
+
+Although the forensic scientists' method is easy to calculate and
+conservative enough, But:
+
+\begin{itemize}
+\tightlist
+\item
+  The courts will be forced to make decisions under estimated \(\beta\)
+  if we only give a single estimation of \(beta\), since the calculated
+  \(C_0\) is either over or under the legal limit.
+\item
+  Differences between individuals are ignored, for example age and sex,
+  which may affect \(\beta\).
+\item
+  \(\beta\) value at \(2.5\%\) is over conservative and most
+  uncertainties are hiding.
+\end{itemize}
+
+So we don't suggest it.
+
+\subsection{Reasons for BRM and
+advantage}\label{reasons-for-brm-and-advantage}
 
 Comparing with fitting linear regression model for \(\beta_i\), which
 can be expressed as:
@@ -476,14 +488,14 @@ convergent.
 \end{figure}
 
 \begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1948}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1169}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1299}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1169}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1169}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0779}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1299}}
-  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1169}}@{}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1974}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1316}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.0789}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}
+  >{\raggedleft\arraybackslash}p{(\linewidth - 14\tabcolsep) * \real{0.1184}}@{}}
 \caption{Posterior Summary from BRM}\tabularnewline
 \toprule\noalign{}
 \begin{minipage}[b]{\linewidth}\raggedright
@@ -525,16 +537,16 @@ Tail\_ESS
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-sexfemale & -1.674 & 0.035 & -1.742 & -1.606 & 1.001 & 8484.958 &
-8099.220 \\
-sexmale & -1.730 & 0.025 & -1.778 & -1.682 & 1.000 & 9304.551 &
-8064.068 \\
-weight\_s & -0.008 & 0.024 & -0.054 & 0.038 & 1.001 & 8428.193 &
-8171.863 \\
-height\_s & -0.046 & 0.025 & -0.095 & 0.004 & 1.000 & 7760.105 &
-8165.085 \\
-drinkingtime\_s & -0.042 & 0.017 & -0.074 & -0.009 & 1.001 & 10726.154 &
-8882.403 \\
+sexfemale & -1.673 & 0.035 & -1.741 & -1.603 & 1.000 & 7808.464 &
+7613.860 \\
+sexmale & -1.731 & 0.025 & -1.779 & -1.682 & 1.000 & 7963.743 &
+7335.938 \\
+weight\_s & -0.008 & 0.024 & -0.054 & 0.039 & 1.001 & 7729.459 &
+7577.398 \\
+height\_s & -0.045 & 0.025 & -0.094 & 0.004 & 1.000 & 7148.804 &
+7921.363 \\
+drinkingtime\_s & -0.042 & 0.017 & -0.074 & -0.009 & 1.000 & 9934.349 &
+8227.404 \\
 \end{longtable}
 
 \subsubsection{PPC Density}\label{ppc-density}
@@ -608,7 +620,7 @@ Metric & Value \\
 95\% predictive interval coverage & 0.980 \\
 50\% predictive interval coverage & 0.510 \\
 Mean Absolute Error & 0.023 \\
-Root Mean Square Error & 0.029 \\
+Root Mean Square Error & 0.028 \\
 \end{longtable}
 
 \subsubsection{Cross-Validation}\label{cross-validation}
@@ -623,8 +635,8 @@ over-fitting.
 \toprule
 Method & elpd & elpd\_SE & p & p\_SE & IC & IC\_SE\\
 \midrule
-LOO & 38.625 & 6.317 & 5.669 & 0.866 & -77.25 & 12.635\\
-K-fold & 38.740 & 6.263 & 5.554 & 1.004 & -77.48 & 12.525\\
+LOO & 38.611 & 6.304 & 5.674 & 0.860 & -77.221 & 12.609\\
+K-fold & 38.256 & 6.393 & 6.029 & 1.124 & -76.512 & 12.787\\
 \bottomrule
 \end{longtable}
 
@@ -675,14 +687,14 @@ Statistic & Value \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-Mean & 0.559 \\
-Median & 0.552 \\
-Mode & 0.544 \\
-2.5\% & 0.437 \\
-25\% & 0.508 \\
-75\% & 0.601 \\
-97.5\% & 0.715 \\
-P(C\_0 \textgreater{} 0.47) & 0.913 \\
+Mean & 0.560 \\
+Median & 0.554 \\
+Mode & 0.549 \\
+2.5\% & 0.440 \\
+25\% & 0.511 \\
+75\% & 0.602 \\
+97.5\% & 0.717 \\
+P(C\_0 \textgreater{} 0.47) & 0.919 \\
 \end{longtable}
 
 \section{\texorpdfstring{Widmark's Equation and
@@ -746,9 +758,9 @@ individuals, \(\eta\) is the coefficients that need to be predicted.
 \subsection{\texorpdfstring{Correlations between \(\beta\) and
 \(V_d\)}{Correlations between \textbackslash beta and V\_d}}\label{correlations-between-beta-and-v_d}
 
-To show that the original method is not good because of the correlation
-can't be ignored, figure 9 gives the correlations between true \(\beta\)
-and \(V_d\) is \(-0.415\), which is relatively big.
+To show that the correlation can't be ignored, figure 9 gives the
+correlations between true \(\beta\) and \(V_d\) is \(-0.415\), which is
+relatively big.
 
 \begin{figure}
 \centering
@@ -756,8 +768,21 @@ and \(V_d\) is \(-0.415\), which is relatively big.
 \caption{Correlation plot betweem V\_d and Beta}
 \end{figure}
 
-\subsection{\texorpdfstring{Joint BRM for \(\beta\) and
-\(V_d\)}{Joint BRM for \textbackslash beta and V\_d}}\label{joint-brm-for-beta-and-v_d}
+\section{\texorpdfstring{Joint Bayesian regression model for \(\beta\)
+and
+\(V_d\)}{Joint Bayesian regression model for \textbackslash beta and V\_d}}\label{joint-bayesian-regression-model-for-beta-and-v_d}
+
+\subsection{\texorpdfstring{Advantages and disadvantages for exists
+method for
+\(V_d\)}{Advantages and disadvantages for exists method for V\_d}}\label{advantages-and-disadvantages-for-exists-method-for-v_d}
+
+The exists method is easy to calculate. But as we showed before, the
+correlation between \(\beta\) and \(V_d\) is relatively large and can't
+be ignored, especially for the courts since we need the calculated
+\(C_t\) as precise as possible.
+
+\subsection{\texorpdfstring{Overview of
+\(V_d\)}{Overview of V\_d}}\label{overview-of-v_d}
 
 \(V_d\) is calculated by true value \(\beta\) (with our
 log-transformed). We will not log-transformed \(V_d\) since the density
@@ -769,7 +794,7 @@ of \(V_d\) can't be improved by taking log.
 \caption{Density plot of V\_d}
 \end{figure}
 
-\subsection{Fitting model and Results}\label{fitting-model-and-results}
+\subsection{Modeling}\label{modeling}
 
 The mathematical expression of the joint model can be expressed as:
 
@@ -833,7 +858,7 @@ female).
 Priors for others are still weak informative priors. Settings for others
 are not changed (\(4\) chains, \(4000\) iterations, \(1000\) warm-up).
 
-\subsubsection{Results}\label{results}
+\subsection{Results}\label{results}
 
 Table \(6\) belew is the results table, all Rhat and ESS are in good
 range. The expected estimated correlation \(-0.46\) in the model is also
@@ -907,6 +932,9 @@ rescor(beta,Vd) & -0.4635 & 0.0800 & 1.0001 & 9939.374 & 9178.082 &
 Correlation \\
 \end{longtable}
 
+Figure \(10\) shows the joint posterior distribution of \(\beta\) and
+\(V_d\). It is a good multivariate gaussian (2d).
+
 \begin{figure}
 \centering
 \pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-17-1.pdf}}
@@ -925,7 +953,7 @@ parameters.
 Method & elpd & elpd\_SE & p & p\_SE & IC & IC\_SE\\
 \midrule
 LOO & 123.879 & 14.300 & 11.473 & 3.233 & -247.759 & 28.600\\
-K-fold & 123.702 & 13.483 & 11.650 & 2.588 & -247.404 & 26.966\\
+K-fold & 123.115 & 13.653 & 12.238 & 2.769 & -246.229 & 27.307\\
 \bottomrule
 \end{longtable}
 
@@ -941,69 +969,175 @@ MSE for single \(\beta\) model to test if the results worse when take in
 \toprule
 Metric & Estimate\\
 \midrule
-MSE\_Vd & 0.0865\\
-MSE\_beta (joint model) & 0.0233\\
-MSE\_beta (model C) & 0.0233\\
-MSE\_C0 & 0.1700\\
+MSE\_Vd & 0.0864\\
+MSE\_beta (joint model) & 0.0232\\
+MSE\_beta (model C) & 0.0232\\
+MSE\_C0 & 0.1705\\
 Vd Coverage (95\%) & 0.9600\\
 \addlinespace
-Vd Coverage (50\%) & 0.5200\\
+Vd Coverage (50\%) & 0.5300\\
 C0 Coverage (95\%) & 1.0000\\
-C0 Coverage (50\%) & 0.7200\\
+C0 Coverage (50\%) & 0.7000\\
 \bottomrule
 \end{longtable}
 
+\section{Conclusion}\label{conclusion}
+
+\subsection{Limitation}\label{limitation}
+
+\begin{itemize}
+\tightlist
+\item
+  Based on the variables we have in this sample and small sample size,
+  the model doesn't explain much variation.
+\end{itemize}
+
+Since the BAC elimination rate \(\beta\) really depends on individuals.
+We can't really know what drugs the person is taking or how often the
+person taking alcohol or health condition of the person, even we know it
+is still very hard to model all variation, obviously it will cost much.
+(So in some sense, the original method is an efficient method if they
+can split the \(\beta\) by gender, since it is easy and quick method
+compare to our model model.)
+
+\begin{itemize}
+\tightlist
+\item
+  The model is sensitive with priors.
+\end{itemize}
+
+It is better to choose priors by what the courts want, like make the
+range of priors for \(\beta\) narrower (less variance) or give more
+space to the courts so using a flat prior. In this case we only have
+\(100\) data points, so any choice of prior will affect the posterior.
+We use non-informative priors, it may cause slower converge. In
+practice, it is hard to set priors since again \(\beta\) is quite
+random.
+
+\subsection{Suggestion}\label{suggestion}
+
+When using the model, it is necessary to know when the person is
+arrested and when the person stop drinking. Although \(\beta\) is a
+constant rate, if the person is arrested before the BAC reaching peak
+(point at left hand side of the BAC peak point) and measured when the
+BAC starting decreasing (point at right hand side of the BAC peak
+point), then if we use \(\beta\) value to find BAC value at driving time
+(arrest time) is not suitable since the calculated BAC value will be
+higher than true value.
+
+We suggest double blood samples method in practice:
+
+`If a driver is not apprehended sitting behind the wheel, the traffic
+police in Sweden often submit double blood samples taken about 1 h
+apart. The mean result at each sampling time can be used to calculate
+the rate of elimination of alcohol assuming the existence of the
+post-absorptive declining phase and operation of zero-order kinetics.
+From a long experience with investigating drunken driving cases, the
+first blood sample is usually obtained 60 min after an arrest is made
+depending on location throughout the country where the individual is
+apprehended and the availability of a physician or nurse to draw
+blood.'{[}6{]}
+
 \section{Reference}\label{reference}
 
-\section{Variable Description}\label{variable-description}
-
-\begin{itemize}
-\tightlist
-\item
-  how many observations do we have? where we get the resourse,
-  reference? explain each variables in table
-\end{itemize}
-
-The variables identified for the analysis are demographic and
-physiological characteristics from the tested individuals after drinking
-alcohol. Our variable selection is informed by their established
-relevance to human liver metabolic function, especially sex, age, weight
-and height are included due to the significant influence on liver
-metabolism.
-
-\begin{itemize}
-\tightlist
-\item
-  Sex: Biological sex of the individual, male or female
-\item
-  Age:
-\item
-  Weight\\
-\item
-  Height
-\item
-  Beta60:
-\item
-  Co:
-\end{itemize}
-
-Page, Participant number, FigureOnPage, Sample Type\ldots{} clearly
-inrevelant,
-
-Maximum BAC/BrAC,BAC peak time 也可推断为无关factor
-与police预测受测者驾驶中酒精浓度的目标不同
-
-\#Limitation our model limit data collected reason - cannot reflect the
-real world model reason other reason: variables
-
-\#Reference \#测两次血预测beta
-\#如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，\#每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决\#\#于该人被逮捕的全国地点以及是否有医生或护士抽血。
-\#\url{https://www.sciencedirect.com/science/article/pii/S0379073810000770?via\%3Dihub}
+\url{https://www.sciencedirect.com/science/article/pii/S0379073810000770?via\%3Dihub}
 
 P.Y. Kwo, V.A. Ramchandani, S. O'Connor, D. Amann, L.G. Carr, K.
 Sandrasegaran, K.K. Kopecky, T.K. Li Gender differences in alcohol
 metabolism: relationship to liver volume and effect of adjusting for
 body mass Gastroenterology, 115 (1998), pp.~1552-1557
+
+\appendix
+
+\section{Model Comparison}\label{model-comparison}
+
+We basically focus on choices of priors.
+
+Firstly we will test how sensitive our model is with different priors in
+table \(9\):
+
+\begin{itemize}
+\tightlist
+\item
+  Prior A choose student-t distribution for coefficients of gender
+  variables.
+\item
+  Prior B use a narrower variance for coefficients of gender variables.
+\end{itemize}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.3976}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1807}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.2289}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 6\tabcolsep) * \real{0.1928}}@{}}
+\caption{Comparison priors with original prior}\tabularnewline
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Parameter
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Original
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prior\_A
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prior\_B
+\end{minipage} \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Parameter
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Original
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prior\_A
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Prior\_B
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Regression coefficient: male & Normal(0, 2) & Student-t(3, 0, 2) &
+Normal(0, 1) \\
+Regression coefficient: female & Normal(0, 2) & Student-t(3, 0, 2) &
+Normal(0, 1) \\
+Regression coefficients (others) & Normal(0, 0.5) & Normal(0, 0.5) &
+Normal(0, 0.01) \\
+Residual SD (sigma) & Exponential(1) & Exponential(1) &
+Exponential(1) \\
+\end{longtable}
+
+As you can see in table \(10\), the LOO validation shows the model is
+sensitive with prior choice. Smaller variance can make the model worse.
+
+\begin{longtable}[]{@{}lrr@{}}
+\caption{LOO Comparison of different priors' model}\tabularnewline
+\toprule\noalign{}
+Model & elpd\_diff & se\_diff \\
+\midrule\noalign{}
+\endfirsthead
+\toprule\noalign{}
+Model & elpd\_diff & se\_diff \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+fit\_single & 0.000 & 0.000 \\
+fit\_A & -0.026 & 0.041 \\
+fit\_B & -0.641 & 2.677 \\
+\end{longtable}
+
+Other than this, if we plot the mean posterior \(\beta\) value with true
+\(\beta\) value, the results will be more clear. Since the prior
+variance of coefficients is setted very small, the value of \(\beta\) is
+mainly predicted by gender, which you can find clearly two groups for
+prior B's model.
+
+\begin{figure}
+\centering
+\pandocbounded{\includegraphics[keepaspectratio]{Untitled_files/figure-latex/unnamed-chunk-22-1.pdf}}
+\caption{Joint posterior distribution}
+\end{figure}
 
 \phantomsection\label{refs}
 \begin{CSLReferences}{0}{0}
