@@ -541,6 +541,17 @@ T8 <- knitr::kable(
 
 ###################################################################################
 
+priors_table_C <- tribble(~Parameter, ~Prior,
+                          "Regression coefficient for male ", "Normal(0, 1)",
+                          "Regression coefficient for female", "Normal(0, 1)",
+                          "Regression coefficients (others)", "Normal(0, 1)",
+                          "Residual SD ", "Exponential(1)")
+
+T9 <- knitr::kable(priors_table_C, 
+                   caption = "Comparison priors")
+
+###################################################################################
+
 F1000 <- ggplot(data, aes(x = exp(data$beta), y = colMeans(pp_draws), colour = sex)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
@@ -554,40 +565,53 @@ abline(0,1,col="red")
 # Model Comparison
 ###################################################################################
 
-# Student-t intercept prior (robust)
-#prior_A <- c(set_prior("normal(0, 0.01)", class = "b"),
-#             set_prior("student_t(3, 0.15, 0.02", class = "b", coef = "sexmale"),
-#             set_prior("student_t(3, 0.18, 0.02", class = "b", coef = "sexfemale"),
-#             set_prior("exponential(1)", class = "sigma"))
+# Student-t intercept prior
+prior_A <- c(set_prior("normal(0, 0.5)", class = "b"),
+             set_prior("student_t(3, 0, 2", class = "b", coef = "sexmale"),
+             set_prior("student_t(3, 0, 2", class = "b", coef = "sexfemale"),
+             set_prior("exponential(1)", class = "sigma"))
 
-# Student-t likelihood prior includes nu
-#prior_B <- c(prior_A, set_prior("constant(8)", class = "nu"))
+# Normal intercept prior (sensitivity)
+prior_B <- c(set_prior("normal(0, 0.5)", class = "b"),
+             set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
+             set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
+             set_prior("exponential(1)", class = "sigma"))
 
 
 # Normal intercept prior (sensitivity)
-#prior_C <- c(set_prior("normal(0, 1)", class = "b"),
-#             set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
-#             set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
-#             set_prior("exponential(1)", class = "sigma"))
+prior_C <- c(set_prior("normal(0, 0.5)", class = "b"),
+             set_prior("normal(0, 5)", class = "b", coef = "sexmale"),
+             set_prior("normal(0, 5)", class = "b", coef = "sexfemale"),
+             set_prior("exponential(1)", class = "sigma"))
 
-#loo_A <- loo(fit_A, moment_match = TRUE)
-#loo_B <- loo(fit_B, moment_match = TRUE)
-#loo_C <- loo(fit_single, moment_match = TRUE)
-#print(loo_compare(loo_A, loo_B, loo_C))
+# Fitting Model A (gaussian likelihood + student-t intercept prior)...
+fit_A <- brm(formula = f_beta,
+             data = data,
+             family = gaussian(),
+             prior = prior_A,
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
-#message("Fitting Model A (gaussian likelihood + student-t intercept prior)...")
-#fit_A <- brm(formula = f_beta,
-#             data = data,
-#             family = gaussian(),
-#             prior = prior_C,
-#             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
+# Fitting Model B (student-t likelihood + student-t prior)...
+fit_B <- brm(formula = f_beta,
+             data = data,
+             family = gaussian(),
+             prior = prior_B,
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
-#message("Fitting Model B (student-t likelihood + student-t prior)...")
-#fit_B <- brm(formula = f_beta,
-#             data = data,
-#             family = student(),
-#             prior = prior_B,
-#             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
+# Fitting Model B (student-t likelihood + student-t prior)...
+fit_C <- brm(formula = f_beta,
+             data = data,
+             family = gaussian(),
+             prior = prior_C,
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
+
+loo_A <- loo(fit_A, moment_match = TRUE)
+loo_B <- loo(fit_B, moment_match = TRUE)
+loo_C <- loo(fit_B, moment_match = TRUE)
+
+print(loo_compare(loo_A, loo_B, loo_C, loo_single))
+
+
 
 text <- readLines("Group13.Rmd")
 words <- unlist(strsplit(text, "\\s+"))

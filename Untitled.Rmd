@@ -52,13 +52,9 @@ source("code.R")
 
 In the UK it is a criminal offence to drive a motor vehicle with a blood or breath alcohol concentration above the prescribed limit. When a person is arrested for driving under the influence of alcohol it is not usually possible to perform an accurate test of the level of alcohol in the blood or breath immediately. Breath tests can be used as an initial screening tool at the scene, but these are not sufficiently accurate for prosecution. Instead, people are taken to a police station or hospital, where the test can be carried out using proper laboratory protocols. As the body clears alcohol from the blood through time this means that if the individual was over the limit, the measured blood alcohol concentration (BAC) will be lower at the time of measurement than it was when the person was driving a motor vehicle. To deal with this situation, If the BAC after time $t$ (hours) is measured as $C_t$ (g/kg), the BAC at time $0$ is estimated as $C_0 = C_t - βt$, where $\beta$ ($g/kg/h$) is BAC elimination rate. 
 
-The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scientists currently $2.5\%$ percentile of $\beta$ distribution constructing from samples as the estimated $\beta$ value for every individuals. This method is obviously not rigorous enough for the courts, since:
+The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scientists currently $2.5\%$ percentile of $\beta$ distribution constructing from samples as the estimated $\beta$ value for every individuals. This method is obviously not rigorous for the courts.
 
-* The courts will be forced to make decisions under estimated $\beta$ if we only give a single estimation of $beta$, since the calculated $C_0$ is either over or under the legal limit.
-* Differences between individuals are ignored, for example age and sex, which may affect $\beta$.
-* $\beta$ value at $2.5\%$ is over conservative and most uncertainties are hiding.
-
-In this report, we will introduce a Bayesian regression model with considering the heterogeneity between individuals, the model gives a posterior distribution of $\beta$ by using both samples and prior knowledge. Then we randomly simulate $4000$ $\beta$ values from posterior distribution and find out the probability of the person's BAC over limit while driving. 
+In this report, we introduce a Bayesian regression model with considering the heterogeneity between individuals, the model gives a posterior distribution of $\beta$ by using both samples and prior knowledge. Then we randomly simulate $4000$ $\beta$ values from posterior distribution and find out the probability of the person's BAC over limit while driving. 
 
 In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet, etc. As we don't have corresponding data, in our regression model of $\beta$ is mainly dominate by gender, but we still find some useful variables like 'gender' and 'drinking time'
 
@@ -73,6 +69,8 @@ To make it easier, we write the method in a function so other expert witness can
 
 
 # Data Description
+
+$\beta$ true values are converted to positive to convenient calculation. 
 
 It is important to normalized all numerical variables. Centering the covariates can reduce autocorrelation $\rho_k$ of lag $k$ which is defined as:
 
@@ -103,9 +101,19 @@ From the dataset, most data comes from age smaller than $30$ ($85/100$), so even
 
 'BAC Peak time' is converted to hours.
 
-# Bayesian regression model (BRM)
+# Bayesian regression model
 
-## Reasons for BRM
+## Advantages and disadvantages of exists method for $\beta$
+
+Although the forensic scientists' method is easy to calculate and conservative enough, But:
+
+* The courts will be forced to make decisions under estimated $\beta$ if we only give a single estimation of $beta$, since the calculated $C_0$ is either over or under the legal limit.
+* Differences between individuals are ignored, for example age and sex, which may affect $\beta$.
+* $\beta$ value at $2.5\%$ is over conservative and most uncertainties are hiding.
+
+So we don't suggest it.
+
+## Reasons for BRM and advantage
 
 Comparing with fitting linear regression model for $\beta_i$, which can be expressed as:
 
@@ -210,6 +218,7 @@ T2
 ```
 
 ### PPC Density
+
 Figure 5 is the Posterior Predictive Check (PPC) density plot comparing with true value of $\beta$ (Here we have taken exponential of both true value and predicted value). Notice that predicted posterior distribution matches $\beta$ sample distribution pretty well, which get the mean, spread, skew both right even at right tail.
 
 ```{r echo=FALSE, fig.cap="PPC density of 2000 predict results from posterior.", message=FALSE, warning=FALSE}
@@ -333,14 +342,21 @@ to estimate $\hat{V_d}$ where $i$ is the $i_{th}$ iterations (we will again use 
 
 ## Correlations between $\beta$ and $V_d$
 
-To show that the original method is not good because of the correlation can't be ignored, figure 9 gives the correlations between true $\beta$ and $V_d$ is $-0.415$, which is relatively big.
+To show that the correlation can't be ignored, figure 9 gives the correlations between true $\beta$ and $V_d$ is $-0.415$, which is relatively big.
 
 ```{r echo=FALSE, fig.cap="Correlation plot betweem V_d and Beta", message=FALSE, warning=FALSE}
 F9
 ```
 
 
-## Joint BRM for $\beta$ and $V_d$
+
+# Joint Bayesian regression model for $\beta$ and $V_d$
+
+## Advantages and disadvantages for exists method for $V_d$
+
+The exists method is easy to calculate. But as we showed before, the correlation between $\beta$ and $V_d$ is relatively large and can't be ignored, especially for the courts since we need the calculated $C_t$ as precise as possible.
+
+## Overview of $V_d$ 
 
 $V_d$ is calculated by true value $\beta$ (with our log-transformed). We will not log-transformed $V_d$ since the density of $V_d$ can't be improved by taking log.
 
@@ -349,7 +365,7 @@ F8
 ```
 
 
-## Fitting model and Results
+## Modeling
 
 The mathematical expression of the joint model can be expressed as:
 
@@ -398,13 +414,15 @@ The mean value of two priors is actually near to the linear regression results o
 
 Priors for others are still weak informative priors. Settings for others are not changed ($4$ chains, $4000$ iterations, $1000$ warm-up).
 
-### Results
+## Results
 
 Table $6$ belew is the results table, all Rhat and ESS are in good range. The expected estimated correlation $-0.46$ in the model is also near the sample's $V_d$-$\beta$ correlation $-0.415$ (the log-transformation of $\beta$ doesn't affect the correlation.)
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T6
 ```
+
+Figure $10$ shows the joint posterior distribution of $\beta$ and $V_d$. It is a good multivariate gaussian (2d).
 
 ```{r echo=FALSE, fig.cap="Joint posterior distribution", message=FALSE, warning=FALSE}  
 F10
@@ -425,58 +443,44 @@ Table $8$ shows the MSE of $\beta$, $V_d$ and calculated $C_0$ from joint poster
 T8
 ```
 
+# Conclusion
+
+## Limitation
+
+* Based on the variables we have in this sample and small sample size, the model doesn't explain much variation.  
+
+Since the BAC elimination rate $\beta$ really depends on individuals. We can't really know what drugs the person is taking or how often the person taking alcohol or health condition of the person, even we know it is still very hard to model all variation, obviously it will cost much. (So in some sense, the original method is an efficient method if they can split the $\beta$ by gender, since it is easy and quick method compare to our model model.)
+
+* The model is sensitive with priors. 
+
+It is better to choose priors by what the courts want, like make the range of priors for $\beta$ narrower (less variance) or give more space to the courts so using a flat prior. In this case we only have $100$ data points, so any choice of prior will affect the posterior. We use non-informative priors, it may cause slower converge. In practice, it is hard to set priors since again $\beta$ is quite random.
+
+## Suggestion
+
+When using the model, it is necessary to know when the person is arrested and when the person stop drinking. Although $\beta$ is a constant rate, if the person is arrested before the BAC reaching peak (point at left hand side of the BAC peak point) and measured when the BAC starting decreasing (point at right hand side of the BAC peak point), then if we use $\beta$ value to find BAC value at driving time (arrest time) is not suitable since the calculated BAC value will be higher than true value.
+
+We suggest double blood samples method in practice:
+
+<center>
+'If a driver is not apprehended sitting behind the wheel, the traffic police in Sweden often submit double blood samples taken about 1 h apart. The mean result at each sampling time can be used to calculate the rate of elimination of alcohol assuming the existence of the post-absorptive declining phase and operation of zero-order kinetics. From a long experience with investigating drunken driving cases, the first blood sample is usually obtained 60 min after an arrest is made depending on location throughout the country where the individual is apprehended and the availability of a physician or nurse to draw blood.'[6]
+</center>
 
 # Reference
 
+\appendix
+
+# Single Model Comparison
+
+We basically focus on choices of priors. 
+
+Firstly we restrict the variance of priors for each coefficients smaller and change them to table $9$
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+T9
+```
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Variable Description 
-- how many observations do we have?
-where we get the resourse, reference?
-explain each variables in table
-
-The variables identified for the analysis are demographic and physiological characteristics from the tested individuals after drinking alcohol. Our variable selection is informed by their established relevance to human liver metabolic function, especially sex, age, weight and height are included due to the significant influence on liver metabolism.
-
-
-* Sex: Biological sex of the individual, male or female
-* Age: 
-* Weight  
-* Height
-* Beta60:
-* Co:
-
-Page, Participant number, FigureOnPage, Sample Type... clearly inrevelant,
-
-Maximum BAC/BrAC,BAC peak time 也可推断为无关factor 与police预测受测者驾驶中酒精浓度的目标不同
-
-#Limitation
-our model limit
-data collected reason - cannot reflect the real world
-model reason
-other reason: variables
-
-
-
-
-
-
-#Reference
-#测两次血预测beta
-#如果司机坐在方向盘后面没有被捕，瑞典的交警通常会提交间隔约1小时采集的双重血液样本。假设存在吸收后下降阶段和零阶动力学操作，#每个采样时间的平均结果可用于计算酒精的消除率。根据长期调查酒后驾车案件的经验，第一个血液样本通常在逮捕后60分钟获得，这取决##于该人被逮捕的全国地点以及是否有医生或护士抽血。
 #https://www.sciencedirect.com/science/article/pii/S0379073810000770?via%3Dihub
 
 P.Y. Kwo, V.A. Ramchandani, S. O’Connor, D. Amann, L.G. Carr, K. Sandrasegaran, K.K. Kopecky, T.K. Li
