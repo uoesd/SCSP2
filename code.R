@@ -208,16 +208,9 @@ prior_A <- c(set_prior("normal(0, 0.5)", class = "b"),
              set_prior("exponential(1)", class = "sigma"))
 
 # Normal intercept prior (sensitivity)
-prior_B <- c(set_prior("normal(0, 0.5)", class = "b"),
+prior_B <- c(set_prior("normal(0, 0.01)", class = "b"),
              set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
              set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
-             set_prior("exponential(1)", class = "sigma"))
-
-
-# Normal intercept prior (sensitivity)
-prior_C <- c(set_prior("normal(0, 0.5)", class = "b"),
-             set_prior("normal(0, 5)", class = "b", coef = "sexmale"),
-             set_prior("normal(0, 5)", class = "b", coef = "sexfemale"),
              set_prior("exponential(1)", class = "sigma"))
 
 # Fitting Model A (gaussian likelihood + student-t intercept prior)...
@@ -234,16 +227,8 @@ fit_B <- brm(formula = f_beta,
              prior = prior_B,
              chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
 
-# Fitting Model B (student-t likelihood + student-t prior)...
-fit_C <- brm(formula = f_beta,
-             data = data,
-             family = gaussian(),
-             prior = prior_C,
-             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
-
 loo_A <- loo(fit_A, moment_match = TRUE)
 loo_B <- loo(fit_B, moment_match = TRUE)
-loo_C <- loo(fit_C, moment_match = TRUE)
 
 
 #Plot area
@@ -464,8 +449,8 @@ T6 <- knitr::kable(
 
 ###################################################################################
 
-beta_post <- exp(posterior_predict(fit_joint, resp = "beta", ndraws = 10000))
-Vd_post   <- posterior_predict(fit_joint, resp = "Vd",   ndraws = 10000)
+beta_post <- exp(posterior_predict(fit_joint, resp = "beta", ndraws = 12000))
+Vd_post   <- posterior_predict(fit_joint, resp = "Vd",   ndraws = 12000)
 
 # --- 2. Reduce each posterior draw to a single value (preserve covariance) ---
 beta_sample <- rowMeans(beta_post)   # 1 beta per posterior draw
@@ -590,19 +575,19 @@ T8 <- knitr::kable(
 ###################################################################################
 
 priors_comparison <- tribble(
-  ~Parameter, ~Original,            ~Prior_A,             ~Prior_B,        ~Prior_C,
+  ~Parameter, ~Original,            ~Prior_A,             ~Prior_B,       
   
   "Regression coefficient: male",
-  "Normal(0, 2)",               "Student-t(3, 0, 2)", "Normal(0, 1)",  "Normal(0, 5)",
+  "Normal(0, 2)",               "Student-t(3, 0, 2)", "Normal(0, 1)", 
   
   "Regression coefficient: female",
-  "Normal(0, 2)",               "Student-t(3, 0, 2)", "Normal(0, 1)",  "Normal(0, 5)",
+  "Normal(0, 2)",               "Student-t(3, 0, 2)", "Normal(0, 1)",  
   
   "Regression coefficients (others)",
-  "Normal(0, 0.5)",             "Normal(0, 0.5)",     "Normal(0, 0.5)", "Normal(0, 0.5)",
+  "Normal(0, 0.5)",             "Normal(0, 0.5)",     "Normal(0, 0.01)", 
   
   "Residual SD (sigma)",
-  "Exponential(1)",             "Exponential(1)",     "Exponential(1)", "Exponential(1)"
+  "Exponential(1)",             "Exponential(1)",     "Exponential(1)"
 )
 
 T9 <-knitr::kable(priors_comparison,
@@ -611,7 +596,7 @@ T9 <-knitr::kable(priors_comparison,
 
 ###################################################################################
 
-comp <- loo_compare(loo_A, loo_B, loo_C, loo_single)
+comp <- loo_compare(loo_A, loo_B, loo_single)
 
 comp_tbl <- comp |> 
   as.data.frame() |> 
@@ -625,15 +610,23 @@ T10 <-knitr::kable(comp_tbl,
 
 ###################################################################################
 
-F1000 <- ggplot(data, aes(x = exp(data$beta), y = colMeans(pp_draws), colour = sex)) +
-  geom_point() +
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed") +
-  labs(title = "Observed vs Predicted", x = "Observed", y = "Predicted") + 
-  theme(aspect.ratio = 1)
+Cbeta_A = exp(posterior_predict(fit_A))
+Cbeta_B = exp(posterior_predict(fit_B))
 
+Cbeta_A1 <- colMeans(Cbeta_A)
+Cbeta_B1 <- colMeans(Cbeta_B)
 
-plot(Vd_mean, data$Vd, pch=19)
-abline(0,1,col="red")
+# --- 4. Plot mean posterior beta vs true beta ---
+F11 <- ggplot(data) +
+          geom_point(aes(x = exp(data$beta), y = Cbeta_B1, color = 'Prior B results')) +
+          geom_point(aes(x = exp(data$beta), y = colMeans(pp_draws), color = 'Original prior results')) +
+          geom_abline(slope = 1, intercept = 0, linetype = "dashed") +
+          theme_minimal(base_size = 14) +
+          labs(x = "True Beta",
+          y = "Posterior Mean Beta",
+          title = "Posterior Mean vs True Beta")
+
+###################################################################################
 
 
 

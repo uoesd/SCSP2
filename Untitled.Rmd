@@ -428,6 +428,7 @@ Figure $10$ shows the joint posterior distribution of $\beta$ and $V_d$. It is a
 F10
 ```
 
+
 ## Testing 
 
 Table $7$ is the LOO and Kfold results, the p values ($11.0479$ and $10.691$) means the validation results are good since we have $10$ parameters.
@@ -469,29 +470,33 @@ We suggest double blood samples method in practice:
 
 \appendix
 
-# Single Model Comparison
+# Model Comparison
 
-We basically focus on choices of priors. 
+We basically focus on choices of priors.
 
 Firstly we will test how sensitive our model is with different priors in table $9$:
 
 * Prior A choose student-t distribution for coefficients of gender variables.
 * Prior B use a narrower variance for coefficients of gender variables.
-* Prior C use a wider variance for coefficients of gender variables.
-
-Since all other coefficients are relatively small, we don't talk about them.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T9
 ```
 
 
-As you can see in table $10$, the LOO validation shows the model is vary
-
+As you can see in table $10$, the LOO validation shows the model is sensitive with prior choice. Smaller variance can make the model worse. 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T10
 ```
+
+Other than this, if we plot the mean posterior $\beta$ value with true $\beta$ value, the results will be more clear. Since the prior variance of coefficients is setted very small, the value of $\beta$ is mainly predicted by gender, which you can find clearly two groups for prior B's model.
+
+```{r echo=FALSE, fig.cap="Joint posterior distribution", message=FALSE, warning=FALSE}  
+F11
+```
+
+
 #https://www.sciencedirect.com/science/article/pii/S0379073810000770?via%3Dihub
 
 P.Y. Kwo, V.A. Ramchandani, S. O’Connor, D. Amann, L.G. Carr, K. Sandrasegaran, K.K. Kopecky, T.K. Li
