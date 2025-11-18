@@ -17,7 +17,7 @@ geometry: margin=1in
 header-includes:
 - \usepackage{fancyhdr}
 - \pagestyle{fancy}
-- \fancyhead[L]{\textit{Short report title}}
+- \fancyhead[L]{\textit{Forensic Modelling of Blood Alcohol Evidence}}
 - \fancyhead[R]{\leftmark}
 - \fancyfoot[C]{\thepage}
 - \usepackage{setspace}
