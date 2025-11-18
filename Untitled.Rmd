@@ -122,6 +122,7 @@ Comparing with fitting linear regression model for $\beta_i$, which can be expre
 
 $$\hat{\beta}_{j} = \hat{\gamma}X_j + \varepsilon_{\beta}, \quad \varepsilon_{\beta} \sim N(0, \sigma_{\beta}^2)$$
 
+
 and giving a exact value of $\hat{\beta_j}$ under $\varepsilon$ for $j_{th}$ individuals, BRM can model uncertainty of each coefficient $\hat{\gamma}$ and $\varepsilon$. We provide priors and sample likelihoods for all $\hat{\gamma}$ and $\varepsilon$ , BRM will apply bayesian rule to each and output simulation results of each coefficients, not only for $\hat{\beta}$. $\hat{\beta}$s are calculated from simulation results of $\hat{\gamma_j}$, which is:
 
 $$\hat{\beta}_{i,j} = \hat{\gamma}_{i}X_j + \hat{\varepsilon}_{{\beta},i}, \quad \hat{\varepsilon}_{\beta,i} \sim N(0, \hat{\sigma}_{\beta}^2)$$
@@ -402,7 +403,7 @@ $$
 
 The prior for $\beta$-variable coefficients are unchanged.
 
-The prior for $\eta$ is easy to calculated since $\eta = \frac{1}{F_{\text{water}}} \times \frac{1}{F}$. The Blood water content $F_{\text{water}}$ is easy to determine by desiccation and the mean reported values for men and women are $0.825\%$ w/v and $0.838\%$ w/v respectively. The small sex difference is mainly attributed to lower haematocrit in female blood samples. [3]
+The prior for $\eta$ is easy to calculated since $\eta = \frac{1}{F_{\text{water}}} \times \frac{1}{F}$. The Blood water content $F_{\text{water}}$ is easy to determine by desiccation and the mean reported values for men and women are $0.825\%$ w/v and $0.838\%$ w/v respectively. The small sex difference is mainly attributed to lower haematocrit in female blood samples. [33333333]
 
 The fraction of the alcohol dose that reaches the systemic circulation $F$ is typically $0.7$−$0.9$, we use $0.8$. So:
 
@@ -437,7 +438,7 @@ T7
 ```
 
 
-Table $8$ shows the MSE of $\beta$, $V_d$ and calculated $C_0$ from joint posterior distribution comparing with true value, and also a MSE for single $\beta$ model to test if the results worse when take in $V_d$. The estimation result for $\beta$ is not worse than before. The calculated $C_0$ is pretty good from the coverage rate.
+Table $8$ shows the MSE of $\beta$, $V_d$ and calculated $C_0$ from joint posterior distribution comparing with true value, and also a MSE for single $\beta$ model to test if the results worse when take in $V_d$. The estimation result for $\beta$ is not worse than before. The calculated $C_0$ coverage rate is very high.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T8
@@ -449,11 +450,11 @@ T8
 
 * Based on the variables we have in this sample and small sample size, the model doesn't explain much variation.  
 
-Since the BAC elimination rate $\beta$ really depends on individuals. We can't really know what drugs the person is taking or how often the person taking alcohol or health condition of the person, even we know it is still very hard to model all variation, obviously it will cost much. (So in some sense, the original method is an efficient method if they can split the $\beta$ by gender, since it is easy and quick method compare to our model model.)
+Since the BAC elimination rate $\beta$ really depends on individuals, we can't know what drugs the person is taking or how often the person taking alcohol or health condition of the person, even we know it is still very hard to model all variation, obviously it will cost much. (So in some sense, the original method is an efficient method if they can split the $\beta$ by gender, since it is easy and quick method comparing to our model.)
 
 * The model is sensitive with priors. 
 
-It is better to choose priors by what the courts want, like make the range of priors for $\beta$ narrower (less variance) or give more space to the courts so using a flat prior. In this case we only have $100$ data points, so any choice of prior will affect the posterior. We use non-informative priors, it may cause slower converge. In practice, it is hard to set priors since again $\beta$ is quite random.
+It is better to choose priors by what the courts want, like make the range of priors for $\beta$ narrower (less variance) or give more space to the courts so using a flat prior. In this case we only have $100$ data points, so any choice of prior will affect the posterior a lot. We use non-informative priors, it may cause slower converge. In practice, it is hard to set priors since $\beta$ is quite random.
 
 ## Suggestion
 
@@ -461,23 +462,11 @@ When using the model, it is necessary to know when the person is arrested and wh
 
 We suggest double blood samples method in practice:
 
-<center>
-'If a driver is not apprehended sitting behind the wheel, the traffic police in Sweden often submit double blood samples taken about 1 h apart. The mean result at each sampling time can be used to calculate the rate of elimination of alcohol assuming the existence of the post-absorptive declining phase and operation of zero-order kinetics. From a long experience with investigating drunken driving cases, the first blood sample is usually obtained 60 min after an arrest is made depending on location throughout the country where the individual is apprehended and the availability of a physician or nurse to draw blood.'[6]
-</center>
-
+$$
+\text{'If a driver is not apprehended sitting behind the wheel, the traffic police in Sweden often submit double blood samples taken about 1 h apart. The mean result at each sampling time can be used to calculate the rate of elimination of alcohol assuming the existence of the post-absorptive declining phase and operation of zero-order kinetics. From a long experience with investigating drunken driving cases, the first blood sample is usually obtained 60 min after an arrest is made depending on location throughout the country where the individual is apprehended and the availability of a physician or nurse to draw blood.}'[4444444444]
+$$
 # Reference
-[1] Chapter 6.4 (https://www.sciencedirect.com/science/article/pii/S0379073810000770?via%3Dihub)
 
-[2] (https://www.sciencedirect.com/science/article/pii/S0379073820303947#bib0105)
-
-
-[3] A.W. Jones
-Alcohol, its absorption, distribution, metabolism, and excretion in the body and pharmacokinetic calculations, Wiley Interdiscip
-Rev. Forensic Sci., 1 (2019), 10.1002/wfs2.1340
-
-P.Y. Kwo, V.A. Ramchandani, S. O’Connor, D. Amann, L.G. Carr, K. Sandrasegaran, K.K. Kopecky, T.K. Li
-Gender differences in alcohol metabolism: relationship to liver volume and effect of adjusting for body mass
-Gastroenterology, 115 (1998), pp. 1552-1557
 
 \appendix
 
@@ -490,6 +479,7 @@ Firstly we will test how sensitive our model is with different priors in table $
 * Prior A choose student-t distribution for coefficients of gender variables.
 * Prior B use a narrower variance for coefficients of gender variables.
 
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T9
 ```
@@ -501,9 +491,12 @@ As you can see in table $10$, the LOO validation shows the model is sensitive wi
 T10
 ```
 
+
 Other than this, if we plot the mean posterior $\beta$ value with true $\beta$ value, the results will be more clear. Since the prior variance of coefficients is seted very small, the value of $\beta$ is mainly predicted by gender, which you can find clearly two groups for prior B's model.
 
-```{r echo=FALSE, fig.cap="Joint posterior distribution", message=FALSE, warning=FALSE}  
+
+```{r echo=FALSE, fig.cap="Mean Posterior Beta VS True Beta for two models", message=FALSE, warning=FALSE}  
 F12
 ```
+
 
