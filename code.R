@@ -198,6 +198,54 @@ beta_Amean <- colMeans(pp_beta)
 beta_Amean <- exp(beta_Amean)
 
 
+# Model Comparison
+###################################################################################
+
+# Student-t intercept prior
+prior_A <- c(set_prior("normal(0, 0.5)", class = "b"),
+             set_prior("student_t(3, 0, 2", class = "b", coef = "sexmale"),
+             set_prior("student_t(3, 0, 2", class = "b", coef = "sexfemale"),
+             set_prior("exponential(1)", class = "sigma"))
+
+# Normal intercept prior (sensitivity)
+prior_B <- c(set_prior("normal(0, 0.5)", class = "b"),
+             set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
+             set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
+             set_prior("exponential(1)", class = "sigma"))
+
+
+# Normal intercept prior (sensitivity)
+prior_C <- c(set_prior("normal(0, 0.5)", class = "b"),
+             set_prior("normal(0, 5)", class = "b", coef = "sexmale"),
+             set_prior("normal(0, 5)", class = "b", coef = "sexfemale"),
+             set_prior("exponential(1)", class = "sigma"))
+
+# Fitting Model A (gaussian likelihood + student-t intercept prior)...
+fit_A <- brm(formula = f_beta,
+             data = data,
+             family = gaussian(),
+             prior = prior_A,
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
+
+# Fitting Model B (student-t likelihood + student-t prior)...
+fit_B <- brm(formula = f_beta,
+             data = data,
+             family = gaussian(),
+             prior = prior_B,
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
+
+# Fitting Model B (student-t likelihood + student-t prior)...
+fit_C <- brm(formula = f_beta,
+             data = data,
+             family = gaussian(),
+             prior = prior_C,
+             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
+
+loo_A <- loo(fit_A, moment_match = TRUE)
+loo_B <- loo(fit_B, moment_match = TRUE)
+loo_C <- loo(fit_C, moment_match = TRUE)
+
+
 #Plot area
 ###################################################################################
 
@@ -295,14 +343,14 @@ F7 <- ggplot(df_C0, aes(x = C0)) +
 
 ###################################################################################
 
-loo_C <- loo(fit_single, moment_match = TRUE)
-kfc_C <- kfold(fit_single, K = 10)
+loo_single <- loo(fit_single, moment_match = TRUE)
+kfc_single <- kfold(fit_single, K = 10)
 # Extract LOO
 
-loo_vals <- loo_C$estimates
+loo_vals <- loo_single$estimates
 
 # Extract K-fold
-k_vals <- kfc_C$estimates
+k_vals <- kfc_single$estimates
 
 # Build row-wise table
 table_cv_single <- tibble(
@@ -541,14 +589,39 @@ T8 <- knitr::kable(
 
 ###################################################################################
 
-priors_table_C <- tribble(~Parameter, ~Prior,
-                          "Regression coefficient for male ", "Normal(0, 1)",
-                          "Regression coefficient for female", "Normal(0, 1)",
-                          "Regression coefficients (others)", "Normal(0, 1)",
-                          "Residual SD ", "Exponential(1)")
+priors_comparison <- tribble(
+  ~Parameter, ~Original,            ~Prior_A,             ~Prior_B,        ~Prior_C,
+  
+  "Regression coefficient: male",
+  "Normal(0, 2)",               "Student-t(3, 0, 2)", "Normal(0, 1)",  "Normal(0, 5)",
+  
+  "Regression coefficient: female",
+  "Normal(0, 2)",               "Student-t(3, 0, 2)", "Normal(0, 1)",  "Normal(0, 5)",
+  
+  "Regression coefficients (others)",
+  "Normal(0, 0.5)",             "Normal(0, 0.5)",     "Normal(0, 0.5)", "Normal(0, 0.5)",
+  
+  "Residual SD (sigma)",
+  "Exponential(1)",             "Exponential(1)",     "Exponential(1)", "Exponential(1)"
+)
 
-T9 <- knitr::kable(priors_table_C, 
-                   caption = "Comparison priors")
+T9 <-knitr::kable(priors_comparison,
+                  caption = "Comparison priors with original prior")
+
+
+###################################################################################
+
+comp <- loo_compare(loo_A, loo_B, loo_C, loo_single)
+
+comp_tbl <- comp |> 
+  as.data.frame() |> 
+  tibble::rownames_to_column("Model") |> 
+  dplyr::select(Model, elpd_diff, se_diff)
+
+# Print as a nicely formatted table
+T10 <-knitr::kable(comp_tbl,
+                   digits = 3,
+                   caption = "LOO Comparison of different priors' model")
 
 ###################################################################################
 
@@ -561,55 +634,6 @@ F1000 <- ggplot(data, aes(x = exp(data$beta), y = colMeans(pp_draws), colour = s
 
 plot(Vd_mean, data$Vd, pch=19)
 abline(0,1,col="red")
-
-# Model Comparison
-###################################################################################
-
-# Student-t intercept prior
-prior_A <- c(set_prior("normal(0, 0.5)", class = "b"),
-             set_prior("student_t(3, 0, 2", class = "b", coef = "sexmale"),
-             set_prior("student_t(3, 0, 2", class = "b", coef = "sexfemale"),
-             set_prior("exponential(1)", class = "sigma"))
-
-# Normal intercept prior (sensitivity)
-prior_B <- c(set_prior("normal(0, 0.5)", class = "b"),
-             set_prior("normal(0, 1)", class = "b", coef = "sexmale"),
-             set_prior("normal(0, 1)", class = "b", coef = "sexfemale"),
-             set_prior("exponential(1)", class = "sigma"))
-
-
-# Normal intercept prior (sensitivity)
-prior_C <- c(set_prior("normal(0, 0.5)", class = "b"),
-             set_prior("normal(0, 5)", class = "b", coef = "sexmale"),
-             set_prior("normal(0, 5)", class = "b", coef = "sexfemale"),
-             set_prior("exponential(1)", class = "sigma"))
-
-# Fitting Model A (gaussian likelihood + student-t intercept prior)...
-fit_A <- brm(formula = f_beta,
-             data = data,
-             family = gaussian(),
-             prior = prior_A,
-             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
-
-# Fitting Model B (student-t likelihood + student-t prior)...
-fit_B <- brm(formula = f_beta,
-             data = data,
-             family = gaussian(),
-             prior = prior_B,
-             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
-
-# Fitting Model B (student-t likelihood + student-t prior)...
-fit_C <- brm(formula = f_beta,
-             data = data,
-             family = gaussian(),
-             prior = prior_C,
-             chains = 4, iter = 4000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 15))
-
-loo_A <- loo(fit_A, moment_match = TRUE)
-loo_B <- loo(fit_B, moment_match = TRUE)
-loo_C <- loo(fit_B, moment_match = TRUE)
-
-print(loo_compare(loo_A, loo_B, loo_C, loo_single))
 
 
 

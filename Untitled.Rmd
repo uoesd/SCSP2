@@ -473,14 +473,25 @@ We suggest double blood samples method in practice:
 
 We basically focus on choices of priors. 
 
-Firstly we restrict the variance of priors for each coefficients smaller and change them to table $9$
+Firstly we will test how sensitive our model is with different priors in table $9$:
+
+* Prior A choose student-t distribution for coefficients of gender variables.
+* Prior B use a narrower variance for coefficients of gender variables.
+* Prior C use a wider variance for coefficients of gender variables.
+
+Since all other coefficients are relatively small, we don't talk about them.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T9
 ```
 
 
+As you can see in table $10$, the LOO validation shows the model is vary
 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+T10
+```
 #https://www.sciencedirect.com/science/article/pii/S0379073810000770?via%3Dihub
 
 P.Y. Kwo, V.A. Ramchandani, S. O’Connor, D. Amann, L.G. Carr, K. Sandrasegaran, K.K. Kopecky, T.K. Li
