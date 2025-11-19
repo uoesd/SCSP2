@@ -175,7 +175,7 @@ $$\hat{\beta}_{i,j} = \hat{\gamma}_{1,i}\,\text{female}_j
 
 ### Priors
 
-Before fitting the Bayesian regression model, we should define appropriate priors for all regression coefficients and final residual. We use weakly informative priors, which have small effects on the posterior. The selected priors are summarized as follows:
+Before fitting the Bayesian regression model, we should define appropriate priors for all regression coefficients and the residual standard deviation. We use weakly informative priors, which have small effects on the posterior. The selected priors are summarized as follows:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T1
@@ -183,7 +183,7 @@ T1
 
 We do not expect $\beta$ to have a linear relationship with the variables, so zero-mean normal priors are appropriate. We consider gender to be the baseline factor influencing alcohol elimination rates, so we set relatively wide priors Normal(0, 2) for the sex coefficients, allowing their effects to vary within a reasonable range. For other standardized variables, since their impacts are considered relatively small, we used more shrinkage weakly informative priors Normal(0, 0.5) to prevent unreasonably large effects. The residual standard deviation is given an Exponential($1$) prior, which is a commonly used positive weakly informative prior that can avoid unreasonably high noise.
 
-If future research involves different populations, larger sample sizes, or additional biological information, the prior distributions can be adjusted accordingly to ensure they are applicable to any new datasets.
+If future research involves different populations, larger sample sizes, or additional biological information, the prior distributions can be changed.
 
 
 ## Model Results
