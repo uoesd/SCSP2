@@ -175,7 +175,7 @@ $$\hat{\beta}_{i,j} = \hat{\gamma}_{1,i}\,\text{female}_j
 
 ### Priors
 
-Before fitting the Bayesian regression model, appropriate priors need to be specified for all regression coefficients and the residual standard deviation. We use weakly informative priors, which have small effects on the posterior. The selected priors are summarized as follows:
+Before fitting the Bayesian regression model, we should define appropriate priors for all regression coefficients and the residual standard deviation. We use weakly informative priors, which have small effects on the posterior. The selected priors are summarized as follows:
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T1
