@@ -666,6 +666,7 @@ F12 <- ggplot(data) +
 
 ###################################################################################
 
+# words count
 pandoc <- rmarkdown::pandoc_exec()
 cmd <- sprintf('"%s" P2.Rmd --from=markdown --to=plain | wc -w', pandoc)
 system(cmd)
