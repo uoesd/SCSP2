@@ -403,10 +403,10 @@ So the final regression model is:
 
 \subsubsection{Priors}\label{priors}
 
-Before fitting the Bayesian regression model, appropriate priors need to
-be specified for all regression coefficients and the residual standard
-deviation. We use weakly informative priors, which have small effects on
-the posterior. The selected priors are summarized as follows:
+Before fitting the Bayesian regression model, we should define
+appropriate priors for all regression coefficients and the residual
+standard deviation. We use weakly informative priors, which have small
+effects on the posterior. The selected priors are summarized as follows:
 
 \begin{longtable}[]{@{}ll@{}}
 \caption{Weakly informative priors}\tabularnewline
@@ -438,8 +438,8 @@ is given an Exponential(\(1\)) prior, which is a commonly used positive
 weakly informative prior that can avoid unreasonably high noise.
 
 If future research involves different populations, larger sample sizes,
-or additional biological information, the prior distributions can be
-adjusted accordingly to ensure they are applicable to any new datasets.
+or additional biological information, the prior distributions should be
+changed.
 
 \subsection{Model Results}\label{model-results}
 
@@ -1113,7 +1113,7 @@ prior B's model (figure \(12\)).
 \caption{Mean Posterior Beta VS True Beta for two models}
 \end{figure}
 
-\section{Total words: 3678}\label{total-words-3678}
+\section{Total words: 3667}\label{total-words-3667}
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}

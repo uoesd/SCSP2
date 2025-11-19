@@ -494,6 +494,6 @@ Other than this, if we plot the mean posterior $\beta$ value with true $\beta$ v
 F12
 ```
 
-# Total words: 3677
+# Total words: 3667
 
 # References {-}
