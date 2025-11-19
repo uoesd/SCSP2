@@ -466,10 +466,6 @@ We suggest double blood samples method in practice:
 'If a driver is not apprehended sitting behind the wheel, the traffic police in Sweden often submit double blood samples taken about 1 h apart. The mean result at each sampling time can be used to calculate the rate of elimination of alcohol assuming the existence of the post-absorptive declining phase and operation of zero-order kinetics. From a long experience with investigating drunken driving cases, the first blood sample is usually obtained 60 min after an arrest is made depending on location throughout the country where the individual is apprehended and the availability of a physician or nurse to draw blood.' @jones2010evidence
 \end{center}
 
-# References {#refs}
-
-\appendix
-
 # Model Comparison
 
 We basically focus on choices of priors.
@@ -500,3 +496,5 @@ F12
 ```
 
 # Total words: 3668
+
+# References {#refs}
