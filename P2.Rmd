@@ -1,6 +1,6 @@
 ---
 title: 'Forensic Modelling of Blood Alcohol Evidence'
-author: 
+author: 'Du Shi, Kunning Zhang, Yixuan Yin'
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   pdf_document:
@@ -48,11 +48,6 @@ source("code.R")
 set.seed(121212)
 ```
 
-\begin{center}
-{\large \textbf{Group 13}}\\
-Du Shi, Kunning Zhang, Yixuan Yin\\
-Total words: 3668
-\end{center}
 
 # Executive Summary
 
@@ -504,4 +499,4 @@ Other than this, if we plot the mean posterior $\beta$ value with true $\beta$ v
 F12
 ```
 
-
+# Total words: 3668
