@@ -101,7 +101,6 @@
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
-\fancyhead[L]{\textit{Forensic Modelling of Blood Alcohol Evidence}}
 \fancyhead[R]{\leftmark}
 \fancyfoot[C]{\thepage}
 \usepackage{setspace}
@@ -148,7 +147,7 @@
 
 \title{Forensic Modelling of Blood Alcohol Evidence}
 \author{Du Shi, Kunning Zhang, Yixuan Yin}
-\date{十一月 19, 2025}
+\date{November 19, 2025}
 
 \begin{document}
 \maketitle
@@ -184,9 +183,10 @@ courts.
 In this report, we introduce a Bayesian Regression Model (BRM) with
 considering the heterogeneity between individuals, the model gives a
 posterior distribution of \(\hat{\beta}\) by using both samples and
-prior knowledge. Then we use Markov Chain Monte Carlo (MCMC) to simulate
-\(12000\) \(\beta\) draws from posterior distribution and find out the
-probability of the person's BAC over limit while driving.
+prior knowledge. Then we use Hamiltonian Monte Carlo (one of Markov
+Chain Monte Carlo) to simulate \(12000\) \(\beta\) draws from posterior
+distribution and find out the probability of the person's BAC over limit
+while driving.
 
 In real world, \(\beta\) estimation is quite difficult, it depends on
 the individuals' liver condition, drinking habits, genetic, diet, etc.
@@ -225,10 +225,11 @@ defined as:
 
 `\(\rho_k\)' is an important indicator to show the performance of a BRM
 model, it measures how similar the sample at position \(i\) is to the
-sample at position \(i+k\). Since MCMC is a random walk process,
-\(\theta_i\) should be similar to \(\theta_{i+1}\), less similar to
-\(\theta_{i+2}\), independent with \(\theta_{i+k}\) for large \(k\). So
-if \(\rho_k\) is large means the chains hardly move, can't converge.
+sample at position \(i+k\). Since Hamiltonian Monte Carlo is a random
+walk process, \(\theta_i\) should be similar to \(\theta_{i+1}\), less
+similar to \(\theta_{i+2}\), independent with \(\theta_{i+k}\) for large
+\(k\). So if \(\rho_k\) is large means the chains hardly move, can't
+converge.
 
 To make it more clear, we will use Effective Sample Size (ESS) to
 explain:
@@ -333,9 +334,8 @@ The \(\theta\) in the equation is the \(\gamma\)s and \(\varepsilon\).
 For most real models, we can't compute this posterior
 \(p(\theta \mid \text{data})\) analytically. Markov Chain Monte Carlo
 (MCMC) helps us draw samples from it, which we can then summarize. BRM
-uses Hamiltonian Monte Carlo (One of MCMC), which is better than
-standard MCMC (like Metropolis-Hastings) since it is faster and cost
-less.
+uses Hamiltonian Monte Carlo, which is better than standard MCMC (like
+Metropolis-Hastings) since it is faster and cost less.
 
 After setting priors for \(\gamma\)s and \(\varepsilon\), we need
 specify a family for \(\beta\) as the the likelihood of the observed
@@ -586,9 +586,8 @@ evidence of our choices on variables and likelihood family.
 \subsubsection{Coverage rate and Errors}\label{coverage-rate-and-errors}
 
 Table 3 shows the coverage rate of \(95\%\) and \(50\%\) predicted
-intervals, which means \(98\) and \(51\) individuals' real \(\beta\)
-value is inside the intervals. The MAE and RMSE are both relatively
-small.
+intervals, \(98\) and \(51\) individuals' real \(\beta\) value is inside
+the intervals. The MAE and RMSE are both relatively small.
 
 \begin{longtable}[]{@{}lr@{}}
 \caption{Testing table}\tabularnewline
@@ -612,7 +611,7 @@ Root Mean Square Error & 0.028 \\
 
 We do two kinds of Cross-Validation: LOO and Kfold (table \(4\)). The
 two methods show similar results means the model is stable and the \(p\)
-value is near the number of variables (\(5\)) shows the model is not
+value is near the number of variables \(5\) shows the model is not
 over-fitting.
 
 \begin{longtable}[t]{lrrrrrr}
@@ -654,7 +653,7 @@ To make the result clear, it is better to give Table 5 to the courts and
 illustrate:
 
 \begin{center}
-There is $91.5\%$ probability that the 70 year old female is over the drink driving limit, with both mean, median and mode value over the limit.
+There is $91.1\%$ probability that the 70 year old female is over the drink driving limit, with both mean, median and mode value over the limit.
 \end{center}
 
 The results also show that the original method is not reasonable since
@@ -932,7 +931,7 @@ Figure \(11\) shows the joint posterior distribution of \(\beta\) and
 \subsection{Testing}\label{testing}
 
 Table \(7\) is the LOO and Kfold results, the p values (\(11.473\) and
-\(11.111\)) means the validation results are good since we have \(10\)
+\(12.993\)) means the validation results are good since we have \(10\)
 parameters.
 
 \begin{longtable}[t]{lrrrrrr}
@@ -1104,9 +1103,9 @@ fit\_B & -0.789 & 2.685 \\
 
 Other than this, if we plot the mean posterior \(\beta\) value with true
 \(\beta\) value, the results will be more clear. Since the prior
-variance of coefficients is seted very small, the value of \(\beta\) is
+variance of coefficients is set very small, the value of \(\beta\) is
 mainly predicted by gender, which you can find clearly two groups for
-prior B's model.
+prior B's model (figure \(12\)).
 
 \begin{figure}
 \centering
@@ -1114,7 +1113,7 @@ prior B's model.
 \caption{Mean Posterior Beta VS True Beta for two models}
 \end{figure}
 
-\section{Total words: 3668}\label{total-words-3668}
+\section{Total words: 3678}\label{total-words-3678}
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}

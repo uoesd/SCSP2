@@ -17,7 +17,6 @@ geometry: margin=1in
 header-includes:
 - \usepackage{fancyhdr}
 - \pagestyle{fancy}
-- \fancyhead[L]{\textit{Forensic Modelling of Blood Alcohol Evidence}}
 - \fancyhead[R]{\leftmark}
 - \fancyfoot[C]{\thepage}
 - \usepackage{setspace}
@@ -55,7 +54,7 @@ In the UK it is a criminal offence to drive a motor vehicle with a blood or brea
 
 The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scientists currently use $2.5\%$ percentile of $\beta$ distribution constructing from samples as the estimated $\beta$ value for every individuals. This method is obviously not rigorous for the courts.
 
-In this report, we introduce a Bayesian Regression Model (BRM) with considering the heterogeneity between individuals, the model gives a posterior distribution of $\hat{\beta}$ by using both samples and prior knowledge. Then we use Markov Chain Monte Carlo (MCMC) to simulate $12000$ $\beta$ draws from posterior distribution and find out the probability of the person's BAC over limit while driving. 
+In this report, we introduce a Bayesian Regression Model (BRM) with considering the heterogeneity between individuals, the model gives a posterior distribution of $\hat{\beta}$ by using both samples and prior knowledge. Then we use Hamiltonian Monte Carlo (one of Markov Chain Monte Carlo) to simulate $12000$ $\beta$ draws from posterior distribution and find out the probability of the person's BAC over limit while driving. 
 
 In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet, etc. As we don't have corresponding data, variation of $\beta$ is mainly explained by gender, but we still find some useful variables like 'weight' and 'drinking time'.
 
@@ -76,7 +75,7 @@ It is important to normalized all numerical variables. Centering the covariates 
 
 $$\rho_k = \frac{Cov(\theta^i, \theta^{i+k})}{\theta^2}.$$
 
-'$\rho_k$' is an important indicator to show the performance of a BRM model, it measures how similar the sample at position $i$ is to the sample at position $i+k$. Since MCMC is a random walk process, $\theta_i$ should be similar to $\theta_{i+1}$, less similar to $\theta_{i+2}$, independent with $\theta_{i+k}$ for large $k$. So if $\rho_k$ is large means the chains hardly move, can't converge.
+'$\rho_k$' is an important indicator to show the performance of a BRM model, it measures how similar the sample at position $i$ is to the sample at position $i+k$. Since Hamiltonian Monte Carlo is a random walk process, $\theta_i$ should be similar to $\theta_{i+1}$, less similar to $\theta_{i+2}$, independent with $\theta_{i+k}$ for large $k$. So if $\rho_k$ is large means the chains hardly move, can't converge.
 
 To make it more clear, we will use Effective Sample Size (ESS) to explain: 
 
@@ -139,7 +138,7 @@ The principle theorem behind BRM is Bayes' Rule:
 
 $$p(\theta \mid \text{data}) = \frac{p(\text{data} \mid \theta) \, p(\theta)}{p(\text{data})}.$$
 
-The $\theta$ in the equation is the $\gamma$s and $\varepsilon$. For most real models, we can't compute this posterior $p(\theta \mid \text{data})$ analytically. Markov Chain Monte Carlo (MCMC) helps us draw samples from it, which we can then summarize. BRM uses Hamiltonian Monte Carlo (One of MCMC), which is better than standard MCMC (like Metropolis-Hastings) since it is faster and cost less.
+The $\theta$ in the equation is the $\gamma$s and $\varepsilon$. For most real models, we can't compute this posterior $p(\theta \mid \text{data})$ analytically. Markov Chain Monte Carlo (MCMC) helps us draw samples from it, which we can then summarize. BRM uses Hamiltonian Monte Carlo, which is better than standard MCMC (like Metropolis-Hastings) since it is faster and cost less.
 
 After setting priors for $\gamma$s and $\varepsilon$, we need specify a family for $\beta$ as the the likelihood of the observed data. In our sample, we have already taken $\log(\beta)$, so it is better to use the most common normal distribution likelihood, it is normal and can express $\beta$ values good without restrict samples' shape.
 
@@ -201,7 +200,7 @@ T2
 
 Figure 4 shows posterior results for each variables' coefficients, all coefficients show good normal patterns since all chains have converged and warm-up length is enough. Since the $\beta$ is log-transformed, the value of 'b_sexfemale' and 'b_sexmale' is not typical value of $\beta$ like $0.19$ when other coefficients are all near zero. Also $\sigma$ value is estimated  under log-transformed $\beta$.
 
-```{r echo=FALSE, fig.cap="Posterioe density of 4 chains for all coefficients.", message=FALSE, warning=FALSE}
+```{r echo=FALSE, fig.width=10, fig.height=8, fig.cap="Posterioe density of 4 chains for all coefficients.", message=FALSE, warning=FALSE}
 F4
 ```
 
@@ -209,7 +208,7 @@ F4
 Figure 5 shows the trace plots for all variable coefficients, it can be seen that all $4$ chains mix well and all values are picking after convergent.
 
 
-```{r echo=FALSE, fig.cap="Traceplot of all coefficients and variance sigma.", message=FALSE, warning=FALSE}
+```{r fig.width=10, fig.height=8, echo=FALSE, fig.cap="Traceplot of all coefficients and variance sigma.", message=FALSE, warning=FALSE}
 F5
 ```
 
@@ -251,7 +250,7 @@ F7
 
 ### Coverage rate and Errors
 
-Table 3 shows the coverage rate of $95\%$ and $50\%$ predicted intervals, which means $98$ and $51$ individuals' real $\beta$ value is inside the intervals. The MAE and RMSE are both relatively small.
+Table 3 shows the coverage rate of $95\%$ and $50\%$ predicted intervals, $98$ and $51$ individuals' real $\beta$ value is inside the intervals. The MAE and RMSE are both relatively small.
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
@@ -260,7 +259,7 @@ T3
 
 ### Cross-Validation
 
-We do two kinds of Cross-Validation: LOO and Kfold (table $4$). The two methods show similar results means the model is stable and the $p$ value is near the number of variables ($5$) shows the model is not over-fitting.
+We do two kinds of Cross-Validation: LOO and Kfold (table $4$). The two methods show similar results means the model is stable and the $p$ value is near the number of variables $5$ shows the model is not over-fitting.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T4
@@ -283,7 +282,7 @@ F8
 To make the result clear, it is better to give Table 5 to the courts and illustrate:
 
 \begin{center}
-There is $91.5\%$ probability that the 70 year old female is over the drink driving limit, with both mean, median and mode value over the limit.
+There is $91.1\%$ probability that the 70 year old female is over the drink driving limit, with both mean, median and mode value over the limit.
 \end{center}
 
 The results also show that the original method is not reasonable since $2.5\%$ percentile is over-conservative even in this case.
@@ -431,7 +430,7 @@ F11
 
 ## Testing 
 
-Table $7$ is the LOO and Kfold results, the p values ($11.473$ and $11.111$) means the validation results are good since we have $10$ parameters.
+Table $7$ is the LOO and Kfold results, the p values ($11.473$ and $12.993$) means the validation results are good since we have $10$ parameters.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T7
@@ -488,13 +487,13 @@ T10
 ```
 
 
-Other than this, if we plot the mean posterior $\beta$ value with true $\beta$ value, the results will be more clear. Since the prior variance of coefficients is seted very small, the value of $\beta$ is mainly predicted by gender, which you can find clearly two groups for prior B's model.
+Other than this, if we plot the mean posterior $\beta$ value with true $\beta$ value, the results will be more clear. Since the prior variance of coefficients is set very small, the value of $\beta$ is mainly predicted by gender, which you can find clearly two groups for prior B's model (figure $12$).
 
 
 ```{r echo=FALSE, fig.cap="Mean Posterior Beta VS True Beta for two models", message=FALSE, warning=FALSE}  
 F12
 ```
 
-# Total words: 3668
+# Total words: 3678
 
 # References {-}

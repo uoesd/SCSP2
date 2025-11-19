@@ -445,7 +445,7 @@ F9 <- ggplot(data, aes(x = Vd, y = exp(beta))) +
 ###################################################################################
 
 # Density of log(Vd)
-F10 <- ggplot(data, aes(x = log(Vd))) +
+F10 <- ggplot(data, aes(x = Vd)) +
   geom_density() +
   labs(title = "Density Plot", x = "V_d", y = "Density")
 
@@ -665,11 +665,6 @@ F12 <- ggplot(data) +
           title = "Posterior Mean vs True Beta")
 
 ###################################################################################
-
-text <- readLines("P2.Rmd")
-words <- unlist(strsplit(text, "\\s+"))
-words <- words[words != ""]
-length(words)
 
 pandoc <- rmarkdown::pandoc_exec()
 cmd <- sprintf('"%s" P2.Rmd --from=markdown --to=plain | wc -w', pandoc)
