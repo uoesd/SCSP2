@@ -1,6 +1,9 @@
 ---
 title: 'Forensic Modelling of Blood Alcohol Evidence'
-author: "Group 13  \nDu Shi, Kunning Zhang, Yixuan Yin\n \nTotal words: 3668\n"
+author: |
+  Group 13
+  Du Shi, Kunning Zhang, Yixuan Yin
+  Total words: 3668
 date: "`r format(Sys.Date(), '%B %d, %Y')`"
 output:
   pdf_document:
@@ -157,11 +160,11 @@ F2
 
 We remove the intercept and use gender (male and female) to be the two baselines. Since $\beta$ for male and female are in different range.
 
-- Gender: Female's BAC elimination rate is larger than male on average (figure 3), it is explained by liver weight represents a greater fraction of lean body mass in the female gender. [1111111111]
+- Gender: Female's BAC elimination rate is larger than male on average (figure 3), it is explained by liver weight represents a greater fraction of lean body mass in the female gender. @kwo1998gender
 
 - Drinking time: If the person keep drinking after BAC reaches peak, the measured $\beta$ will be smaller since $\beta$ is measured starting at BAC peak time till the end, there will be fluctuations on the BAC plots. We will use total drinking time as the indicator.
 
-- Weight and Height: Basically higher weight often leads lager size of liver and larger amount of total body water. Height also affect the amount of total body water. [222222222]
+- Weight and Height: Basically higher weight often leads lager size of liver and larger amount of total body water. Height also affect the amount of total body water. @maskell2020tota
 
 ```{r Figure, echo=FALSE, fig.cap="Box plot of beta respect to gender.", message=FALSE, warning=FALSE}
 F3
@@ -403,7 +406,7 @@ $$
 
 The prior for $\beta$-variable coefficients are unchanged.
 
-The prior for $\eta$ is easy to calculated since $\eta = \frac{1}{F_{\text{water}}} \times \frac{1}{F}$. The Blood water content $F_{\text{water}}$ is easy to determine by desiccation and the mean reported values for men and women are $0.825\%$ w/v and $0.838\%$ w/v respectively. The small sex difference is mainly attributed to lower haematocrit in female blood samples. [33333333]
+The prior for $\eta$ is easy to calculated since $\eta = \frac{1}{F_{\text{water}}} \times \frac{1}{F}$. The Blood water content $F_{\text{water}}$ is easy to determine by desiccation and the mean reported values for men and women are $0.825\%$ w/v and $0.838\%$ w/v respectively. The small sex difference is mainly attributed to lower haematocrit in female blood samples. @jones2019alcohol
 
 The fraction of the alcohol dose that reaches the systemic circulation $F$ is typically $0.7$−$0.9$, we use $0.8$. So:
 
@@ -462,9 +465,10 @@ When using the model, it is necessary to know when the person is arrested and wh
 
 We suggest double blood samples method in practice:
 
-$$
-\text{'If a driver is not apprehended sitting behind the wheel, the traffic police in Sweden often submit double blood samples taken about 1 h apart. The mean result at each sampling time can be used to calculate the rate of elimination of alcohol assuming the existence of the post-absorptive declining phase and operation of zero-order kinetics. From a long experience with investigating drunken driving cases, the first blood sample is usually obtained 60 min after an arrest is made depending on location throughout the country where the individual is apprehended and the availability of a physician or nurse to draw blood.}'[4444444444]
-$$
+\begin{center}
+'If a driver is not apprehended sitting behind the wheel, the traffic police in Sweden often submit double blood samples taken about 1 h apart. The mean result at each sampling time can be used to calculate the rate of elimination of alcohol assuming the existence of the post-absorptive declining phase and operation of zero-order kinetics. From a long experience with investigating drunken driving cases, the first blood sample is usually obtained 60 min after an arrest is made depending on location throughout the country where the individual is apprehended and the availability of a physician or nurse to draw blood.' @jones2010evidence
+\end{center}
+
 # Reference
 
 
