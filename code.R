@@ -647,8 +647,8 @@ T10 <-knitr::kable(comp_tbl,
                    caption = "LOO Comparison of different priors' model")
 
 ###################################################################################
-# Compute posterior mean
 
+# Compute posterior mean
 Cbeta_A = exp(posterior_predict(fit_A))
 Cbeta_B = exp(posterior_predict(fit_B))
 Cbeta_A1 <- colMeans(Cbeta_A)
@@ -665,8 +665,6 @@ F12 <- ggplot(data) +
           title = "Posterior Mean vs True Beta")
 
 ###################################################################################
-
-
 
 text <- readLines("P2.Rmd")
 words <- unlist(strsplit(text, "\\s+"))
