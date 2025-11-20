@@ -50,20 +50,23 @@ set.seed(121212)
 
 # Executive Summary
 
-In the UK it is a criminal offence to drive a motor vehicle with a blood or breath alcohol concentration above the prescribed limit. When a person is arrested for driving under the influence of alcohol it is not usually possible to perform an accurate test of the level of alcohol in the blood or breath immediately. Breath tests can be used as an initial screening tool at the scene, but these are not sufficiently accurate for prosecution. Instead, people are taken to a police station or hospital, where the test can be carried out using proper laboratory protocols. As the body clears alcohol from the blood through time this means that if the individual was over the limit, the measured blood alcohol concentration (BAC) will be lower at the time of measurement than it was when the person was driving a motor vehicle. To deal with this situation, If the BAC after time $t$ (hours) is measured as $C_t$ (g/kg), the BAC at time $0$ is estimated as $C_0 = C_t - βt$, where $\beta$ ($g/kg/h$) is BAC elimination rate. 
+In the UK it is a criminal offence to drive a motor vehicle with a blood alcohol concentration above the prescribed limit. When a person is arrested for driving under the influence of alcohol it is not usually possible to perform an accurate test of the level of alcohol in the blood immediately. People are taken to a police station or hospital, where the test can be carried out using proper laboratory protocols. As the body clears alcohol from the blood through time this means that if the individual was over the limit, the measured blood alcohol concentration (BAC) will be lower at the time of measurement than it was when the person was driving a motor vehicle. To deal with this situation, If the BAC after time $t$ (hours) is measured as $C_t$ (g/kg), the BAC at time $0$ is estimated as $C_0 = C_t - βt$, where $\beta$ ($g/kg/h$) is BAC elimination rate. 
 
 The key point is how to find a precise $\beta$ to estimate $C_0$. Forensic scientists currently use $2.5\%$ percentile of $\beta$ distribution constructing from samples as the estimated $\beta$ value for every individuals. This method is obviously not rigorous for the courts.
 
-In this report, we introduce a Bayesian Regression Model (BRM) with considering the heterogeneity between individuals, the model gives a posterior distribution of $\hat{\beta}$ by using both samples and prior knowledge. Then we use Hamiltonian Monte Carlo (one of Markov Chain Monte Carlo) to simulate $12000$ $\beta$ draws from posterior distribution and find out the probability of the person's BAC over limit while driving. 
+In this report, we introduce a Bayesian Regression Model (BRM) with considering the heterogeneity between individuals, the model use Hamiltonian Monte Carlo (one of Markov Chain Monte Carlo) to simulate $12000$ $\beta$ draws, and gives a posterior distribution of $\hat{\beta}$ by using both samples and prior knowledge. From the posterior distribution, we can find out the probability of the person's BAC over limit while driving. The mean absolute error of results is only $0.023$.
 
-In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet, etc. As we don't have corresponding data, variation of $\beta$ is mainly explained by gender, but we still find some useful variables like 'weight' and 'drinking time'.
+In real world, $\beta$ estimation is quite difficult, it depends on the individuals' liver condition, drinking habits, genetic, diet, etc. As we don't have corresponding data, variation of $\beta$ is mainly explained by gender, female's $\beta$ value is larger than male. But we still find some useful variables like 'weight' and 'drinking time'.
 
-When it is too late to use a blood or breath test and the only information available is eyewitness testimony of the quantity of alcohol consumed. We have to use Widmark's equation:
+We test the model on the given example, the 70 years-old woman drives over the limit with $91.1$ probability.
+
+When it is too late to use a blood test and the only information available is eyewitness testimony of the quantity of alcohol consumed. We have to use Widmark's equation:
+
 $$C_t = \frac{A}{Weight \times V_d} - \beta t$$
 
 where $A$ is Amount of Alcohol Consumed (g), $V_d$ is the volume of distribution that need to be found.
 
-Forensic scientists use the same method again to estimate $V_d$ separately with $\beta$. But $V_d$ and $\beta$ are not independent, so the method is also unavailable. To improve it, we build a joint Bayesian regression model, which can simulate them together to solve with the correlation. Then again after simulation, each $C_t$ is calculated by each pair of $\beta$ and $V_d$, so expert witness can still find a probability of $C_t$ exceeding the limit.
+Forensic scientists use the same method again to estimate $V_d$ separately with $\beta$. But $V_d$ and $\beta$ are not independent (with correlation $0.415$), so the method is also unavailable. To improve it, we build a joint Bayesian regression model, which can simulate them together to solve with the correlation. $V_d$ is estimated by Total Body Water (TBW), we find an equation to calculate it.
 
 Results will be provided in format of table $5$.
 
@@ -97,7 +100,7 @@ F1
 ```
 
 
-Since $\beta$ is a constant rate, measured when the BAC curve reaches peak and starts to decrease, so variables like AAC and Maximum BAC will not be used, since they are correlated with the value of BAC, not BAC elimination rate.
+Since $\beta$ is a constant rate, measured when the BAC curve reaches peak and starts to decrease, so variables like 'AAC' and 'BACpeaktime' will not be used, since they are correlated with the value of BAC, not BAC elimination rate.
 
 From the dataset, most data comes from age smaller than $30$, so even though age is a sufficient variable for $\beta$ the model can't really recognize it. Research shows that age doesn't really matter unless the subject has age-related liver disease, but because of moral and ethical, we don't find much research of alcohol test on elderly person with liver disease.
 
@@ -172,6 +175,11 @@ $$\hat{\beta}_{i,j} = \hat{\gamma}_{1,i}\,\text{female}_j
 + \hat{\gamma}_{2,i}\,\text{male}_j
 + \hat{\gamma}_{3,i}\,\text{weight}_j
 + \hat{\gamma}_{4,i}\,\text{height}_j + \varepsilon_{\beta,i} , \quad \varepsilon_{\beta,i} \sim N(0, \sigma_{\beta}^2).$$
+
+We have tried other variables, like we said in data description part, some variables don't really explain much variation  and some interactions like sex with weight and height don't improve the model much, at least with these $100$ data. So we don't put them in. 
+
+'maxBAC' can improve the model a little bit, but in practice $\beta$ is a constant rate, 'maxBAC' only matter for measured $\beta$ since it may affect the absorb time then affect the measured BAC elimination in similar way of 'drinking time', so we prefer to use 'drinking time' only.
+
 
 ### Priors
 
@@ -494,6 +502,6 @@ Other than this, if we plot the mean posterior $\beta$ value with true $\beta$ v
 F12
 ```
 
-# Total words: 3667
+# Total words: 3764; Total executive summary words: 473
 
 # References {-}

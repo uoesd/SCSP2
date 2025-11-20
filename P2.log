@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.16)  19 NOV 2025 21:00
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.16)  20 NOV 2025 15:58
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1091,16 +1091,15 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [9]
-Overfull \hbox (0.73541pt too wide) in paragraph at lines 478--479
+Overfull \hbox (0.73541pt too wide) in paragraph at lines 492--493
  []\TU/lmr/m/n/10.95 Tail_ESS
  []
 
 
-Overfull \hbox (0.73541pt too wide) in paragraph at lines 497--498
+Overfull \hbox (0.73541pt too wide) in paragraph at lines 511--512
  []\TU/lmr/m/n/10.95 Tail_ESS
  []
 
-ignored error: Infinite glue shrinkage found in box being split
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1111,8 +1110,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 [10]
 File: P2_files/figure-latex/unnamed-chunk-6-1.pdf Graphic file (type pdf)
 <use P2_files/figure-latex/unnamed-chunk-6-1.pdf>
-File: P2_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file (type pdf)
-<use P2_files/figure-latex/unnamed-chunk-7-1.pdf>
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1121,6 +1118,10 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [11]
+File: P2_files/figure-latex/unnamed-chunk-7-1.pdf Graphic file (type pdf)
+<use P2_files/figure-latex/unnamed-chunk-7-1.pdf>
+File: P2_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (type pdf)
+<use P2_files/figure-latex/unnamed-chunk-8-1.pdf>
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1129,8 +1130,6 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [12]
-File: P2_files/figure-latex/unnamed-chunk-8-1.pdf Graphic file (type pdf)
-<use P2_files/figure-latex/unnamed-chunk-8-1.pdf>
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1157,6 +1156,14 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
 [15]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[16]
 File: P2_files/figure-latex/unnamed-chunk-12-1.pdf Graphic file (type pdf)
 <use P2_files/figure-latex/unnamed-chunk-12-1.pdf>
 
@@ -1166,7 +1173,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[16
+[17
 
 ]
 
@@ -1176,25 +1183,25 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[17]
+[18]
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 14.4pt on input line 685.
+(Font)              scaled to size 14.4pt on input line 699.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 10.0pt on input line 685.
+(Font)              scaled to size 10.0pt on input line 699.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(1)/m/n' will be
-(Font)              scaled to size 7.0pt on input line 685.
+(Font)              scaled to size 7.0pt on input line 699.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 14.4013pt on input line 685.
+(Font)              scaled to size 14.4013pt on input line 699.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 10.00092pt on input line 685.
+(Font)              scaled to size 10.00092pt on input line 699.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(2)/m/n' will be
-(Font)              scaled to size 7.00064pt on input line 685.
+(Font)              scaled to size 7.00064pt on input line 699.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 14.39845pt on input line 685.
+(Font)              scaled to size 14.39845pt on input line 699.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 9.99893pt on input line 685.
+(Font)              scaled to size 9.99893pt on input line 699.
 LaTeX Font Info:    Font shape `TU/latinmodern-math.otf(3)/m/n' will be
-(Font)              scaled to size 6.99925pt on input line 685.
+(Font)              scaled to size 6.99925pt on input line 699.
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1202,7 +1209,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[18
+[19
 
 ]
 File: P2_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (type pdf)
@@ -1214,7 +1221,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[19]
+[20]
 File: P2_files/figure-latex/unnamed-chunk-15-1.pdf Graphic file (type pdf)
 <use P2_files/figure-latex/unnamed-chunk-15-1.pdf>
 
@@ -1224,7 +1231,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[20
+[21
 
 ]
 
@@ -1234,17 +1241,9 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[21]
+[22]
 File: P2_files/figure-latex/unnamed-chunk-17-1.pdf Graphic file (type pdf)
 <use P2_files/figure-latex/unnamed-chunk-17-1.pdf>
-
-Package fancyhdr Warning: \headheight is too small (12.0pt): 
-(fancyhdr)                Make it at least 13.59999pt, for example:
-(fancyhdr)                \setlength{\headheight}{13.59999pt}.
-(fancyhdr)                You might also make \topmargin smaller:
-(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
-
-[22]
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1260,7 +1259,15 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[24
+[24]
+
+Package fancyhdr Warning: \headheight is too small (12.0pt): 
+(fancyhdr)                Make it at least 13.59999pt, for example:
+(fancyhdr)                \setlength{\headheight}{13.59999pt}.
+(fancyhdr)                You might also make \topmargin smaller:
+(fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
+
+[25
 
 ]
 File: P2_files/figure-latex/unnamed-chunk-22-1.pdf Graphic file (type pdf)
@@ -1272,7 +1279,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[25
+[26
 
 ]
 
@@ -1282,7 +1289,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[26]
+[27]
 
 Package fancyhdr Warning: \headheight is too small (12.0pt): 
 (fancyhdr)                Make it at least 13.59999pt, for example:
@@ -1290,7 +1297,7 @@ Package fancyhdr Warning: \headheight is too small (12.0pt):
 (fancyhdr)                You might also make \topmargin smaller:
 (fancyhdr)                \addtolength{\topmargin}{-1.59999pt}.
 
-[27
+[28
 
 ] (./P2.aux)
  ***********
@@ -1303,11 +1310,11 @@ LaTeX Warning: There were multiply-defined labels.
  ) 
 Here is how much of TeX's memory you used:
  20846 strings out of 470195
- 380941 string characters out of 5478363
- 956972 words of memory out of 5000000
+ 380975 string characters out of 5478363
+ 957008 words of memory out of 5000000
  49099 multiletter control sequences out of 15000+600000
  637260 words of font info for 123 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 90i,13n,114p,401b,513s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 90i,13n,114p,401b,480s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on P2.pdf (27 pages).
+Output written on P2.pdf (28 pages).

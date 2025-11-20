@@ -147,7 +147,7 @@
 
 \title{Forensic Modelling of Blood Alcohol Evidence}
 \author{Du Shi, Kunning Zhang, Yixuan Yin}
-\date{November 19, 2025}
+\date{November 20, 2025}
 
 \begin{document}
 \maketitle
@@ -159,12 +159,10 @@
 \section{Executive Summary}\label{executive-summary}
 
 In the UK it is a criminal offence to drive a motor vehicle with a blood
-or breath alcohol concentration above the prescribed limit. When a
-person is arrested for driving under the influence of alcohol it is not
-usually possible to perform an accurate test of the level of alcohol in
-the blood or breath immediately. Breath tests can be used as an initial
-screening tool at the scene, but these are not sufficiently accurate for
-prosecution. Instead, people are taken to a police station or hospital,
+alcohol concentration above the prescribed limit. When a person is
+arrested for driving under the influence of alcohol it is not usually
+possible to perform an accurate test of the level of alcohol in the
+blood immediately. People are taken to a police station or hospital,
 where the test can be carried out using proper laboratory protocols. As
 the body clears alcohol from the blood through time this means that if
 the individual was over the limit, the measured blood alcohol
@@ -181,34 +179,39 @@ for every individuals. This method is obviously not rigorous for the
 courts.
 
 In this report, we introduce a Bayesian Regression Model (BRM) with
-considering the heterogeneity between individuals, the model gives a
-posterior distribution of \(\hat{\beta}\) by using both samples and
-prior knowledge. Then we use Hamiltonian Monte Carlo (one of Markov
-Chain Monte Carlo) to simulate \(12000\) \(\beta\) draws from posterior
-distribution and find out the probability of the person's BAC over limit
-while driving.
+considering the heterogeneity between individuals, the model use
+Hamiltonian Monte Carlo (one of Markov Chain Monte Carlo) to simulate
+\(12000\) \(\beta\) draws, and gives a posterior distribution of
+\(\hat{\beta}\) by using both samples and prior knowledge. From the
+posterior distribution, we can find out the probability of the person's
+BAC over limit while driving. The mean absolute error of results is only
+\(0.023\).
 
 In real world, \(\beta\) estimation is quite difficult, it depends on
 the individuals' liver condition, drinking habits, genetic, diet, etc.
 As we don't have corresponding data, variation of \(\beta\) is mainly
-explained by gender, but we still find some useful variables like
-`weight' and `drinking time'.
+explained by gender, female's \(\beta\) value is larger than male. But
+we still find some useful variables like `weight' and `drinking time'.
 
-When it is too late to use a blood or breath test and the only
-information available is eyewitness testimony of the quantity of alcohol
-consumed. We have to use Widmark's equation:
+We test the model on the given example, the 70 years-old woman drives
+over the limit with \(91.1\) probability.
+
+When it is too late to use a blood test and the only information
+available is eyewitness testimony of the quantity of alcohol consumed.
+We have to use Widmark's equation:
+
 \[C_t = \frac{A}{Weight \times V_d} - \beta t\]
 
 where \(A\) is Amount of Alcohol Consumed (g), \(V_d\) is the volume of
 distribution that need to be found.
 
 Forensic scientists use the same method again to estimate \(V_d\)
-separately with \(\beta\). But \(V_d\) and \(\beta\) are not
-independent, so the method is also unavailable. To improve it, we build
-a joint Bayesian regression model, which can simulate them together to
-solve with the correlation. Then again after simulation, each \(C_t\) is
-calculated by each pair of \(\beta\) and \(V_d\), so expert witness can
-still find a probability of \(C_t\) exceeding the limit.
+separately with \(\beta\). But \(V_d\) and \(\beta\) are not independent
+(with correlation \(0.415\)), so the method is also unavailable. To
+improve it, we build a joint Bayesian regression model, which can
+simulate them together to solve with the correlation. \(V_d\) is
+estimated by Total Body Water (TBW), we find an equation to calculate
+it.
 
 Results will be provided in format of table \(5\).
 
@@ -400,6 +403,17 @@ So the final regression model is:
 + \hat{\gamma}_{2,i}\,\text{male}_j
 + \hat{\gamma}_{3,i}\,\text{weight}_j
 + \hat{\gamma}_{4,i}\,\text{height}_j + \varepsilon_{\beta,i} , \quad \varepsilon_{\beta,i} \sim N(0, \sigma_{\beta}^2).\]
+
+We have tried other variables, like we said in data description part,
+some variables don't really explain much variation and some interactions
+like sex with weight and height don't improve the model much, at least
+with these \(100\) data. So we don't put them in.
+
+`maxBAC' can improve the model a little bit, but in practice \(\beta\)
+is a constant rate, `maxBAC' only matter for measured \(\beta\) since it
+may affect the absorb time then affect the measured BAC elimination in
+similar way of `drinking time', so we prefer to use `drinking time'
+only.
 
 \subsubsection{Priors}\label{priors}
 
@@ -1113,7 +1127,8 @@ prior B's model (figure \(12\)).
 \caption{Mean Posterior Beta VS True Beta for two models}
 \end{figure}
 
-\section{Total words: 3667}\label{total-words-3667}
+\section{Total words: 3673; Total executive summary words:
+473}\label{total-words-3673-total-executive-summary-words-473}
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
