@@ -252,9 +252,11 @@ where $S$ is the number of posterior draws.
 
 We will use it to check if our posterior is under or over dispersion, the good model's PIT plot should be flat over $Uniform(0,1)$. For our model, the LOO-PIT QQ plot (Figure 7) is flat everywhere except probability near 0.55 and 0.8, which are acceptable by the randomness of MCMC method. A U-shape (points over dot line at two tails) in PIT plots means overestimates variance, it doesn't appear in our plot gives evidence of our choices on variables and likelihood family.
 
+
 ```{r echo=FALSE, fig.cap="LOO-PIT QQ plot", message=FALSE, warning=FALSE}
 F7
 ```
+
 
 ### Coverage rate and Errors
 
@@ -265,9 +267,11 @@ Table 3 shows the coverage rate of $95\%$ and $50\%$ predicted intervals, $98$ a
 T3
 ```
 
+
 ### Cross-Validation
 
 We do two kinds of Cross-Validation: LOO and Kfold (table $4$). The two methods show similar results means the model is stable and the $p$ value is near the number of variables $5$ shows the model is not over-fitting.
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 T4
